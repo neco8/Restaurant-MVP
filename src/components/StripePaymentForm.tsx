@@ -52,7 +52,6 @@ export function StripePaymentForm({
   clientSecret,
 }: {
   clientSecret: string;
-  paymentIntentId?: string;
 }) {
   return (
     <div data-testid="stripe-elements">

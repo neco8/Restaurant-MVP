@@ -36,8 +36,6 @@ describe("StripePaymentForm", () => {
     render(
       <StripePaymentForm
         clientSecret="pi_test_secret_abc"
-        paymentIntentId="pi_test_123"
-        amountInCents={1200}
       />
     );
 
@@ -64,8 +62,6 @@ describe("StripePaymentForm", () => {
     render(
       <StripePaymentForm
         clientSecret="pi_test_secret_abc"
-        paymentIntentId="pi_test_123"
-        amountInCents={1200}
       />
     );
 
@@ -86,8 +82,6 @@ describe("StripePaymentForm", () => {
     render(
       <StripePaymentForm
         clientSecret="pi_test_secret_abc"
-        paymentIntentId="pi_test_123"
-        amountInCents={1200}
       />
     );
 
@@ -106,8 +100,6 @@ describe("StripePaymentForm", () => {
     render(
       <StripePaymentForm
         clientSecret="pi_test_secret_abc"
-        paymentIntentId="pi_test_123"
-        amountInCents={1200}
       />
     );
 
@@ -122,8 +114,6 @@ describe("StripePaymentForm", () => {
     render(
       <StripePaymentForm
         clientSecret="pi_test_secret_abc"
-        paymentIntentId="pi_test_123"
-        amountInCents={1200}
       />
     );
     expect(screen.getByRole("button", { name: "Place Order" })).toBeInTheDocument();
@@ -141,8 +131,6 @@ describe("when payment succeeds", () => {
     render(
       <StripePaymentForm
         clientSecret="pi_test_secret"
-        paymentIntentId="pi_test_123"
-        amountInCents={1200}
       />
     );
 

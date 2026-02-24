@@ -50,7 +50,6 @@ export function CheckoutPage({
 export default function CheckoutRoute() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
-  const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -71,9 +70,8 @@ export default function CheckoutRoute() {
         if (!r.ok) throw new Error("Server error");
         return r.json();
       })
-      .then((data: { clientSecret: string; paymentIntentId: string }) => {
+      .then((data: { clientSecret: string }) => {
         setClientSecret(data.clientSecret);
-        setPaymentIntentId(data.paymentIntentId);
       })
       .catch(() => {
         setError("Something went wrong. Please try again.");
@@ -84,7 +82,7 @@ export default function CheckoutRoute() {
     <CheckoutPage cartItems={cartItems}>
       {error && <p role="alert">{error}</p>}
       {clientSecret ? (
-        <StripePaymentForm clientSecret={clientSecret} paymentIntentId={paymentIntentId ?? undefined} />
+        <StripePaymentForm clientSecret={clientSecret} />
       ) : (
         <button disabled={cartItems.length === 0}>Place Order</button>
       )}
