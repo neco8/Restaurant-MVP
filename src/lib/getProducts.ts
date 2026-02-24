@@ -1,8 +1,4 @@
-import type { Product } from "./types";
-
-export type ProductRepository = {
-  findAll: () => Promise<Product[]>;
-};
+import type { Product, ProductRepository } from "./types";
 
 export async function getProducts(
   repository: ProductRepository

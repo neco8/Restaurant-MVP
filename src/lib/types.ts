@@ -16,3 +16,7 @@ export type CartItem = {
   price: number;
   quantity: number;
 };
+
+export type ProductRepository = {
+  findAll: () => Promise<Product[]>;
+};
