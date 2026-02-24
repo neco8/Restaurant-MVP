@@ -11,3 +11,12 @@ test("shows product name as heading", () => {
     screen.getByRole("heading", { name: "Ramen" })
   ).toBeInTheDocument();
 });
+
+test("shows product price", () => {
+  render(
+    <ProductDetail
+      product={{ id: "1", name: "Ramen", price: 800, description: "Delicious" }}
+    />
+  );
+  expect(screen.getByTestId("product-price")).toHaveTextContent("800");
+});
