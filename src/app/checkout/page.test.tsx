@@ -36,3 +36,14 @@ test("shows item price when cart has one item", async () => {
   render(page);
   expect(screen.getByText("$9.99")).toBeInTheDocument();
 });
+
+test("shows order total for multiple items", async () => {
+  const page = await CheckoutPage({
+    items: [
+      { name: "Burger", price: 9.99 },
+      { name: "Fries", price: 3.49 },
+    ],
+  });
+  render(page);
+  expect(screen.getByText("Total: $13.48")).toBeInTheDocument();
+});
