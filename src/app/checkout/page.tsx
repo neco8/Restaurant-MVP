@@ -6,7 +6,15 @@ import { orderTotal, lineTotal, formatPrice, getCartItems } from "@/lib";
 import { StripePaymentForm } from "@/components/StripePaymentForm";
 
 // Named export for unit tests (pure rendering, no Stripe/localStorage)
-export function CheckoutPage({ cartItems = [], loading = false }: { cartItems?: CartItem[]; loading?: boolean } = {}) {
+export function CheckoutPage({
+  cartItems = [],
+  loading = false,
+  children,
+}: {
+  cartItems?: CartItem[];
+  loading?: boolean;
+  children?: React.ReactNode;
+} = {}) {
   return (
     <div>
       <h1>Checkout</h1>
@@ -29,11 +37,11 @@ export function CheckoutPage({ cartItems = [], loading = false }: { cartItems?: 
           </>
         )}
       </section>
-      {loading ? (
+      {children ?? (loading ? (
         <p role="status">Preparing payment…</p>
       ) : (
         <button disabled={cartItems.length === 0}>Place Order</button>
-      )}
+      ))}
     </div>
   );
 }
@@ -73,33 +81,13 @@ export default function CheckoutRoute() {
   }, [cartItems]);
 
   return (
-    <div>
-      <h1>Checkout</h1>
-      <section>
-        <h2>Order Summary</h2>
-        {cartItems.length === 0 ? (
-          <p>Your cart is empty</p>
-        ) : (
-          <>
-            <ul>
-              {cartItems.map((item) => (
-                <li key={item.id}>
-                  <span>{item.name}</span>
-                  {item.quantity > 1 && <span>×{item.quantity}</span>}
-                  <span>{formatPrice(lineTotal(item))}</span>
-                </li>
-              ))}
-            </ul>
-            <p data-testid="checkout-total">Total: {formatPrice(orderTotal(cartItems))}</p>
-          </>
-        )}
-      </section>
+    <CheckoutPage cartItems={cartItems}>
       {error && <p role="alert">{error}</p>}
       {clientSecret ? (
         <StripePaymentForm clientSecret={clientSecret} paymentIntentId={paymentIntentId ?? undefined} />
       ) : (
         <button disabled={cartItems.length === 0}>Place Order</button>
       )}
-    </div>
+    </CheckoutPage>
   );
 }
