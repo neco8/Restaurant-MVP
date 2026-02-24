@@ -1,9 +1,4 @@
-type CartItem = {
-  id: string;
-  name: string;
-  price: number;
-  description: string;
-};
+import type { CartItem } from "@/lib/types";
 
 type Props = {
   getCartItems?: () => Promise<CartItem[]>;

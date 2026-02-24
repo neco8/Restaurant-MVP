@@ -1,9 +1,8 @@
 import { total, lineTotal } from "@/lib/total";
 import { formatPrice } from "@/lib/formatPrice";
+import type { CartItem } from "@/lib/types";
 
-type Item = { name: string; price: number; quantity: number };
-
-export default async function CheckoutPage({ items = [] }: { items?: Item[] } = {}) {
+export default async function CheckoutPage({ items = [] }: { items?: CartItem[] } = {}) {
   return (
     <div>
       <h1>Checkout</h1>
@@ -15,7 +14,7 @@ export default async function CheckoutPage({ items = [] }: { items?: Item[] } = 
           <>
             <ul>
               {items.map((item) => (
-                <li key={item.name}>
+                <li key={item.id}>
                   <span>{item.name}</span>
                   {item.quantity > 1 && <span>×{item.quantity}</span>}
                   <span>{formatPrice(lineTotal(item))}</span>
