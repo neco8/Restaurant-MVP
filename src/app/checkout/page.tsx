@@ -1,8 +1,6 @@
-type Item = { name: string; price: number };
+import { total } from "@/lib/total";
 
-function total(items: Item[]): number {
-  return items.reduce((sum, item) => sum + item.price, 0);
-}
+type Item = { name: string; price: number };
 
 export default async function CheckoutPage({ items = [] }: { items?: Item[] } = {}) {
   return (
