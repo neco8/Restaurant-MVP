@@ -1,4 +1,5 @@
-import { getCartItems, addToCart } from "./cart";
+import { addToCart, getCartItems, clearCart } from "./cart";
+import type { CartItem } from "./types";
 
 beforeEach(() => {
   localStorage.clear();
@@ -23,4 +24,10 @@ test("addToCart keeps separate entries for different items", () => {
   addToCart({ id: "1", name: "Ramen", price: 12.00 });
   addToCart({ id: "2", name: "Gyoza", price: 7.50 });
   expect(getCartItems()).toHaveLength(2);
+});
+
+test("clearCart removes all items", () => {
+  addToCart({ id: "1", name: "Ramen", price: 12.00 });
+  clearCart();
+  expect(getCartItems()).toEqual([]);
 });
