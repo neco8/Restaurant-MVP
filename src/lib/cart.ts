@@ -1,4 +1,4 @@
-import type { CartEntry } from "./types";
+import type { CartEntry, CartItem, Product } from "./types";
 import { quantity, parseQuantity } from "./quantity";
 
 const CART_KEY = "cart";
@@ -28,6 +28,17 @@ export function addToCart(id: string): void {
     entries.push({ id, quantity: quantity(1) });
   }
   localStorage.setItem(CART_KEY, JSON.stringify(entries));
+}
+
+export function hydrateCart(entries: CartEntry[], products: Product[]): CartItem[] {
+  const result: CartItem[] = [];
+  for (const entry of entries) {
+    const product = products.find((p) => p.id === entry.id);
+    if (product) {
+      result.push({ id: entry.id, name: product.name, price: product.price, quantity: entry.quantity });
+    }
+  }
+  return result;
 }
 
 export function clearCart(): void {
