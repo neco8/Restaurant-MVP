@@ -20,7 +20,7 @@ export default async function CheckoutPage({ cartItems = [] }: { cartItems?: Car
                 </li>
               ))}
             </ul>
-            <p>Total: {formatPrice(orderTotal(cartItems))}</p>
+            <p data-testid="checkout-total">Total: {formatPrice(orderTotal(cartItems))}</p>
           </>
         )}
       </section>
