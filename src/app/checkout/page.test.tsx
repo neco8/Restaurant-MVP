@@ -37,6 +37,12 @@ test("shows item price when cart has one item", async () => {
   expect(screen.getByText("$9.99")).toBeInTheDocument();
 });
 
+test("Place Order button is disabled when cart is empty", async () => {
+  const page = await CheckoutPage();
+  render(page);
+  expect(screen.getByRole("button", { name: "Place Order" })).toBeDisabled();
+});
+
 test("shows order total for multiple items", async () => {
   const page = await CheckoutPage({
     items: [
