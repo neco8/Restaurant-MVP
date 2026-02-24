@@ -5,7 +5,7 @@ export type ProductRepository = {
 };
 
 export async function getProducts(
-  _repository: ProductRepository
+  repository: ProductRepository
 ): Promise<Product[]> {
-  return [];
+  return repository.findAll();
 }
