@@ -1,5 +1,5 @@
 import { render, screen, waitFor } from "@testing-library/react";
-import { getCartItems } from "@/lib";
+import { getCartEntries } from "@/lib";
 import { quantity } from "@/lib/quantity";
 import { price } from "@/lib/price";
 import CheckoutRoute, { CheckoutPage } from "./page";
@@ -8,7 +8,7 @@ vi.mock("@/lib", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib")>();
   return {
     ...actual,
-    getCartItems: vi.fn().mockReturnValue([]),
+    getCartEntries: vi.fn().mockReturnValue([]),
   };
 });
 
@@ -128,23 +128,35 @@ test("does not show Place Order button when loading", () => {
   expect(screen.queryByRole("button", { name: "Place Order" })).not.toBeInTheDocument();
 });
 
-// ── CheckoutRoute (reads localStorage, fetches payment intent) ───────────────
-//
-// These tests cover the rendering logic that is currently duplicated
-// verbatim between CheckoutPage and CheckoutRoute.  They exist to make it
-// safe to refactor CheckoutRoute so that it delegates order-summary
-// rendering to CheckoutPage instead of carrying its own copy.
+// ── CheckoutRoute (reads localStorage, fetches products + payment intent) ────
+
+function mockFetchForRoute() {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn().mockImplementation((url: string) => {
+      if (url === "/api/products") {
+        return Promise.resolve({
+          ok: true,
+          json: () =>
+            Promise.resolve([
+              { id: "1", name: "Burger", price: 9.99, description: "Tasty burger" },
+              { id: "2", name: "Fries", price: 3.49, description: "Crispy fries" },
+            ]),
+        });
+      }
+      return Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({ clientSecret: "pi_test_secret_abc", paymentIntentId: "pi_test_123" }),
+      });
+    })
+  );
+}
 
 describe("CheckoutRoute", () => {
   beforeEach(() => {
-    vi.mocked(getCartItems).mockReturnValue([]);
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve({ clientSecret: "pi_test_secret_abc", paymentIntentId: "pi_test_123" }),
-      })
-    );
+    vi.mocked(getCartEntries).mockReturnValue([]);
+    mockFetchForRoute();
   });
 
   afterEach(() => {
@@ -176,53 +188,53 @@ describe("CheckoutRoute", () => {
     expect(screen.getByRole("button", { name: "Place Order" })).toBeDisabled();
   });
 
-  test("shows item name from localStorage cart", async () => {
-    vi.mocked(getCartItems).mockReturnValue([{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(1) }]);
+  test("shows item name from server products", async () => {
+    vi.mocked(getCartEntries).mockReturnValue([{ id: "1", quantity: quantity(1) }]);
     render(<CheckoutRoute />);
     await waitFor(() => expect(screen.getByText("Burger")).toBeInTheDocument());
   });
 
-  test("shows item price from localStorage cart", async () => {
-    vi.mocked(getCartItems).mockReturnValue([{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(1) }]);
+  test("shows item price from server products", async () => {
+    vi.mocked(getCartEntries).mockReturnValue([{ id: "1", quantity: quantity(1) }]);
     render(<CheckoutRoute />);
     await waitFor(() => expect(screen.getByText("$9.99")).toBeInTheDocument());
   });
 
   test("shows quantity badge when quantity is greater than one", async () => {
-    vi.mocked(getCartItems).mockReturnValue([{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(2) }]);
+    vi.mocked(getCartEntries).mockReturnValue([{ id: "1", quantity: quantity(2) }]);
     render(<CheckoutRoute />);
     await waitFor(() => expect(screen.getByText("×2")).toBeInTheDocument());
   });
 
   test("does not show quantity badge when quantity is one", async () => {
-    vi.mocked(getCartItems).mockReturnValue([{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(1) }]);
+    vi.mocked(getCartEntries).mockReturnValue([{ id: "1", quantity: quantity(1) }]);
     render(<CheckoutRoute />);
     await waitFor(() => expect(screen.queryByText("×1")).not.toBeInTheDocument());
   });
 
   test("shows order total for multiple items", async () => {
-    vi.mocked(getCartItems).mockReturnValue([
-      { id: "1", name: "Burger", price: price(9.99), quantity: quantity(1) },
-      { id: "2", name: "Fries", price: price(3.49), quantity: quantity(1) },
+    vi.mocked(getCartEntries).mockReturnValue([
+      { id: "1", quantity: quantity(1) },
+      { id: "2", quantity: quantity(1) },
     ]);
     render(<CheckoutRoute />);
     await waitFor(() => expect(screen.getByText("Total: $13.48")).toBeInTheDocument());
   });
 
   test("checkout total section has checkout-total testid", async () => {
-    vi.mocked(getCartItems).mockReturnValue([{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(1) }]);
+    vi.mocked(getCartEntries).mockReturnValue([{ id: "1", quantity: quantity(1) }]);
     render(<CheckoutRoute />);
     await waitFor(() => expect(screen.getByTestId("checkout-total")).toBeInTheDocument());
   });
 
   test("shows StripePaymentForm once payment intent is fetched", async () => {
-    vi.mocked(getCartItems).mockReturnValue([{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(1) }]);
+    vi.mocked(getCartEntries).mockReturnValue([{ id: "1", quantity: quantity(1) }]);
     render(<CheckoutRoute />);
     await waitFor(() => expect(screen.getByTestId("stripe-payment-form")).toBeInTheDocument());
   });
 
   test("replaces Place Order button with StripePaymentForm after payment intent is fetched", async () => {
-    vi.mocked(getCartItems).mockReturnValue([{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(1) }]);
+    vi.mocked(getCartEntries).mockReturnValue([{ id: "1", quantity: quantity(1) }]);
     render(<CheckoutRoute />);
     await waitFor(() =>
       expect(screen.queryByRole("button", { name: "Place Order" })).not.toBeInTheDocument()
@@ -234,7 +246,7 @@ describe("CheckoutRoute", () => {
 
 describe("CheckoutRoute - payment intent fetch error handling", () => {
   beforeEach(() => {
-    vi.mocked(getCartItems).mockReturnValue([{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(1) }]);
+    vi.mocked(getCartEntries).mockReturnValue([{ id: "1", quantity: quantity(1) }]);
   });
 
   afterEach(() => {
@@ -266,9 +278,17 @@ describe("CheckoutRoute - payment intent fetch error handling", () => {
   test("shows error message when server returns a non-ok response", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockResolvedValue({
-        ok: false,
-        json: () => Promise.resolve({ error: "Internal Server Error" }),
+      vi.fn().mockImplementation((url: string) => {
+        if (url === "/api/products") {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve([{ id: "1", name: "Burger", price: 9.99, description: "Tasty" }]),
+          });
+        }
+        return Promise.resolve({
+          ok: false,
+          json: () => Promise.resolve({ error: "Internal Server Error" }),
+        });
       })
     );
 
@@ -282,9 +302,17 @@ describe("CheckoutRoute - payment intent fetch error handling", () => {
   test("error message text is user-friendly on server error", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockResolvedValue({
-        ok: false,
-        json: () => Promise.resolve({ error: "Internal Server Error" }),
+      vi.fn().mockImplementation((url: string) => {
+        if (url === "/api/products") {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve([{ id: "1", name: "Burger", price: 9.99, description: "Tasty" }]),
+          });
+        }
+        return Promise.resolve({
+          ok: false,
+          json: () => Promise.resolve({ error: "Internal Server Error" }),
+        });
       })
     );
 

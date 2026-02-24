@@ -22,9 +22,26 @@ vi.mock("@/lib", async () => {
   const actual = await vi.importActual<typeof import("@/lib")>("@/lib");
   return {
     ...actual,
-    getCartItems: () => [{ id: "1", name: "Burger", price: actual.price(10.0), quantity: actual.quantity(1) }],
+    getCartEntries: () => [{ id: "1", quantity: actual.quantity(1) }],
   };
 });
+
+function mockFetch(paymentResponse: { clientSecret: string; paymentIntentId: string }) {
+  global.fetch = vi.fn().mockImplementation((url: string) => {
+    if (url === "/api/products") {
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve([
+          { id: "1", name: "Burger", price: 10.0, description: "Tasty burger" },
+        ]),
+      });
+    }
+    return Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve(paymentResponse),
+    });
+  });
+}
 
 describe("CheckoutRoute", () => {
   beforeEach(() => {
@@ -32,13 +49,9 @@ describe("CheckoutRoute", () => {
   });
 
   it("passes paymentIntentId from API response to StripePaymentForm", async () => {
-    global.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      json: () =>
-        Promise.resolve({
-          clientSecret: "pi_abc123_secret_def456",
-          paymentIntentId: "pi_abc123",
-        }),
+    mockFetch({
+      clientSecret: "pi_abc123_secret_def456",
+      paymentIntentId: "pi_abc123",
     });
 
     const { default: CheckoutRoute } = await import("./page");
@@ -53,15 +66,9 @@ describe("CheckoutRoute", () => {
   });
 
   it("does not derive paymentIntentId by parsing client_secret", async () => {
-    // Use a clientSecret where split("_secret_")[0] would give the WRONG id
-    // to prove the code uses the API-provided paymentIntentId, not a parsed one
-    global.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      json: () =>
-        Promise.resolve({
-          clientSecret: "pi_wrong_id_secret_xyz",
-          paymentIntentId: "pi_correct_id",
-        }),
+    mockFetch({
+      clientSecret: "pi_wrong_id_secret_xyz",
+      paymentIntentId: "pi_correct_id",
     });
 
     const { default: CheckoutRoute } = await import("./page");
@@ -72,7 +79,6 @@ describe("CheckoutRoute", () => {
     });
 
     const form = screen.getByTestId("stripe-payment-form");
-    // If the code parses client_secret, it would get "pi_wrong_id" instead of "pi_correct_id"
     expect(form.dataset.paymentIntentId).toBe("pi_correct_id");
   });
 });
