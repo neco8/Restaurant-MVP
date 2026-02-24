@@ -30,3 +30,9 @@ test("shows item name when cart has one item", async () => {
   render(page);
   expect(screen.getByText("Burger")).toBeInTheDocument();
 });
+
+test("shows item price when cart has one item", async () => {
+  const page = await CheckoutPage({ items: [{ name: "Burger", price: 9.99 }] });
+  render(page);
+  expect(screen.getByText("$9.99")).toBeInTheDocument();
+});
