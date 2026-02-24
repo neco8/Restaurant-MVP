@@ -18,3 +18,7 @@ export function addToCart(item: { id: string; name: string; price: number }): vo
   }
   localStorage.setItem(CART_KEY, JSON.stringify(items));
 }
+
+export function clearCart(): void {
+  localStorage.removeItem(CART_KEY);
+}
