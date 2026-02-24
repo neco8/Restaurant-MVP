@@ -140,7 +140,7 @@ describe("CheckoutRoute", () => {
       "fetch",
       vi.fn().mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve({ clientSecret: "pi_test_secret_abc" }),
+        json: () => Promise.resolve({ clientSecret: "pi_test_secret_abc", paymentIntentId: "pi_test_123" }),
       })
     );
   });
