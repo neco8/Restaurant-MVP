@@ -205,6 +205,26 @@ Feel the difference? The second approach *can't go wrong* because each step is s
 
 ---
 
+## How to Explore This Product
+
+**Run the tests.** That's it.
+
+```bash
+# Unit tests (Vitest)
+npx vitest run
+
+# E2E tests (Playwright)
+npx playwright test
+```
+
+Tests are the **single source of truth** for what this system does. Don't read the source code to understand behavior — read the tests. Every behavior the product has is described by a test. Nothing more, nothing less.
+
+Want to know what `ProductDetail` does? Read `ProductDetail.test.tsx`. Want to know what the checkout flow looks like? Read the E2E test. The tests tell you exactly what the system promises to do — and if a behavior isn't tested, it doesn't exist as far as we're concerned.
+
+**No guessing. No assumptions. Just run the tests and read them.**
+
+---
+
 ## Final Words to Myself
 
 You will be tempted to skip steps. You'll think "I already know what the design should be, let me just write it." **That's your ego talking.** The whole point of this discipline is that YOU DON'T KNOW the design yet — you DISCOVER it through the tests and transformations.
