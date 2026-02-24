@@ -1,5 +1,22 @@
-import { render, screen } from "@testing-library/react";
-import { CheckoutPage } from "./page";
+import { render, screen, waitFor } from "@testing-library/react";
+import { getCartItems } from "@/lib";
+import CheckoutRoute, { CheckoutPage } from "./page";
+
+vi.mock("@/lib", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib")>();
+  return {
+    ...actual,
+    getCartItems: vi.fn().mockReturnValue([]),
+  };
+});
+
+vi.mock("@/components/StripePaymentForm", () => ({
+  StripePaymentForm: ({ clientSecret }: { clientSecret: string }) => (
+    <div data-testid="stripe-payment-form">{clientSecret}</div>
+  ),
+}));
+
+// ── CheckoutPage (pure component, no side-effects) ──────────────────────────
 
 test("shows Checkout heading", () => {
   render(<CheckoutPage />);
@@ -76,4 +93,105 @@ test("shows order total for multiple items", () => {
 test("checkout total section has checkout-total testid", () => {
   render(<CheckoutPage cartItems={[{ id: "1", name: "Burger", price: 9.99, quantity: 1 }]} />);
   expect(screen.getByTestId("checkout-total")).toBeInTheDocument();
+});
+
+// ── CheckoutRoute (reads localStorage, fetches payment intent) ───────────────
+//
+// These tests cover the rendering logic that is currently duplicated
+// verbatim between CheckoutPage and CheckoutRoute.  They exist to make it
+// safe to refactor CheckoutRoute so that it delegates order-summary
+// rendering to CheckoutPage instead of carrying its own copy.
+
+describe("CheckoutRoute", () => {
+  beforeEach(() => {
+    vi.mocked(getCartItems).mockReturnValue([]);
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        json: () => Promise.resolve({ clientSecret: "pi_test_secret_abc" }),
+      })
+    );
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  test("renders Checkout heading", () => {
+    render(<CheckoutRoute />);
+    expect(screen.getByRole("heading", { name: "Checkout" })).toBeInTheDocument();
+  });
+
+  test("renders Order Summary heading", () => {
+    render(<CheckoutRoute />);
+    expect(screen.getByRole("heading", { name: "Order Summary" })).toBeInTheDocument();
+  });
+
+  test("shows empty cart message when localStorage is empty", () => {
+    render(<CheckoutRoute />);
+    expect(screen.getByText("Your cart is empty")).toBeInTheDocument();
+  });
+
+  test("shows Place Order button while cart is empty", () => {
+    render(<CheckoutRoute />);
+    expect(screen.getByRole("button", { name: "Place Order" })).toBeInTheDocument();
+  });
+
+  test("Place Order button is disabled while cart is empty", () => {
+    render(<CheckoutRoute />);
+    expect(screen.getByRole("button", { name: "Place Order" })).toBeDisabled();
+  });
+
+  test("shows item name from localStorage cart", async () => {
+    vi.mocked(getCartItems).mockReturnValue([{ id: "1", name: "Burger", price: 9.99, quantity: 1 }]);
+    render(<CheckoutRoute />);
+    await waitFor(() => expect(screen.getByText("Burger")).toBeInTheDocument());
+  });
+
+  test("shows item price from localStorage cart", async () => {
+    vi.mocked(getCartItems).mockReturnValue([{ id: "1", name: "Burger", price: 9.99, quantity: 1 }]);
+    render(<CheckoutRoute />);
+    await waitFor(() => expect(screen.getByText("$9.99")).toBeInTheDocument());
+  });
+
+  test("shows quantity badge when quantity is greater than one", async () => {
+    vi.mocked(getCartItems).mockReturnValue([{ id: "1", name: "Burger", price: 9.99, quantity: 2 }]);
+    render(<CheckoutRoute />);
+    await waitFor(() => expect(screen.getByText("×2")).toBeInTheDocument());
+  });
+
+  test("does not show quantity badge when quantity is one", async () => {
+    vi.mocked(getCartItems).mockReturnValue([{ id: "1", name: "Burger", price: 9.99, quantity: 1 }]);
+    render(<CheckoutRoute />);
+    await waitFor(() => expect(screen.queryByText("×1")).not.toBeInTheDocument());
+  });
+
+  test("shows order total for multiple items", async () => {
+    vi.mocked(getCartItems).mockReturnValue([
+      { id: "1", name: "Burger", price: 9.99, quantity: 1 },
+      { id: "2", name: "Fries", price: 3.49, quantity: 1 },
+    ]);
+    render(<CheckoutRoute />);
+    await waitFor(() => expect(screen.getByText("Total: $13.48")).toBeInTheDocument());
+  });
+
+  test("checkout total section has checkout-total testid", async () => {
+    vi.mocked(getCartItems).mockReturnValue([{ id: "1", name: "Burger", price: 9.99, quantity: 1 }]);
+    render(<CheckoutRoute />);
+    await waitFor(() => expect(screen.getByTestId("checkout-total")).toBeInTheDocument());
+  });
+
+  test("shows StripePaymentForm once payment intent is fetched", async () => {
+    vi.mocked(getCartItems).mockReturnValue([{ id: "1", name: "Burger", price: 9.99, quantity: 1 }]);
+    render(<CheckoutRoute />);
+    await waitFor(() => expect(screen.getByTestId("stripe-payment-form")).toBeInTheDocument());
+  });
+
+  test("replaces Place Order button with StripePaymentForm after payment intent is fetched", async () => {
+    vi.mocked(getCartItems).mockReturnValue([{ id: "1", name: "Burger", price: 9.99, quantity: 1 }]);
+    render(<CheckoutRoute />);
+    await waitFor(() =>
+      expect(screen.queryByRole("button", { name: "Place Order" })).not.toBeInTheDocument()
+    );
+  });
 });
