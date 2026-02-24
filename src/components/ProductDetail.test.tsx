@@ -13,13 +13,13 @@ test("shows product name as heading", () => {
   ).toBeInTheDocument();
 });
 
-test("shows product price", () => {
+test("shows product price formatted with dollar sign and two decimal places", () => {
   render(
     <ProductDetail
-      product={{ id: "1", name: "Ramen", price: 800, description: "Delicious" }}
+      product={{ id: "1", name: "Ramen", price: 9.90, description: "Delicious" }}
     />
   );
-  expect(screen.getByTestId("product-price")).toHaveTextContent("800");
+  expect(screen.getByTestId("product-price")).toHaveTextContent("$9.90");
 });
 
 test("shows product description", () => {
