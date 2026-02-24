@@ -210,7 +210,11 @@ Feel the difference? The second approach *can't go wrong* because each step is s
 **Run the tests.** That's it.
 
 ```bash
+# Unit tests (Vitest)
 npx vitest run
+
+# E2E tests (Playwright)
+npx playwright test
 ```
 
 Tests are the **single source of truth** for what this system does. Don't read the source code to understand behavior — read the tests. Every behavior the product has is described by a test. Nothing more, nothing less.
