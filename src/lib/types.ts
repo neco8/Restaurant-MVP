@@ -1,3 +1,8 @@
+export type OrderLine = {
+  price: number;
+  quantity: number;
+};
+
 export type Product = {
   id: string;
   name: string;
