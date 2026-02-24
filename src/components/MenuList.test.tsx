@@ -14,3 +14,12 @@ test("shows one product card when one product given", () => {
   expect(screen.getAllByTestId("product-card")).toHaveLength(1);
   expect(screen.getByTestId("product-name")).toHaveTextContent("ラーメン");
 });
+
+test("shows multiple product cards when multiple products given", () => {
+  const products = [
+    { id: "1", name: "ラーメン", price: 800, description: "おいしい" },
+    { id: "2", name: "チャーハン", price: 700, description: "パラパラ" },
+  ];
+  render(<MenuList products={products} />);
+  expect(screen.getAllByTestId("product-card")).toHaveLength(2);
+});
