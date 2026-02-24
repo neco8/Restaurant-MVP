@@ -17,6 +17,7 @@ export default async function CartPage({ getCartItems }: Props = {}) {
       {items.map((item) => (
         <span key={item.id}>{item.name}</span>
       ))}
+      <a href="/checkout">Proceed to Checkout</a>
     </>
   );
 }
