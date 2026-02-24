@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import MenuList from "./MenuList";
+import { ROUTES } from "@/lib";
 
 test("shows Menu heading", () => {
   render(<MenuList products={[]} />);
@@ -28,5 +29,11 @@ test("product card links to /menu/:id", () => {
   const product = { id: "42", name: "Ramen", price: 800, description: "Delicious" };
   render(<MenuList products={[product]} />);
   const card = screen.getByTestId("product-card");
-  expect(card).toHaveAttribute("href", "/menu/42");
+  expect(card).toHaveAttribute("href", ROUTES.MENU_ITEM("42"));
+});
+
+test("shows product price on card", () => {
+  const product = { id: "1", name: "Ramen", price: 9.90, description: "Delicious" };
+  render(<MenuList products={[product]} />);
+  expect(screen.getByTestId("product-price")).toHaveTextContent("$9.90");
 });
