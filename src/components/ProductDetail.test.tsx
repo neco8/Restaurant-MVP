@@ -62,3 +62,13 @@ test("shows cart count of 0 initially", () => {
   );
   expect(screen.getByTestId("cart-count")).toHaveTextContent("0");
 });
+
+test("increments cart count when Add to Cart is clicked", async () => {
+  render(
+    <ProductDetail
+      product={{ id: "1", name: "Ramen", price: 800, description: "Delicious" }}
+    />
+  );
+  await userEvent.click(screen.getByRole("button", { name: "Add to Cart" }));
+  expect(screen.getByTestId("cart-count")).toHaveTextContent("1");
+});
