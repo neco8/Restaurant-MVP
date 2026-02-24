@@ -1,5 +1,5 @@
-import type { CartItem } from "@/lib/types";
-import { ROUTES } from "@/lib/routes";
+import type { CartItem } from "@/lib";
+import { ROUTES } from "@/lib";
 
 type Props = {
   getCartItems?: () => Promise<CartItem[]>;

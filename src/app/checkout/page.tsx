@@ -1,6 +1,5 @@
-import { orderTotal, lineTotal } from "@/lib/pricing";
-import { formatPrice } from "@/lib/formatPrice";
-import type { CartItem } from "@/lib/types";
+import type { CartItem } from "@/lib";
+import { orderTotal, lineTotal, formatPrice } from "@/lib";
 
 export default async function CheckoutPage({ cartItems = [] }: { cartItems?: CartItem[] } = {}) {
   return (

@@ -1,5 +1,5 @@
 import ProductDetail from "@/components/ProductDetail";
-import type { Product } from "@/lib/types";
+import type { Product } from "@/lib";
 
 type Props = {
   params: { id: string };

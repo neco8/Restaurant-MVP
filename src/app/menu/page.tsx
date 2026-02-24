@@ -1,5 +1,5 @@
 import MenuList from "@/components/MenuList";
-import type { Product } from "@/lib/types";
+import type { Product } from "@/lib";
 
 type Props = {
   getProducts?: () => Promise<Product[]>;

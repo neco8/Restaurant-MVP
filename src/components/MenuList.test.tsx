@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import MenuList from "./MenuList";
-import { ROUTES } from "@/lib/routes";
+import { ROUTES } from "@/lib";
 
 test("shows Menu heading", () => {
   render(<MenuList products={[]} />);

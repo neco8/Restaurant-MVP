@@ -1,9 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import type { Product } from "@/lib/types";
-import { formatPrice } from "@/lib/formatPrice";
-import { ROUTES } from "@/lib/routes";
+import type { Product } from "@/lib";
+import { formatPrice, ROUTES } from "@/lib";
 
 export default function MenuList({ products }: { products: Product[] }) {
   return (

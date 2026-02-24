@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { formatPrice } from "@/lib/formatPrice";
-import type { Product } from "@/lib/types";
-import { ROUTES } from "@/lib/routes";
+import type { Product } from "@/lib";
+import { formatPrice, ROUTES } from "@/lib";
 
 export default function ProductDetail({
   product,
