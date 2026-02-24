@@ -1,5 +1,7 @@
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import * as lib from "@/lib";
 import { StripePaymentForm } from "./StripePaymentForm";
 
 const mockConfirmPayment = vi.fn();
@@ -124,5 +126,31 @@ describe("StripePaymentForm", () => {
       />
     );
     expect(screen.getByRole("button", { name: "Place Order" })).toBeInTheDocument();
+  });
+});
+
+describe("when payment succeeds", () => {
+  it("clears the cart after successful payment", async () => {
+    mockConfirmPayment.mockResolvedValue({
+      paymentIntent: { status: "succeeded", id: "pi_test_123" },
+    });
+
+    const clearCartSpy = vi.spyOn(lib, "clearCart").mockImplementation(() => {});
+
+    render(
+      <StripePaymentForm
+        clientSecret="pi_test_secret"
+        paymentIntentId="pi_test_123"
+        amountInCents={1200}
+      />
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: "Place Order" }));
+
+    await waitFor(() => {
+      expect(clearCartSpy).toHaveBeenCalledOnce();
+    });
+
+    clearCartSpy.mockRestore();
   });
 });
