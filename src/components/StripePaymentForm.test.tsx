@@ -1,8 +1,7 @@
-import { vi, describe, it, expect, beforeEach, expectTypeOf } from "vitest";
+import { vi, describe, it, expect, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as lib from "@/lib";
-import type { ComponentProps } from "react";
 import { StripePaymentForm } from "./StripePaymentForm";
 
 const mockConfirmPayment = vi.fn();
@@ -37,7 +36,7 @@ describe("StripePaymentForm", () => {
       <StripePaymentForm
         clientSecret="pi_test_secret_abc"
         paymentIntentId="pi_test_123"
-        amountInCents={1200}
+
       />
     );
 
@@ -65,7 +64,7 @@ describe("StripePaymentForm", () => {
       <StripePaymentForm
         clientSecret="pi_test_secret_abc"
         paymentIntentId="pi_test_123"
-        amountInCents={1200}
+
       />
     );
 
@@ -87,7 +86,7 @@ describe("StripePaymentForm", () => {
       <StripePaymentForm
         clientSecret="pi_test_secret_abc"
         paymentIntentId="pi_test_123"
-        amountInCents={1200}
+
       />
     );
 
@@ -122,7 +121,7 @@ describe("StripePaymentForm", () => {
       <StripePaymentForm
         clientSecret="pi_test_secret_abc"
         paymentIntentId="pi_test_123"
-        amountInCents={1200}
+
       />
     );
     expect(screen.getByRole("button", { name: "Place Order" })).toBeInTheDocument();
@@ -162,7 +161,7 @@ describe("when payment succeeds", () => {
       <StripePaymentForm
         clientSecret="pi_test_secret"
         paymentIntentId="pi_test_123"
-        amountInCents={1200}
+
       />
     );
 
