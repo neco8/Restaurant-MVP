@@ -55,6 +55,18 @@ test("shows item quantity when greater than one", async () => {
   expect(screen.getByText("×2")).toBeInTheDocument();
 });
 
+test("does not show quantity badge when quantity is one", async () => {
+  const page = await CheckoutPage({ items: [{ name: "Burger", price: 9.99, quantity: 1 }] });
+  render(page);
+  expect(screen.queryByText("×1")).not.toBeInTheDocument();
+});
+
+test("total reflects quantity", async () => {
+  const page = await CheckoutPage({ items: [{ name: "Burger", price: 9.99, quantity: 2 }] });
+  render(page);
+  expect(screen.getByText("Total: $19.98")).toBeInTheDocument();
+});
+
 test("shows order total for multiple items", async () => {
   const page = await CheckoutPage({
     items: [
