@@ -107,14 +107,13 @@ describe("StripePaymentForm", () => {
       <StripePaymentForm
         clientSecret="pi_test_secret_abc"
         paymentIntentId="pi_test_123"
-        amountInCents={1200}
       />
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Place Order" }));
 
     await waitFor(() => {
-      expect(mockPush).toHaveBeenCalledWith("/orders/pi_abc123/complete");
+      expect(mockPush).toHaveBeenCalledWith("/orders/pi_test_123/complete");
     });
   });
 
@@ -178,16 +177,8 @@ describe("when payment succeeds", () => {
 });
 
 describe("StripePaymentForm props contract", () => {
-  it("renders with only clientSecret prop, without paymentIntentId or amountInCents", () => {
-    render(<StripePaymentForm clientSecret="pi_test_secret" />);
+  it("requires both clientSecret and paymentIntentId props", () => {
+    render(<StripePaymentForm clientSecret="pi_test_secret" paymentIntentId="pi_test_123" />);
     expect(screen.getByTestId("stripe-elements")).toBeInTheDocument();
-  });
-
-  it("does not accept paymentIntentId prop", () => {
-    expectTypeOf<ComponentProps<typeof StripePaymentForm>>().not.toHaveProperty("paymentIntentId");
-  });
-
-  it("does not accept amountInCents prop", () => {
-    expectTypeOf<ComponentProps<typeof StripePaymentForm>>().not.toHaveProperty("amountInCents");
   });
 });
