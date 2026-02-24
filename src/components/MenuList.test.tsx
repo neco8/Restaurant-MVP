@@ -30,3 +30,9 @@ test("product card links to /menu/:id", () => {
   const card = screen.getByTestId("product-card");
   expect(card).toHaveAttribute("href", "/menu/42");
 });
+
+test("shows product price on card", () => {
+  const product = { id: "1", name: "Ramen", price: 9.90, description: "Delicious" };
+  render(<MenuList products={[product]} />);
+  expect(screen.getByTestId("product-price")).toHaveTextContent("$9.90");
+});
