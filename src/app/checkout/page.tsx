@@ -24,7 +24,7 @@ export default async function CheckoutPage({ items = [] }: { items?: Item[] } = 
           </>
         )}
       </section>
-      <button>Place Order</button>
+      <button disabled={items.length === 0}>Place Order</button>
     </div>
   );
 }
