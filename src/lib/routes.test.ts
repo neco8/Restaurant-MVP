@@ -19,3 +19,7 @@ test("ROUTES.CART is /cart", () => {
 test("ROUTES.CHECKOUT is /checkout", () => {
   expect(ROUTES.CHECKOUT).toBe("/checkout");
 });
+
+test("ROUTES.ORDER_COMPLETE builds an order confirmation path from an id", () => {
+  expect(ROUTES.ORDER_COMPLETE("pi_123")).toBe("/orders/pi_123/complete");
+});
