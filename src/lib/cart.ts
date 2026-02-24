@@ -1,5 +1,7 @@
 import type { CartItem } from "./types";
+import type { Price } from "./price";
 import { quantity, parseQuantity } from "./quantity";
+import { parsePrice } from "./price";
 
 const CART_KEY = "cart";
 
@@ -13,11 +15,13 @@ export function getCartItems(): CartItem[] {
       item !== null &&
       typeof item === "object" &&
       "quantity" in item &&
-      parseQuantity((item as Record<string, unknown>).quantity) !== null,
+      parseQuantity((item as Record<string, unknown>).quantity) !== null &&
+      "price" in item &&
+      parsePrice((item as Record<string, unknown>).price) !== null,
   ) as CartItem[];
 }
 
-export function addToCart(item: { id: string; name: string; price: number }): void {
+export function addToCart(item: { id: string; name: string; price: Price }): void {
   const items = getCartItems();
   const existing = items.find((i) => i.id === item.id);
   if (existing) {

@@ -1,4 +1,5 @@
 import { vi, describe, it, expect, beforeEach } from "vitest";
+import { price } from "@/lib/price";
 
 const mockCreate = vi.fn().mockResolvedValue({
   id: "pi_test_123",
@@ -26,8 +27,8 @@ describe("POST /api/create-payment-intent", () => {
       client_secret: "pi_test_123_secret_xxx",
     });
     mockFindAll.mockResolvedValue([
-      { id: "1", name: "Ramen", price: 12.00, description: "Rich tonkotsu broth" },
-      { id: "2", name: "Gyoza", price: 7.50, description: "Pan-fried pork dumplings" },
+      { id: "1", name: "Ramen", price: price(12.00), description: "Rich tonkotsu broth" },
+      { id: "2", name: "Gyoza", price: price(7.50), description: "Pan-fried pork dumplings" },
     ]);
     process.env.STRIPE_SECRET_KEY = "sk_test_fake";
   });
