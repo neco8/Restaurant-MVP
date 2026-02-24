@@ -12,6 +12,8 @@ export default async function OrderCompletePage({ params }: Props) {
     const paymentIntent = await stripe.paymentIntents.retrieve(params.id);
     if (paymentIntent.status === "succeeded") {
       status = "Payment Complete";
+    } else if (paymentIntent.status === "processing") {
+      status = "Payment Processing";
     }
   } catch {
     // Payment intent not found or other error
