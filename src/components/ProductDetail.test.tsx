@@ -55,23 +55,23 @@ test("calls onAddToCart when Add to Cart is clicked", async () => {
   expect(onAddToCart).toHaveBeenCalledOnce();
 });
 
-test("shows cart count of 0 initially", () => {
+test("shows added count of 0 initially", () => {
   render(
     <ProductDetail
       product={{ id: "1", name: "Ramen", price: price(8.00), description: "Delicious" }}
     />
   );
-  expect(screen.getByTestId("cart-count")).toHaveTextContent("0");
+  expect(screen.getByTestId("added-count")).toHaveTextContent("0");
 });
 
-test("increments cart count when Add to Cart is clicked", async () => {
+test("increments added count when Add to Cart is clicked", async () => {
   render(
     <ProductDetail
       product={{ id: "1", name: "Ramen", price: price(8.00), description: "Delicious" }}
     />
   );
   await userEvent.click(screen.getByRole("button", { name: "Add to Cart" }));
-  expect(screen.getByTestId("cart-count")).toHaveTextContent("1");
+  expect(screen.getByTestId("added-count")).toHaveTextContent("1");
 });
 
 test("shows View Cart link", () => {
