@@ -23,3 +23,10 @@ test("shows multiple product cards when multiple products given", () => {
   render(<MenuList products={products} />);
   expect(screen.getAllByTestId("product-card")).toHaveLength(2);
 });
+
+test("product card links to /menu/:id", () => {
+  const product = { id: "42", name: "ラーメン", price: 800, description: "おいしい" };
+  render(<MenuList products={[product]} />);
+  const card = screen.getByTestId("product-card");
+  expect(card).toHaveAttribute("href", "/menu/42");
+});
