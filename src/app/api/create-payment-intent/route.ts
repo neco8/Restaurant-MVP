@@ -26,6 +26,9 @@ export async function POST(request: Request) {
     if (!product) {
       return NextResponse.json({ error: "Unknown product id" }, { status: 400 });
     }
+    if (!Number.isInteger(item.quantity) || item.quantity < 1) {
+      return NextResponse.json({ error: "Invalid quantity" }, { status: 400 });
+    }
     orderLines.push({ price: product.price, quantity: item.quantity });
   }
 
