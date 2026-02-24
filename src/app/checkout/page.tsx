@@ -6,7 +6,7 @@ import { orderTotal, lineTotal, formatPrice, getCartItems } from "@/lib";
 import { StripePaymentForm } from "@/components/StripePaymentForm";
 
 // Named export for unit tests (pure rendering, no Stripe/localStorage)
-export function CheckoutPage({ cartItems = [] }: { cartItems?: CartItem[] } = {}) {
+export function CheckoutPage({ cartItems = [], loading = false }: { cartItems?: CartItem[]; loading?: boolean } = {}) {
   return (
     <div>
       <h1>Checkout</h1>
@@ -29,7 +29,11 @@ export function CheckoutPage({ cartItems = [] }: { cartItems?: CartItem[] } = {}
           </>
         )}
       </section>
-      <button disabled={cartItems.length === 0}>Place Order</button>
+      {loading ? (
+        <p role="status">Preparing payment…</p>
+      ) : (
+        <button disabled={cartItems.length === 0}>Place Order</button>
+      )}
     </div>
   );
 }
