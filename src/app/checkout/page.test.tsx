@@ -195,3 +195,71 @@ describe("CheckoutRoute", () => {
     );
   });
 });
+
+// ── CheckoutRoute — payment intent fetch error handling ──────────────────────
+
+describe("CheckoutRoute - payment intent fetch error handling", () => {
+  beforeEach(() => {
+    vi.mocked(getCartItems).mockReturnValue([{ id: "1", name: "Burger", price: 9.99, quantity: 1 }]);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  test("shows error message when network request fails", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("Network error")));
+
+    render(<CheckoutRoute />);
+
+    await waitFor(() => {
+      expect(screen.getByRole("alert")).toBeInTheDocument();
+    });
+  });
+
+  test("error message text is user-friendly on network failure", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("Network error")));
+
+    render(<CheckoutRoute />);
+
+    await waitFor(() => {
+      expect(screen.getByRole("alert")).toHaveTextContent(
+        "Something went wrong. Please try again."
+      );
+    });
+  });
+
+  test("shows error message when server returns a non-ok response", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: false,
+        json: () => Promise.resolve({ error: "Internal Server Error" }),
+      })
+    );
+
+    render(<CheckoutRoute />);
+
+    await waitFor(() => {
+      expect(screen.getByRole("alert")).toBeInTheDocument();
+    });
+  });
+
+  test("error message text is user-friendly on server error", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: false,
+        json: () => Promise.resolve({ error: "Internal Server Error" }),
+      })
+    );
+
+    render(<CheckoutRoute />);
+
+    await waitFor(() => {
+      expect(screen.getByRole("alert")).toHaveTextContent(
+        "Something went wrong. Please try again."
+      );
+    });
+  });
+});
