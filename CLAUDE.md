@@ -92,12 +92,26 @@ Priority order (simpler = higher priority):
 
 Listen to me carefully, future self. **Your commits are your thought process made visible.** They're not just "save points." They're a story — the story of how you understood the problem and built the solution, one deliberate step at a time.
 
+### Commit Message Format
+
+```
+(acceptance red|red|green|refactor): <summary>
+
+<optional short description>
+```
+
+**Prefix rules — match the TDD state transition:**
+
+| Prefix            | When to use                                       | Records your…   |
+| ----------------- | ------------------------------------------------- | --------------- |
+| `acceptance red`  | E2E / acceptance test written and failing          | *intention*     |
+| `red`             | Unit / integration test written and failing        | *intention*     |
+| `green`           | Simplest production code that makes the test pass  | *solution*      |
+| `refactor`        | Restructure without changing behavior              | *understanding* |
+
 ### Commit Rules
 
-1. **One commit per TDD state transition.**
-   - Commit on RED: `test: add failing test for [behavior]` — The test is written and fails. Commit it. This records your *intention*.
-   - Commit on GREEN: `feat: make [behavior] pass` — The simplest code that passes. Commit it. This records your *solution*.
-   - Commit on REFACTOR: `refactor: [what you restructured]` — Clean it up. Commit it. This records your *understanding*.
+1. **One commit per TDD state transition.** One `red`, one `green`, one `refactor` — never combined.
 
 2. **Never bundle multiple behaviors into one commit.** If your commit message needs a bullet list, you committed too much.
 
@@ -107,21 +121,25 @@ Listen to me carefully, future self. **Your commits are your thought process mad
 
 5. **A commit should be revertable without breaking unrelated things.** If reverting one commit breaks three features, your commits are too coarse.
 
+6. **Scaffolding / config commits** (project setup, CI, tooling) use a plain descriptive prefix like `chore:` — they live outside the TDD cycle.
+
 ### Example Commit Sequence (Walking Skeleton)
 
 ```
-test: add acceptance test for displaying menu items (RED - outer loop)
-test: add unit test for MenuList component rendering empty state
-feat: implement MenuList component with empty state
-test: add unit test for MenuList rendering menu items
-feat: implement MenuList with item rendering
-refactor: extract MenuItem into its own component
-test: add unit test for GetMenuItems use case
-feat: implement GetMenuItems use case with stub repository
-test: add unit test for MenuRepository
-feat: implement MenuRepository with in-memory store
-feat: wire all layers together — acceptance test passes (GREEN - outer loop)
-refactor: clean up dependency injection wiring
+chore: scaffold Next.js project with Prisma and Playwright
+(acceptance red): add e2e test for full checkout flow
+
+(red): add unit test for MenuList rendering empty state
+(green): implement MenuList with empty state
+(red): add unit test for MenuList rendering menu items
+(green): implement MenuList with item rendering
+(refactor): extract MenuItem into its own component
+(red): add unit test for GetMenuItems use case
+(green): implement GetMenuItems use case with stub repository
+(red): add unit test for MenuRepository
+(green): implement MenuRepository with in-memory store
+(green): wire all layers — acceptance test passes
+(refactor): clean up dependency injection wiring
 ```
 
 See that? **12 commits for one feature.** Each one is tiny. Each one tells a story. Each one is independently understandable. That's not overhead — that's **craftsmanship**.
