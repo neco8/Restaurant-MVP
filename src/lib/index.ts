@@ -3,4 +3,5 @@
 
 export * from "./formatPrice";
 export * from "./pricing";
+export * from "./routes";
 export * from "./types";
