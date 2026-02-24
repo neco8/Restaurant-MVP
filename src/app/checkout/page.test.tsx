@@ -83,3 +83,9 @@ test("shows order total for multiple items", async () => {
   render(page);
   expect(screen.getByText("Total: $13.48")).toBeInTheDocument();
 });
+
+test("checkout total section has checkout-total testid", async () => {
+  const page = await CheckoutPage({ cartItems: [{ id: "1", name: "Burger", price: 9.99, quantity: 1 }] });
+  render(page);
+  expect(screen.getByTestId("checkout-total")).toBeInTheDocument();
+});
