@@ -7,7 +7,7 @@ test("shows product name as heading", async () => {
     getProduct: async () => ({
       id: "1",
       name: "Ramen",
-      price: 800,
+      price: 8.00,
       description: "Delicious",
     }),
   });

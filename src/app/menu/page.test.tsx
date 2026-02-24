@@ -12,7 +12,7 @@ test("shows Menu heading", async () => {
 test("shows product cards from getProducts", async () => {
   const page = await MenuPage({
     getProducts: async () => [
-      { id: "1", name: "Ramen", price: 800, description: "Delicious" },
+      { id: "1", name: "Ramen", price: 8.00, description: "Delicious" },
     ],
   });
   render(page);

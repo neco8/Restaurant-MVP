@@ -10,7 +10,7 @@ test("shows Cart heading", async () => {
 test("shows product name from getCartItems", async () => {
   const page = await CartPage({
     getCartItems: async () => [
-      { id: "1", name: "Ramen", price: 800, description: "Delicious" },
+      { id: "1", name: "Ramen", price: 8.00, description: "Delicious" },
     ],
   });
   render(page);
