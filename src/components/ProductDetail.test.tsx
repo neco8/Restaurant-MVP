@@ -20,3 +20,12 @@ test("shows product price", () => {
   );
   expect(screen.getByTestId("product-price")).toHaveTextContent("800");
 });
+
+test("shows product description", () => {
+  render(
+    <ProductDetail
+      product={{ id: "1", name: "Ramen", price: 800, description: "Delicious" }}
+    />
+  );
+  expect(screen.getByTestId("product-description")).toHaveTextContent("Delicious");
+});
