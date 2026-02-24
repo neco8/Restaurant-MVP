@@ -1,12 +1,11 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import type { CartItem } from "@/lib";
-import { ROUTES } from "@/lib";
+import { ROUTES, getCartItems } from "@/lib";
 
-type Props = {
-  getCartItems?: () => Promise<CartItem[]>;
-};
-
-export default async function CartPage({ getCartItems }: Props = {}) {
-  const cartItems = getCartItems ? await getCartItems() : [];
+// Named export for unit tests (accepts cartItems prop directly)
+export function CartPage({ cartItems = [] }: { cartItems?: CartItem[] } = {}) {
   return (
     <>
       <h1>Cart</h1>
@@ -16,4 +15,15 @@ export default async function CartPage({ getCartItems }: Props = {}) {
       <a href={ROUTES.CHECKOUT}>Proceed to Checkout</a>
     </>
   );
+}
+
+// Default export: real app reads cart from localStorage
+export default function CartRoute() {
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+
+  useEffect(() => {
+    setCartItems(getCartItems());
+  }, []);
+
+  return <CartPage cartItems={cartItems} />;
 }
