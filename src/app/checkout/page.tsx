@@ -1,6 +1,6 @@
 import { total } from "@/lib/total";
 
-type Item = { name: string; price: number };
+type Item = { name: string; price: number; quantity?: number };
 
 export default async function CheckoutPage({ items = [] }: { items?: Item[] } = {}) {
   return (
@@ -16,6 +16,7 @@ export default async function CheckoutPage({ items = [] }: { items?: Item[] } = 
               {items.map((item) => (
                 <li key={item.name}>
                   <span>{item.name}</span>
+                  {item.quantity && item.quantity > 1 && <span>×{item.quantity}</span>}
                   <span>${item.price.toFixed(2)}</span>
                 </li>
               ))}
