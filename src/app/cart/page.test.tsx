@@ -21,3 +21,65 @@ test("shows Proceed to Checkout link", () => {
     screen.getByRole("link", { name: "Proceed to Checkout" })
   ).toBeInTheDocument();
 });
+
+test("shows item price when cart has one item", () => {
+  render(
+    <CartPage
+      cartItems={[{ id: "1", name: "Ramen", price: 8.00, quantity: 1 }]}
+    />
+  );
+  expect(screen.getByText("$8.00")).toBeInTheDocument();
+});
+
+test("shows item quantity", () => {
+  render(
+    <CartPage
+      cartItems={[{ id: "1", name: "Ramen", price: 8.00, quantity: 2 }]}
+    />
+  );
+  expect(screen.getByText("×2")).toBeInTheDocument();
+});
+
+test("does not show quantity badge when quantity is one", () => {
+  render(
+    <CartPage
+      cartItems={[{ id: "1", name: "Ramen", price: 8.00, quantity: 1 }]}
+    />
+  );
+  expect(screen.queryByText("×1")).not.toBeInTheDocument();
+});
+
+test("shows line total for item with quantity greater than one", () => {
+  render(
+    <CartPage
+      cartItems={[{ id: "1", name: "Burger", price: 9.99, quantity: 2 }]}
+    />
+  );
+  expect(screen.getByText("$19.98")).toBeInTheDocument();
+});
+
+test("shows order total for single item", () => {
+  render(
+    <CartPage
+      cartItems={[{ id: "1", name: "Ramen", price: 8.00, quantity: 1 }]}
+    />
+  );
+  expect(screen.getByText("Total: $8.00")).toBeInTheDocument();
+});
+
+test("shows order total for multiple items", () => {
+  render(
+    <CartPage
+      cartItems={[
+        { id: "1", name: "Ramen", price: 8.00, quantity: 1 },
+        { id: "2", name: "Gyoza", price: 5.50, quantity: 2 },
+      ]}
+    />
+  );
+  expect(screen.getByText("Total: $19.00")).toBeInTheDocument();
+});
+
+test("shows empty cart message when no items", () => {
+  render(<CartPage />);
+  expect(screen.getByText("Your cart is empty")).toBeInTheDocument();
+});
