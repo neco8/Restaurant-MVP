@@ -3,6 +3,7 @@
 
 export * from "./formatPrice";
 export * from "./getProducts";
+export * from "./inMemoryProductRepository";
 export * from "./pricing";
 export * from "./routes";
 export * from "./types";
