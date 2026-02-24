@@ -49,6 +49,12 @@ test("Place Order button is enabled when cart has items", async () => {
   expect(screen.getByRole("button", { name: "Place Order" })).toBeEnabled();
 });
 
+test("shows item quantity when greater than one", async () => {
+  const page = await CheckoutPage({ items: [{ name: "Burger", price: 9.99, quantity: 2 }] });
+  render(page);
+  expect(screen.getByText("×2")).toBeInTheDocument();
+});
+
 test("shows order total for multiple items", async () => {
   const page = await CheckoutPage({
     items: [
