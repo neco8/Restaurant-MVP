@@ -1,5 +1,5 @@
 import { render, screen, waitFor } from "@testing-library/react";
-import { getCartEntries } from "@/lib";
+import { getStoredCartItems } from "@/lib";
 import { quantity } from "@/lib/quantity";
 import { price } from "@/lib/price";
 import CheckoutRoute, { CheckoutPage } from "./page";
@@ -8,7 +8,7 @@ vi.mock("@/lib", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib")>();
   return {
     ...actual,
-    getCartEntries: vi.fn().mockReturnValue([]),
+    getStoredCartItems: vi.fn().mockReturnValue([]),
   };
 });
 
@@ -155,7 +155,7 @@ function mockFetchForRoute() {
 
 describe("CheckoutRoute", () => {
   beforeEach(() => {
-    vi.mocked(getCartEntries).mockReturnValue([]);
+    vi.mocked(getStoredCartItems).mockReturnValue([]);
     mockFetchForRoute();
   });
 
@@ -189,31 +189,31 @@ describe("CheckoutRoute", () => {
   });
 
   test("shows item name from server products", async () => {
-    vi.mocked(getCartEntries).mockReturnValue([{ id: "1", quantity: quantity(1) }]);
+    vi.mocked(getStoredCartItems).mockReturnValue([{ id: "1", quantity: quantity(1) }]);
     render(<CheckoutRoute />);
     await waitFor(() => expect(screen.getByText("Burger")).toBeInTheDocument());
   });
 
   test("shows item price from server products", async () => {
-    vi.mocked(getCartEntries).mockReturnValue([{ id: "1", quantity: quantity(1) }]);
+    vi.mocked(getStoredCartItems).mockReturnValue([{ id: "1", quantity: quantity(1) }]);
     render(<CheckoutRoute />);
     await waitFor(() => expect(screen.getByText("$9.99")).toBeInTheDocument());
   });
 
   test("shows quantity badge when quantity is greater than one", async () => {
-    vi.mocked(getCartEntries).mockReturnValue([{ id: "1", quantity: quantity(2) }]);
+    vi.mocked(getStoredCartItems).mockReturnValue([{ id: "1", quantity: quantity(2) }]);
     render(<CheckoutRoute />);
     await waitFor(() => expect(screen.getByText("×2")).toBeInTheDocument());
   });
 
   test("does not show quantity badge when quantity is one", async () => {
-    vi.mocked(getCartEntries).mockReturnValue([{ id: "1", quantity: quantity(1) }]);
+    vi.mocked(getStoredCartItems).mockReturnValue([{ id: "1", quantity: quantity(1) }]);
     render(<CheckoutRoute />);
     await waitFor(() => expect(screen.queryByText("×1")).not.toBeInTheDocument());
   });
 
   test("shows order total for multiple items", async () => {
-    vi.mocked(getCartEntries).mockReturnValue([
+    vi.mocked(getStoredCartItems).mockReturnValue([
       { id: "1", quantity: quantity(1) },
       { id: "2", quantity: quantity(1) },
     ]);
@@ -222,19 +222,19 @@ describe("CheckoutRoute", () => {
   });
 
   test("checkout total section has checkout-total testid", async () => {
-    vi.mocked(getCartEntries).mockReturnValue([{ id: "1", quantity: quantity(1) }]);
+    vi.mocked(getStoredCartItems).mockReturnValue([{ id: "1", quantity: quantity(1) }]);
     render(<CheckoutRoute />);
     await waitFor(() => expect(screen.getByTestId("checkout-total")).toBeInTheDocument());
   });
 
   test("shows StripePaymentForm once payment intent is fetched", async () => {
-    vi.mocked(getCartEntries).mockReturnValue([{ id: "1", quantity: quantity(1) }]);
+    vi.mocked(getStoredCartItems).mockReturnValue([{ id: "1", quantity: quantity(1) }]);
     render(<CheckoutRoute />);
     await waitFor(() => expect(screen.getByTestId("stripe-payment-form")).toBeInTheDocument());
   });
 
   test("replaces Place Order button with StripePaymentForm after payment intent is fetched", async () => {
-    vi.mocked(getCartEntries).mockReturnValue([{ id: "1", quantity: quantity(1) }]);
+    vi.mocked(getStoredCartItems).mockReturnValue([{ id: "1", quantity: quantity(1) }]);
     render(<CheckoutRoute />);
     await waitFor(() =>
       expect(screen.queryByRole("button", { name: "Place Order" })).not.toBeInTheDocument()
@@ -246,7 +246,7 @@ describe("CheckoutRoute", () => {
 
 describe("CheckoutRoute - payment intent fetch error handling", () => {
   beforeEach(() => {
-    vi.mocked(getCartEntries).mockReturnValue([{ id: "1", quantity: quantity(1) }]);
+    vi.mocked(getStoredCartItems).mockReturnValue([{ id: "1", quantity: quantity(1) }]);
   });
 
   afterEach(() => {

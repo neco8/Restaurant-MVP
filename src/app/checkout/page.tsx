@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { CartItem, Product } from "@/lib";
-import { orderTotal, lineTotal, formatPrice, getCartEntries, hydrateCart } from "@/lib";
+import { orderTotal, lineTotal, formatPrice, getStoredCartItems, hydrateCart } from "@/lib";
 import { StripePaymentForm } from "@/components/StripePaymentForm";
 
 // Named export for unit tests (pure rendering, no Stripe/localStorage)
@@ -54,8 +54,8 @@ export default function CheckoutRoute() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const entries = getCartEntries();
-    if (entries.length === 0) return;
+    const storedItems = getStoredCartItems();
+    if (storedItems.length === 0) return;
 
     Promise.all([
       fetch("/api/products").then((r) => r.json()) as Promise<Product[]>,
@@ -63,7 +63,7 @@ export default function CheckoutRoute() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          cartItems: entries.map((e) => ({ id: e.id, quantity: e.quantity })),
+          cartItems: storedItems.map((e) => ({ id: e.id, quantity: e.quantity })),
         }),
       }).then((r) => {
         if (!r.ok) throw new Error("Server error");
@@ -71,7 +71,7 @@ export default function CheckoutRoute() {
       }),
     ])
       .then(([products, payment]) => {
-        setCartItems(hydrateCart(entries, products));
+        setCartItems(hydrateCart(storedItems, products));
         setClientSecret(payment.clientSecret);
         setPaymentIntentId(payment.paymentIntentId);
       })

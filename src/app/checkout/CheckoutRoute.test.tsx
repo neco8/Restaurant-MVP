@@ -22,7 +22,7 @@ vi.mock("@/lib", async () => {
   const actual = await vi.importActual<typeof import("@/lib")>("@/lib");
   return {
     ...actual,
-    getCartEntries: () => [{ id: "1", quantity: actual.quantity(1) }],
+    getStoredCartItems: () => [{ id: "1", quantity: actual.quantity(1) }],
   };
 });
 
