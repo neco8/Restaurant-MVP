@@ -5,11 +5,11 @@ type Props = {
 };
 
 export default async function CartPage({ getCartItems }: Props = {}) {
-  const items = getCartItems ? await getCartItems() : [];
+  const cartItems = getCartItems ? await getCartItems() : [];
   return (
     <>
       <h1>Cart</h1>
-      {items.map((item) => (
+      {cartItems.map((item) => (
         <span key={item.id}>{item.name}</span>
       ))}
       <a href="/checkout">Proceed to Checkout</a>

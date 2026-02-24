@@ -8,6 +8,6 @@ export function lineTotal(item: OrderLine): number {
   return lineTotalCents(item) / 100;
 }
 
-export function total(items: OrderLine[]): number {
+export function orderTotal(items: OrderLine[]): number {
   return items.reduce((sum, item) => sum + lineTotalCents(item), 0) / 100;
 }
