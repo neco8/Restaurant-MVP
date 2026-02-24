@@ -13,6 +13,11 @@ export type Product = {
   description: string;
 };
 
+export type CartEntry = {
+  id: string;
+  quantity: Quantity;
+};
+
 export type CartItem = {
   id: string;
   name: string;
