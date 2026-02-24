@@ -1,3 +1,8 @@
 export default async function CheckoutPage() {
-  return <h1>Checkout</h1>;
+  return (
+    <div>
+      <h1>Checkout</h1>
+      <button>Place Order</button>
+    </div>
+  );
 }
