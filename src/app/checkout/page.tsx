@@ -11,7 +11,10 @@ export default async function CheckoutPage({ items = [] }: { items?: Item[] } = 
         ) : (
           <ul>
             {items.map((item) => (
-              <li key={item.name}>{item.name}</li>
+              <li key={item.name}>
+                <span>{item.name}</span>
+                <span>${item.price.toFixed(2)}</span>
+              </li>
             ))}
           </ul>
         )}
