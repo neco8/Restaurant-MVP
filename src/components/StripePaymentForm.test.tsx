@@ -1,7 +1,8 @@
-import { vi, describe, it, expect, beforeEach } from "vitest";
+import { vi, describe, it, expect, beforeEach, expectTypeOf } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as lib from "@/lib";
+import type { ComponentProps } from "react";
 import { StripePaymentForm } from "./StripePaymentForm";
 
 const mockConfirmPayment = vi.fn();
@@ -152,5 +153,20 @@ describe("when payment succeeds", () => {
     });
 
     clearCartSpy.mockRestore();
+  });
+});
+
+describe("StripePaymentForm props contract", () => {
+  it("renders with only clientSecret prop, without paymentIntentId or amountInCents", () => {
+    render(<StripePaymentForm clientSecret="pi_test_secret" />);
+    expect(screen.getByTestId("stripe-elements")).toBeInTheDocument();
+  });
+
+  it("does not accept paymentIntentId prop", () => {
+    expectTypeOf<ComponentProps<typeof StripePaymentForm>>().not.toHaveProperty("paymentIntentId");
+  });
+
+  it("does not accept amountInCents prop", () => {
+    expectTypeOf<ComponentProps<typeof StripePaymentForm>>().not.toHaveProperty("amountInCents");
   });
 });
