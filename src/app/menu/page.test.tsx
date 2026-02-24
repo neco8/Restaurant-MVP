@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import MenuPage from "./page";
+import { defaultProductRepository } from "@/lib";
 
 test("shows Menu heading", async () => {
   const page = await MenuPage();
@@ -7,6 +8,13 @@ test("shows Menu heading", async () => {
   expect(
     screen.getByRole("heading", { name: "Menu" })
   ).toBeInTheDocument();
+});
+
+test("shows products from default repository when no getProducts provided", async () => {
+  const page = await MenuPage();
+  render(page);
+  const products = await defaultProductRepository().findAll();
+  expect(screen.getAllByTestId("product-card")).toHaveLength(products.length);
 });
 
 test("shows product cards from getProducts", async () => {
