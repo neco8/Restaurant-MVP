@@ -11,6 +11,7 @@ export default function ProductDetail({ product }: { product: Product }) {
       <h1>{product.name}</h1>
       <span data-testid="product-price">{product.price}</span>
       <span data-testid="product-description">{product.description}</span>
+      <button>Add to Cart</button>
     </>
   );
 }
