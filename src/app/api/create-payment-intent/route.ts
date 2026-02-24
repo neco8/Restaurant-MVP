@@ -1,5 +1,6 @@
 import Stripe from "stripe";
 import { NextResponse } from "next/server";
+import { defaultProductRepository } from "@/lib/defaultProductRepository";
 
 export async function POST(request: Request) {
   let body;
@@ -9,14 +10,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const { amountInCents } = body;
+  const { cartItems } = body;
 
-  if (
-    typeof amountInCents !== "number" ||
-    !Number.isInteger(amountInCents) ||
-    amountInCents <= 0
-  ) {
-    return NextResponse.json({ error: "Invalid amountInCents" }, { status: 400 });
+  if (!Array.isArray(cartItems) || cartItems.length === 0) {
+    return NextResponse.json({ error: "cartItems is required" }, { status: 400 });
+  }
+
+  const repo = defaultProductRepository();
+  const products = await repo.findAll();
+
+  let amountInCents = 0;
+  for (const item of cartItems) {
+    const product = products.find((p) => p.id === item.id);
+    if (!product) {
+      return NextResponse.json({ error: "Unknown product id" }, { status: 400 });
+    }
+    amountInCents += Math.round(product.price * 100) * item.quantity;
   }
 
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);

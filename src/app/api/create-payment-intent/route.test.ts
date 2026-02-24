@@ -37,7 +37,7 @@ describe("POST /api/create-payment-intent", () => {
     const request = new Request("http://localhost/api/create-payment-intent", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amountInCents: 1200 }),
+      body: JSON.stringify({ cartItems: [{ id: "1", quantity: 1 }] }),
     });
 
     const response = await POST(request);
@@ -52,7 +52,7 @@ describe("POST /api/create-payment-intent", () => {
     const request = new Request("http://localhost/api/create-payment-intent", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amountInCents: 1200 }),
+      body: JSON.stringify({ cartItems: [{ id: "1", quantity: 1 }] }),
     });
 
     const response = await POST(request);
@@ -67,7 +67,7 @@ describe("POST /api/create-payment-intent", () => {
     const request = new Request("http://localhost/api/create-payment-intent", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amountInCents: 1200 }),
+      body: JSON.stringify({ cartItems: [{ id: "1", quantity: 1 }] }),
     });
 
     await POST(request);
@@ -283,7 +283,7 @@ describe("POST /api/create-payment-intent", () => {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ amountInCents: 1200 }),
+          body: JSON.stringify({ cartItems: [{ id: "1", quantity: 1 }] }),
         }
       );
 
