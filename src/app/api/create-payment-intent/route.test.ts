@@ -176,6 +176,57 @@ describe("POST /api/create-payment-intent", () => {
         expect.objectContaining({ amount: 1500 })
       );
     });
+
+    it("returns 400 when quantity is a fraction (e.g. 0.5)", async () => {
+      // BUG: A malicious client sends quantity: 0.5 for Ramen ($12.00).
+      // Expected: server rejects non-integer quantity with 400.
+      // Actual: server accepts it and charges $6.00 instead of $12.00.
+      const { POST } = await import("./route");
+      const request = new Request("http://localhost/api/create-payment-intent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          cartItems: [{ id: "1", quantity: 0.5 }],
+        }),
+      });
+
+      const response = await POST(request);
+
+      expect(response.status).toBe(400);
+    });
+
+    it("returns 400 when quantity is zero", async () => {
+      // BUG: quantity: 0 should be rejected but server processes it.
+      const { POST } = await import("./route");
+      const request = new Request("http://localhost/api/create-payment-intent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          cartItems: [{ id: "1", quantity: 0 }],
+        }),
+      });
+
+      const response = await POST(request);
+
+      expect(response.status).toBe(400);
+    });
+
+    it("returns 400 when quantity is negative", async () => {
+      // BUG: negative quantity reduces the total, allowing attacker to
+      // offset another item's cost.
+      const { POST } = await import("./route");
+      const request = new Request("http://localhost/api/create-payment-intent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          cartItems: [{ id: "1", quantity: -1 }],
+        }),
+      });
+
+      const response = await POST(request);
+
+      expect(response.status).toBe(400);
+    });
   });
 
   describe("error handling", () => {
