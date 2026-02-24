@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { CartItem } from "@/lib";
-import { orderTotal, lineTotal, formatPrice, getCartItems } from "@/lib";
+import type { CartItem, Product } from "@/lib";
+import { orderTotal, lineTotal, formatPrice, getCartEntries, hydrateCart } from "@/lib";
 import { StripePaymentForm } from "@/components/StripePaymentForm";
 
 // Named export for unit tests (pure rendering, no Stripe/localStorage)
@@ -54,31 +54,31 @@ export default function CheckoutRoute() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const items = getCartItems();
-    setCartItems(items);
-  }, []);
+    const entries = getCartEntries();
+    if (entries.length === 0) return;
 
-  useEffect(() => {
-    if (cartItems.length === 0) return;
-    fetch("/api/create-payment-intent", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        cartItems: cartItems.map((item) => ({ id: item.id, quantity: item.quantity })),
-      }),
-    })
-      .then((r) => {
+    Promise.all([
+      fetch("/api/products").then((r) => r.json()) as Promise<Product[]>,
+      fetch("/api/create-payment-intent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          cartItems: entries.map((e) => ({ id: e.id, quantity: e.quantity })),
+        }),
+      }).then((r) => {
         if (!r.ok) throw new Error("Server error");
-        return r.json();
-      })
-      .then((data: { clientSecret: string; paymentIntentId: string }) => {
-        setClientSecret(data.clientSecret);
-        setPaymentIntentId(data.paymentIntentId);
+        return r.json() as Promise<{ clientSecret: string; paymentIntentId: string }>;
+      }),
+    ])
+      .then(([products, payment]) => {
+        setCartItems(hydrateCart(entries, products));
+        setClientSecret(payment.clientSecret);
+        setPaymentIntentId(payment.paymentIntentId);
       })
       .catch(() => {
         setError("Something went wrong. Please try again.");
       });
-  }, [cartItems]);
+  }, []);
 
   return (
     <CheckoutPage cartItems={cartItems}>

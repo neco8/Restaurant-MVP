@@ -58,6 +58,13 @@ it("shows Payment Failed when Stripe payment status is canceled", async () => {
   expect(screen.getByTestId("payment-status")).toHaveTextContent("Payment Failed");
 });
 
+it("shows Payment Processing when Stripe payment status is processing", async () => {
+  mockRetrieve.mockResolvedValue({ id: "pi_test_123", status: "processing" });
+  const page = await OrderCompletePage({ params: { id: "pi_test_123" } });
+  render(page);
+  expect(screen.getByTestId("payment-status")).toHaveTextContent("Payment Processing");
+});
+
 it("shows Payment Failed when payment intent does not exist in Stripe", async () => {
   mockRetrieve.mockRejectedValue(new Error("No such payment_intent: 'invalid_id'"));
   const page = await OrderCompletePage({ params: { id: "invalid_id" } });

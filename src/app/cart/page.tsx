@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { CartItem } from "@/lib";
-import { ROUTES, getCartItems, formatPrice, lineTotal, orderTotal } from "@/lib";
+import type { CartItem, Product } from "@/lib";
+import { ROUTES, getCartEntries, hydrateCart, formatPrice, lineTotal, orderTotal } from "@/lib";
 
 // Named export for unit tests (accepts cartItems prop directly)
 export function CartPage({ cartItems = [] }: { cartItems?: CartItem[] } = {}) {
@@ -28,12 +28,18 @@ export function CartPage({ cartItems = [] }: { cartItems?: CartItem[] } = {}) {
   );
 }
 
-// Default export: real app reads cart from localStorage
+// Default export: real app reads cart from localStorage, hydrates from server
 export default function CartRoute() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
   useEffect(() => {
-    setCartItems(getCartItems());
+    const entries = getCartEntries();
+    if (entries.length === 0) return;
+    fetch("/api/products")
+      .then((r) => r.json())
+      .then((products: Product[]) => {
+        setCartItems(hydrateCart(entries, products));
+      });
   }, []);
 
   return <CartPage cartItems={cartItems} />;
