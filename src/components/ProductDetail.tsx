@@ -7,6 +7,9 @@ type Product = {
 
 export default function ProductDetail({ product }: { product: Product }) {
   return (
-    <h1>{product.name}</h1>
+    <>
+      <h1>{product.name}</h1>
+      <span data-testid="product-price">{product.price}</span>
+    </>
   );
 }
