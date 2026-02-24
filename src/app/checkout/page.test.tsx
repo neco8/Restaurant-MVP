@@ -95,6 +95,37 @@ test("checkout total section has checkout-total testid", () => {
   expect(screen.getByTestId("checkout-total")).toBeInTheDocument();
 });
 
+test("shows loading indicator when loading is true", () => {
+  render(
+    <CheckoutPage
+      cartItems={[{ id: "1", name: "Burger", price: 9.99, quantity: 1 }]}
+      loading={true}
+    />
+  );
+  expect(screen.getByRole("status")).toBeInTheDocument();
+  expect(screen.getByText("Preparing payment…")).toBeInTheDocument();
+});
+
+test("does not show loading indicator when loading is false", () => {
+  render(
+    <CheckoutPage
+      cartItems={[{ id: "1", name: "Burger", price: 9.99, quantity: 1 }]}
+      loading={false}
+    />
+  );
+  expect(screen.queryByRole("status")).not.toBeInTheDocument();
+});
+
+test("does not show Place Order button when loading", () => {
+  render(
+    <CheckoutPage
+      cartItems={[{ id: "1", name: "Burger", price: 9.99, quantity: 1 }]}
+      loading={true}
+    />
+  );
+  expect(screen.queryByRole("button", { name: "Place Order" })).not.toBeInTheDocument();
+});
+
 // ── CheckoutRoute (reads localStorage, fetches payment intent) ───────────────
 //
 // These tests cover the rendering logic that is currently duplicated
