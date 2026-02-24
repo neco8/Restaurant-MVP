@@ -53,3 +53,12 @@ test("calls onAddToCart when Add to Cart is clicked", async () => {
   await userEvent.click(screen.getByRole("button", { name: "Add to Cart" }));
   expect(onAddToCart).toHaveBeenCalledOnce();
 });
+
+test("shows cart count of 0 initially", () => {
+  render(
+    <ProductDetail
+      product={{ id: "1", name: "Ramen", price: 800, description: "Delicious" }}
+    />
+  );
+  expect(screen.getByTestId("cart-count")).toHaveTextContent("0");
+});
