@@ -16,3 +16,11 @@ test("shows product name from getCartItems", async () => {
   render(page);
   expect(screen.getByText("Ramen")).toBeInTheDocument();
 });
+
+test("shows Proceed to Checkout link", async () => {
+  const page = await CartPage();
+  render(page);
+  expect(
+    screen.getByRole("link", { name: "Proceed to Checkout" })
+  ).toBeInTheDocument();
+});
