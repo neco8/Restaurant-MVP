@@ -1,7 +1,7 @@
 import Stripe from "stripe";
 import { NextResponse } from "next/server";
 import { defaultProductRepository } from "@/lib/defaultProductRepository";
-import { orderTotal } from "@/lib/pricing";
+import { orderTotal } from "@/lib/totals";
 import { parseQuantity } from "@/lib/quantity";
 
 export async function POST(request: Request) {
@@ -12,9 +12,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const { cartItems } = body;
+  const { cartItems: storedItems } = body;
 
-  if (!Array.isArray(cartItems) || cartItems.length === 0) {
+  if (!Array.isArray(storedItems) || storedItems.length === 0) {
     return NextResponse.json({ error: "cartItems is required" }, { status: 400 });
   }
 
@@ -22,12 +22,12 @@ export async function POST(request: Request) {
   const products = await repo.findAll();
 
   const orderLines = [];
-  for (const item of cartItems) {
-    const product = products.find((p) => p.id === item.id);
+  for (const storedItem of storedItems) {
+    const product = products.find((p) => p.id === storedItem.id);
     if (!product) {
       return NextResponse.json({ error: "Unknown product id" }, { status: 400 });
     }
-    const qty = parseQuantity(item.quantity);
+    const qty = parseQuantity(storedItem.quantity);
     if (qty === null) {
       return NextResponse.json({ error: "Invalid quantity" }, { status: 400 });
     }

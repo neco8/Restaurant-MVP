@@ -1,4 +1,4 @@
-import { orderTotal, lineTotal } from "./pricing";
+import { orderTotal, lineTotal } from "./totals";
 import { quantity } from "./quantity";
 import { price } from "./price";
 
