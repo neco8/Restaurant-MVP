@@ -29,3 +29,14 @@ test("shows product description", () => {
   );
   expect(screen.getByTestId("product-description")).toHaveTextContent("Delicious");
 });
+
+test("shows Add to Cart button", () => {
+  render(
+    <ProductDetail
+      product={{ id: "1", name: "Ramen", price: 800, description: "Delicious" }}
+    />
+  );
+  expect(
+    screen.getByRole("button", { name: "Add to Cart" })
+  ).toBeInTheDocument();
+});
