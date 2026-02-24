@@ -95,10 +95,12 @@ Listen to me carefully, future self. **Your commits are your thought process mad
 ### Commit Message Format
 
 ```
-(acceptance red|red|green|refactor): <summary>
+<prefix>: <summary>
 
 <optional short description>
 ```
+
+Where `prefix` is one of: `acceptance red`, `red`, `green`, `refactor`.
 
 **Prefix rules — match the TDD state transition:**
 
@@ -127,19 +129,19 @@ Listen to me carefully, future self. **Your commits are your thought process mad
 
 ```
 chore: scaffold Next.js project with Prisma and Playwright
-(acceptance red): add e2e test for full checkout flow
+acceptance red: add e2e test for full checkout flow
 
-(red): add unit test for MenuList rendering empty state
-(green): implement MenuList with empty state
-(red): add unit test for MenuList rendering menu items
-(green): implement MenuList with item rendering
-(refactor): extract MenuItem into its own component
-(red): add unit test for GetMenuItems use case
-(green): implement GetMenuItems use case with stub repository
-(red): add unit test for MenuRepository
-(green): implement MenuRepository with in-memory store
-(green): wire all layers — acceptance test passes
-(refactor): clean up dependency injection wiring
+red: add unit test for MenuList rendering empty state
+green: implement MenuList with empty state
+red: add unit test for MenuList rendering menu items
+green: implement MenuList with item rendering
+refactor: extract MenuItem into its own component
+red: add unit test for GetMenuItems use case
+green: implement GetMenuItems use case with stub repository
+red: add unit test for MenuRepository
+green: implement MenuRepository with in-memory store
+green: wire all layers — acceptance test passes
+refactor: clean up dependency injection wiring
 ```
 
 See that? **12 commits for one feature.** Each one is tiny. Each one tells a story. Each one is independently understandable. That's not overhead — that's **craftsmanship**.
