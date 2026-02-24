@@ -1,7 +1,7 @@
 import Stripe from "stripe";
 import { NextResponse } from "next/server";
 import { defaultProductRepository } from "@/lib/defaultProductRepository";
-import { orderTotal } from "@/lib/pricing";
+import { orderTotal } from "@/lib/totals";
 import { parseQuantity } from "@/lib/quantity";
 
 export async function POST(request: Request) {
