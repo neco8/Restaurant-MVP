@@ -2,7 +2,7 @@ import { test, expect, type Page } from "@playwright/test";
 import { ROUTES } from "../src/lib/routes";
 
 /**
- * Stripe Payment Element の iframe 内にテストカード情報を入力する
+ * Fill test card details inside the Stripe Payment Element iframe
  */
 async function fillStripePayment(page: Page) {
   const stripeFrame = page
