@@ -1,4 +1,5 @@
 import { total, lineTotal } from "@/lib/total";
+import { formatPrice } from "@/lib/formatPrice";
 
 type Item = { name: string; price: number; quantity: number };
 
@@ -17,11 +18,11 @@ export default async function CheckoutPage({ items = [] }: { items?: Item[] } = 
                 <li key={item.name}>
                   <span>{item.name}</span>
                   {item.quantity > 1 && <span>×{item.quantity}</span>}
-                  <span>${lineTotal(item).toFixed(2)}</span>
+                  <span>{formatPrice(lineTotal(item))}</span>
                 </li>
               ))}
             </ul>
-            <p>Total: ${total(items).toFixed(2)}</p>
+            <p>Total: {formatPrice(total(items))}</p>
           </>
         )}
       </section>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { formatPrice } from "@/lib/formatPrice";
 
 type Product = {
   id: string;
@@ -26,7 +27,7 @@ export default function ProductDetail({
   return (
     <>
       <h1>{product.name}</h1>
-      <span data-testid="product-price">${product.price.toFixed(2)}</span>
+      <span data-testid="product-price">{formatPrice(product.price)}</span>
       <span data-testid="product-description">{product.description}</span>
       <button onClick={handleAddToCart}>Add to Cart</button>
       <span data-testid="cart-count">{cartCount}</span>
