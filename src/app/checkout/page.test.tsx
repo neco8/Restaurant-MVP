@@ -67,6 +67,12 @@ test("total reflects quantity", async () => {
   expect(screen.getByText("Total: $19.98")).toBeInTheDocument();
 });
 
+test("shows line total for item with quantity greater than one", async () => {
+  const page = await CheckoutPage({ items: [{ name: "Burger", price: 9.99, quantity: 2 }] });
+  render(page);
+  expect(screen.getByText("$19.98")).toBeInTheDocument();
+});
+
 test("shows order total for multiple items", async () => {
   const page = await CheckoutPage({
     items: [
