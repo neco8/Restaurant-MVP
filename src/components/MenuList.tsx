@@ -1,13 +1,7 @@
 "use client";
 
 import Link from "next/link";
-
-type Product = {
-  id: string;
-  name: string;
-  price: number;
-  description: string;
-};
+import type { Product } from "@/lib/types";
 
 export default function MenuList({ products }: { products: Product[] }) {
   return (

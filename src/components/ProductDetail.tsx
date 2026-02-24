@@ -2,13 +2,7 @@
 
 import { useState } from "react";
 import { formatPrice } from "@/lib/formatPrice";
-
-type Product = {
-  id: string;
-  name: string;
-  price: number;
-  description: string;
-};
+import type { Product } from "@/lib/types";
 
 export default function ProductDetail({
   product,

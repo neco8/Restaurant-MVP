@@ -1,11 +1,5 @@
 import MenuList from "@/components/MenuList";
-
-type Product = {
-  id: string;
-  name: string;
-  price: number;
-  description: string;
-};
+import type { Product } from "@/lib/types";
 
 type Props = {
   getProducts?: () => Promise<Product[]>;
