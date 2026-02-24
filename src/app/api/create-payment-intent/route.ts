@@ -2,6 +2,7 @@ import Stripe from "stripe";
 import { NextResponse } from "next/server";
 import { defaultProductRepository } from "@/lib/defaultProductRepository";
 import { orderTotal } from "@/lib/pricing";
+import { parseQuantity } from "@/lib/quantity";
 
 export async function POST(request: Request) {
   let body;
@@ -26,7 +27,11 @@ export async function POST(request: Request) {
     if (!product) {
       return NextResponse.json({ error: "Unknown product id" }, { status: 400 });
     }
-    orderLines.push({ price: product.price, quantity: item.quantity });
+    const qty = parseQuantity(item.quantity);
+    if (qty === null) {
+      return NextResponse.json({ error: "Invalid quantity" }, { status: 400 });
+    }
+    orderLines.push({ price: product.price, quantity: qty });
   }
 
   const amountInCents = Math.round(orderTotal(orderLines) * 100);
