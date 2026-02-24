@@ -1,4 +1,4 @@
-import { total } from "@/lib/total";
+import { total, lineTotal } from "@/lib/total";
 
 type Item = { name: string; price: number; quantity: number };
 
@@ -17,7 +17,7 @@ export default async function CheckoutPage({ items = [] }: { items?: Item[] } = 
                 <li key={item.name}>
                   <span>{item.name}</span>
                   {item.quantity > 1 && <span>×{item.quantity}</span>}
-                  <span>${(item.price * item.quantity).toFixed(2)}</span>
+                  <span>${lineTotal(item).toFixed(2)}</span>
                 </li>
               ))}
             </ul>
