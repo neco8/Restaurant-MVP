@@ -18,3 +18,9 @@ test("shows Order Summary heading", async () => {
   render(page);
   expect(screen.getByRole("heading", { name: "Order Summary" })).toBeInTheDocument();
 });
+
+test("shows empty cart message when no items", async () => {
+  const page = await CheckoutPage();
+  render(page);
+  expect(screen.getByText("Your cart is empty")).toBeInTheDocument();
+});
