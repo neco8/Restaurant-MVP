@@ -11,3 +11,7 @@ test("returns 0 for empty list", () => {
 test("handles prices that cause floating point accumulation errors", () => {
   expect(total([{ price: 0.10 }, { price: 0.20 }, { price: 0.30 }])).toBe(0.60);
 });
+
+test("multiplies price by quantity when quantity is provided", () => {
+  expect(total([{ price: 9.99, quantity: 3 }])).toBe(29.97);
+});
