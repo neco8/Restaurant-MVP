@@ -4,19 +4,19 @@ test.describe("Checkout Flow", () => {
   test("should complete full checkout: shop → cart → checkout → confirmation", async ({
     page,
   }) => {
-    // 1. メインページから商品一覧を開く
+    // 1. Open the product list from the main page
     await page.goto("/");
-    await page.getByRole("link", { name: "メニュー" }).click();
+    await page.getByRole("link", { name: "Menu" }).click();
     await expect(page).toHaveURL("/menu");
 
-    // 商品一覧が表示されていることを確認
+    // Verify the product list is displayed
     await expect(
-      page.getByRole("heading", { name: "メニュー" })
+      page.getByRole("heading", { name: "Menu" })
     ).toBeVisible();
     const productCards = page.getByTestId("product-card");
     await expect(productCards.first()).toBeVisible();
 
-    // 2. 商品を一つ選択する → 3. 商品詳細ページに行く
+    // 2. Select a product → 3. Go to the product detail page
     const firstProductName = await productCards
       .first()
       .getByTestId("product-name")
@@ -24,38 +24,38 @@ test.describe("Checkout Flow", () => {
     await productCards.first().click();
     await expect(page).toHaveURL(/\/menu\/.+/);
 
-    // 商品詳細が表示されていることを確認
+    // Verify product details are displayed
     await expect(
       page.getByRole("heading", { name: firstProductName! })
     ).toBeVisible();
     await expect(page.getByTestId("product-price")).toBeVisible();
     await expect(page.getByTestId("product-description")).toBeVisible();
 
-    // 4. カートに入れる
-    await page.getByRole("button", { name: "カートに入れる" }).click();
+    // 4. Add to cart
+    await page.getByRole("button", { name: "Add to Cart" }).click();
 
-    // カートに追加されたフィードバックを確認
+    // Verify cart count feedback
     await expect(page.getByTestId("cart-count")).toHaveText("1");
 
-    // 5. レジに進む
-    await page.getByRole("link", { name: "カートを見る" }).click();
+    // 5. Proceed to checkout
+    await page.getByRole("link", { name: "View Cart" }).click();
     await expect(page).toHaveURL("/cart");
 
-    // カートに商品が入っていることを確認
+    // Verify the product is in the cart
     await expect(page.getByText(firstProductName!)).toBeVisible();
-    await page.getByRole("link", { name: "レジに進む" }).click();
+    await page.getByRole("link", { name: "Proceed to Checkout" }).click();
     await expect(page).toHaveURL("/checkout");
 
-    // 6. 注文する
+    // 6. Place order
     await expect(
-      page.getByRole("heading", { name: "お会計" })
+      page.getByRole("heading", { name: "Checkout" })
     ).toBeVisible();
-    await page.getByRole("button", { name: "注文する" }).click();
+    await page.getByRole("button", { name: "Place Order" }).click();
 
-    // 7. 注文完了 → 8. 注文完了ページに行く
+    // 7. Order complete → 8. Go to order confirmation page
     await expect(page).toHaveURL(/\/orders\/.+\/complete/);
     await expect(
-      page.getByRole("heading", { name: "ご注文ありがとうございます" })
+      page.getByRole("heading", { name: "Thank you for your order" })
     ).toBeVisible();
     await expect(page.getByTestId("order-id")).toBeVisible();
   });

@@ -6,6 +6,12 @@ Future me, I know you. You're about to jump straight into writing code. STOP. Ta
 
 ---
 
+## Language Rule
+
+**All written output must be in English.** Code, comments, commit messages, test descriptions, documentation, and communication — everything in English. No exceptions.
+
+---
+
 ## The Philosophy: Why This Matters
 
 We don't write code to make machines happy. We write code to **prove that we understand the problem**. TDD is not a testing technique — it's a **thinking discipline**. And when you combine it with TPP and Outside-In Walking Skeleton, something beautiful happens: the design *emerges*. You don't force it. You don't guess it. You **discover** it, one tiny, deliberate step at a time.

@@ -7,8 +7,8 @@ vi.mock("next/image", () => ({
   ),
 }));
 
-test("shows メニュー link to /menu", () => {
+test("shows Menu link to /menu", () => {
   render(<Home />);
-  const link = screen.getByRole("link", { name: "メニュー" });
+  const link = screen.getByRole("link", { name: "Menu" });
   expect(link).toHaveAttribute("href", "/menu");
 });
