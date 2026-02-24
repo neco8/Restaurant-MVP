@@ -1,28 +1,19 @@
 # Core Structure
 
-The skeleton that does not bend. Less is the discipline, not the shortcut.
+Less is the discipline, not the shortcut.
 
 ---
 
-## Rule zero
-
-Nothing exists without a failing test.
-No file. No function. No line.
-
----
-
-## The layers
+## Layers
 
 ```
-e2e test          ← acceptance boundary
-  page            ← route entry point
-    component     ← pure renderer
-      use case    ← business logic
-        repository  ← persistence interface
+page            ← route entry point
+  component     ← pure renderer
+    use case    ← business logic
+      repository  ← persistence interface
 ```
 
-Outside-in always. Each layer is driven by the failing test of the layer above it.
-The acceptance test stays RED until the innermost layer connects.
+Each layer depends only on the layer immediately below it. No skipping.
 
 ---
 
@@ -35,7 +26,7 @@ export default async function Page({ getX }: { getX?: () => Promise<X> } = {}) {
 }
 ```
 
-Injectable. No logic. No business conditionals.
+No logic. No business conditionals.
 `getX` is the seam: production wires the real repository; tests pass a stub.
 
 ---
@@ -56,17 +47,3 @@ Product { id, name, description, price }
 ```
 
 A product can change. A placed order cannot.
-
----
-
-## Commit contract
-
-| prefix           | written when                          |
-|------------------|---------------------------------------|
-| `acceptance red` | E2E test added, failing               |
-| `red`            | Unit test added, failing              |
-| `green`          | Simplest code that makes the test pass |
-| `refactor`       | Structure changed, behavior unchanged |
-
-One TDD state transition per commit. Never combined.
-Three similar lines of code are better than a premature abstraction.
