@@ -47,6 +47,20 @@ describe("POST /api/create-payment-intent", () => {
     expect(body.clientSecret).toBe("pi_test_123_secret_xxx");
   });
 
+  it("returns paymentIntentId from PaymentIntent", async () => {
+    const { POST } = await import("./route");
+    const request = new Request("http://localhost/api/create-payment-intent", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ amountInCents: 1200 }),
+    });
+
+    const response = await POST(request);
+    const body = await response.json();
+
+    expect(body.paymentIntentId).toBe("pi_test_123");
+  });
+
   it("passes amount and currency to Stripe", async () => {
     const { POST } = await import("./route");
 
