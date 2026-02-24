@@ -1,16 +1,16 @@
 import { render, screen } from "@testing-library/react";
-import { CartPage } from "./page";
+import { CartView } from "./page";
 import { quantity } from "@/lib/quantity";
 import { price } from "@/lib/price";
 
 test("shows Cart heading", () => {
-  render(<CartPage />);
+  render(<CartView />);
   expect(screen.getByRole("heading", { name: "Cart" })).toBeInTheDocument();
 });
 
 test("shows product name when cartItems provided", () => {
   render(
-    <CartPage
+    <CartView
       cartItems={[{ id: "1", name: "Ramen", price: price(8.00), quantity: quantity(1) }]}
     />
   );
@@ -18,7 +18,7 @@ test("shows product name when cartItems provided", () => {
 });
 
 test("shows Proceed to Checkout link", () => {
-  render(<CartPage />);
+  render(<CartView />);
   expect(
     screen.getByRole("link", { name: "Proceed to Checkout" })
   ).toBeInTheDocument();
@@ -26,7 +26,7 @@ test("shows Proceed to Checkout link", () => {
 
 test("shows item price when cart has one item", () => {
   render(
-    <CartPage
+    <CartView
       cartItems={[{ id: "1", name: "Ramen", price: price(8.00), quantity: quantity(1) }]}
     />
   );
@@ -35,7 +35,7 @@ test("shows item price when cart has one item", () => {
 
 test("shows item quantity", () => {
   render(
-    <CartPage
+    <CartView
       cartItems={[{ id: "1", name: "Ramen", price: price(8.00), quantity: quantity(2) }]}
     />
   );
@@ -44,7 +44,7 @@ test("shows item quantity", () => {
 
 test("does not show quantity badge when quantity is one", () => {
   render(
-    <CartPage
+    <CartView
       cartItems={[{ id: "1", name: "Ramen", price: price(8.00), quantity: quantity(1) }]}
     />
   );
@@ -53,7 +53,7 @@ test("does not show quantity badge when quantity is one", () => {
 
 test("shows line total for item with quantity greater than one", () => {
   render(
-    <CartPage
+    <CartView
       cartItems={[{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(2) }]}
     />
   );
@@ -62,7 +62,7 @@ test("shows line total for item with quantity greater than one", () => {
 
 test("shows order total for single item", () => {
   render(
-    <CartPage
+    <CartView
       cartItems={[{ id: "1", name: "Ramen", price: price(8.00), quantity: quantity(1) }]}
     />
   );
@@ -71,7 +71,7 @@ test("shows order total for single item", () => {
 
 test("shows order total for multiple items", () => {
   render(
-    <CartPage
+    <CartView
       cartItems={[
         { id: "1", name: "Ramen", price: price(8.00), quantity: quantity(1) },
         { id: "2", name: "Gyoza", price: price(5.50), quantity: quantity(2) },
@@ -82,6 +82,6 @@ test("shows order total for multiple items", () => {
 });
 
 test("shows empty cart message when no items", () => {
-  render(<CartPage />);
+  render(<CartView />);
   expect(screen.getByText("Your cart is empty")).toBeInTheDocument();
 });

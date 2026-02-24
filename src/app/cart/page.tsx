@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import type { CartItem, Product } from "@/lib";
 import { ROUTES, getStoredCartItems, hydrateCart, formatPrice, lineTotal, orderTotal } from "@/lib";
 
-// Named export for unit tests (accepts cartItems prop directly)
-export function CartPage({ cartItems = [] }: { cartItems?: CartItem[] } = {}) {
+// Named export: pure presentational view (no side effects, testable in isolation)
+export function CartView({ cartItems = [] }: { cartItems?: CartItem[] } = {}) {
   return (
     <>
       <h1>Cart</h1>
@@ -42,5 +42,5 @@ export default function CartRoute() {
       });
   }, []);
 
-  return <CartPage cartItems={cartItems} />;
+  return <CartView cartItems={cartItems} />;
 }

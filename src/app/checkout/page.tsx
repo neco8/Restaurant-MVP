@@ -5,8 +5,8 @@ import type { CartItem, Product } from "@/lib";
 import { orderTotal, lineTotal, formatPrice, getStoredCartItems, hydrateCart } from "@/lib";
 import { StripePaymentForm } from "@/components/StripePaymentForm";
 
-// Named export for unit tests (pure rendering, no Stripe/localStorage)
-export function CheckoutPage({
+// Named export: pure presentational view (no side effects, testable in isolation)
+export function CheckoutView({
   cartItems = [],
   loading = false,
   children,
@@ -81,13 +81,13 @@ export default function CheckoutRoute() {
   }, []);
 
   return (
-    <CheckoutPage cartItems={cartItems}>
+    <CheckoutView cartItems={cartItems}>
       {error && <p role="alert">{error}</p>}
       {clientSecret && paymentIntentId ? (
         <StripePaymentForm clientSecret={clientSecret} paymentIntentId={paymentIntentId} />
       ) : (
         <button disabled={cartItems.length === 0}>Place Order</button>
       )}
-    </CheckoutPage>
+    </CheckoutView>
   );
 }
