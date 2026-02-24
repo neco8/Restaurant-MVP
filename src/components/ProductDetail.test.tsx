@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import ProductDetail from "./ProductDetail";
 
 test("shows product name as heading", () => {
@@ -39,4 +40,16 @@ test("shows Add to Cart button", () => {
   expect(
     screen.getByRole("button", { name: "Add to Cart" })
   ).toBeInTheDocument();
+});
+
+test("calls onAddToCart when Add to Cart is clicked", async () => {
+  const onAddToCart = vi.fn();
+  render(
+    <ProductDetail
+      product={{ id: "1", name: "Ramen", price: 800, description: "Delicious" }}
+      onAddToCart={onAddToCart}
+    />
+  );
+  await userEvent.click(screen.getByRole("button", { name: "Add to Cart" }));
+  expect(onAddToCart).toHaveBeenCalledOnce();
 });
