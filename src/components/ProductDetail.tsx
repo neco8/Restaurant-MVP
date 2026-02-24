@@ -30,6 +30,7 @@ export default function ProductDetail({
       <span data-testid="product-description">{product.description}</span>
       <button onClick={handleAddToCart}>Add to Cart</button>
       <span data-testid="cart-count">{cartCount}</span>
+      <a href="/cart">View Cart</a>
     </>
   );
 }
