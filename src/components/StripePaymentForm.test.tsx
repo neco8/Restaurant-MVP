@@ -130,6 +130,27 @@ describe("StripePaymentForm", () => {
   });
 });
 
+describe("redirect uses server-authoritative paymentIntentId", () => {
+  it("redirects using paymentIntentId prop, not result.paymentIntent.id", async () => {
+    mockConfirmPayment.mockResolvedValue({
+      paymentIntent: { id: "pi_from_stripe_response", status: "succeeded" },
+    });
+
+    render(
+      <StripePaymentForm
+        clientSecret="pi_test_secret"
+        paymentIntentId="pi_from_api"
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Place Order" }));
+
+    await waitFor(() => {
+      expect(mockPush).toHaveBeenCalledWith("/orders/pi_from_api/complete");
+    });
+  });
+});
+
 describe("when payment succeeds", () => {
   it("clears the cart after successful payment", async () => {
     mockConfirmPayment.mockResolvedValue({
