@@ -139,6 +139,7 @@ describe("CheckoutRoute", () => {
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue({
+        ok: true,
         json: () => Promise.resolve({ clientSecret: "pi_test_secret_abc" }),
       })
     );
