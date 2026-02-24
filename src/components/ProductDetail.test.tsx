@@ -72,3 +72,12 @@ test("increments cart count when Add to Cart is clicked", async () => {
   await userEvent.click(screen.getByRole("button", { name: "Add to Cart" }));
   expect(screen.getByTestId("cart-count")).toHaveTextContent("1");
 });
+
+test("shows View Cart link", () => {
+  render(
+    <ProductDetail
+      product={{ id: "1", name: "Ramen", price: 800, description: "Delicious" }}
+    />
+  );
+  expect(screen.getByRole("link", { name: "View Cart" })).toBeInTheDocument();
+});
