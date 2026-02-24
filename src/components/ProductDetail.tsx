@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { Product } from "@/lib";
-import { formatPrice, ROUTES } from "@/lib";
+import { formatPrice, ROUTES, addToCart } from "@/lib";
 
 export default function ProductDetail({
   product,
@@ -14,6 +14,7 @@ export default function ProductDetail({
   const [cartCount, setCartCount] = useState(0);
 
   function handleAddToCart() {
+    addToCart({ id: product.id, name: product.name, price: product.price });
     setCartCount(cartCount + 1);
     onAddToCart?.();
   }
