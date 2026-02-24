@@ -14,7 +14,7 @@ export default function ProductDetail({
   const [cartCount, setCartCount] = useState(0);
 
   function handleAddToCart() {
-    addToCart({ id: product.id, name: product.name, price: product.price });
+    addToCart(product.id);
     setCartCount(cartCount + 1);
     onAddToCart?.();
   }
