@@ -24,3 +24,9 @@ test("shows empty cart message when no items", async () => {
   render(page);
   expect(screen.getByText("Your cart is empty")).toBeInTheDocument();
 });
+
+test("shows item name when cart has one item", async () => {
+  const page = await CheckoutPage({ items: [{ name: "Burger", price: 9.99 }] });
+  render(page);
+  expect(screen.getByText("Burger")).toBeInTheDocument();
+});
