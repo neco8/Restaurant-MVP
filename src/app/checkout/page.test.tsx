@@ -26,13 +26,13 @@ test("shows empty cart message when no items", async () => {
 });
 
 test("shows item name when cart has one item", async () => {
-  const page = await CheckoutPage({ items: [{ name: "Burger", price: 9.99 }] });
+  const page = await CheckoutPage({ items: [{ name: "Burger", price: 9.99, quantity: 1 }] });
   render(page);
   expect(screen.getByText("Burger")).toBeInTheDocument();
 });
 
 test("shows item price when cart has one item", async () => {
-  const page = await CheckoutPage({ items: [{ name: "Burger", price: 9.99 }] });
+  const page = await CheckoutPage({ items: [{ name: "Burger", price: 9.99, quantity: 1 }] });
   render(page);
   expect(screen.getByText("$9.99")).toBeInTheDocument();
 });
@@ -44,7 +44,7 @@ test("Place Order button is disabled when cart is empty", async () => {
 });
 
 test("Place Order button is enabled when cart has items", async () => {
-  const page = await CheckoutPage({ items: [{ name: "Burger", price: 9.99 }] });
+  const page = await CheckoutPage({ items: [{ name: "Burger", price: 9.99, quantity: 1 }] });
   render(page);
   expect(screen.getByRole("button", { name: "Place Order" })).toBeEnabled();
 });
@@ -76,8 +76,8 @@ test("shows line total for item with quantity greater than one", async () => {
 test("shows order total for multiple items", async () => {
   const page = await CheckoutPage({
     items: [
-      { name: "Burger", price: 9.99 },
-      { name: "Fries", price: 3.49 },
+      { name: "Burger", price: 9.99, quantity: 1 },
+      { name: "Fries", price: 3.49, quantity: 1 },
     ],
   });
   render(page);
