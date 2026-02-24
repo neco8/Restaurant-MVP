@@ -1,8 +1,23 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 import { ROUTES } from "../src/lib/routes";
 
+/**
+ * Stripe Payment Element の iframe 内にテストカード情報を入力する
+ */
+async function fillStripePayment(page: Page) {
+  const stripeFrame = page
+    .frameLocator("iframe[title='Secure payment input frame']")
+    .first();
+
+  await stripeFrame
+    .getByPlaceholder(/card number/i)
+    .fill("4242424242424242");
+  await stripeFrame.getByPlaceholder(/expir/i).fill("1230");
+  await stripeFrame.getByPlaceholder(/cvc/i).fill("123");
+}
+
 test.describe("Checkout Flow", () => {
-  test("should complete full checkout: shop → cart → checkout → confirmation", async ({
+  test("should complete full checkout with Stripe payment: shop → cart → payment → confirmation", async ({
     page,
   }) => {
     // 1. Open the product list from the main page
@@ -47,17 +62,32 @@ test.describe("Checkout Flow", () => {
     await page.getByRole("link", { name: "Proceed to Checkout" }).click();
     await expect(page).toHaveURL(ROUTES.CHECKOUT);
 
-    // 6. Place order
+    // 6. Enter payment details on checkout page
     await expect(
       page.getByRole("heading", { name: "Checkout" })
     ).toBeVisible();
+    await expect(page.getByTestId("checkout-total")).toBeVisible();
+
+    // Wait for Stripe Payment Element iframe to load
+    await expect(
+      page.frameLocator("iframe[title='Secure payment input frame']").first()
+        .locator("body")
+    ).toBeAttached();
+
+    // Fill in test card details
+    await fillStripePayment(page);
+
+    // Confirm the order
     await page.getByRole("button", { name: "Place Order" }).click();
 
-    // 7. Order complete → 8. Go to order confirmation page
+    // 7. Order confirmation page
     await expect(page).toHaveURL(/\/orders\/.+\/complete/);
     await expect(
       page.getByRole("heading", { name: "Thank you for your order" })
     ).toBeVisible();
     await expect(page.getByTestId("order-id")).toBeVisible();
+
+    // Verify payment was completed
+    await expect(page.getByTestId("payment-status")).toHaveText("Payment Complete");
   });
 });
