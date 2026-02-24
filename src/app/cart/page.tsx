@@ -1,4 +1,5 @@
 import type { CartItem } from "@/lib/types";
+import { ROUTES } from "@/lib/routes";
 
 type Props = {
   getCartItems?: () => Promise<CartItem[]>;
@@ -12,7 +13,7 @@ export default async function CartPage({ getCartItems }: Props = {}) {
       {cartItems.map((item) => (
         <span key={item.id}>{item.name}</span>
       ))}
-      <a href="/checkout">Proceed to Checkout</a>
+      <a href={ROUTES.CHECKOUT}>Proceed to Checkout</a>
     </>
   );
 }

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { formatPrice } from "@/lib/formatPrice";
 import type { Product } from "@/lib/types";
+import { ROUTES } from "@/lib/routes";
 
 export default function ProductDetail({
   product,
@@ -25,7 +26,7 @@ export default function ProductDetail({
       <span data-testid="product-description">{product.description}</span>
       <button onClick={handleAddToCart}>Add to Cart</button>
       <span data-testid="cart-count">{cartCount}</span>
-      <a href="/cart">View Cart</a>
+      <a href={ROUTES.CART}>View Cart</a>
     </>
   );
 }

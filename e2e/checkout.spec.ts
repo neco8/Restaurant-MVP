@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { ROUTES } from "../src/lib/routes";
 
 test.describe("Checkout Flow", () => {
   test("should complete full checkout: shop → cart → checkout → confirmation", async ({
@@ -7,7 +8,7 @@ test.describe("Checkout Flow", () => {
     // 1. Open the product list from the main page
     await page.goto("/");
     await page.getByRole("link", { name: "Menu" }).click();
-    await expect(page).toHaveURL("/menu");
+    await expect(page).toHaveURL(ROUTES.MENU);
 
     // Verify the product list is displayed
     await expect(
@@ -39,12 +40,12 @@ test.describe("Checkout Flow", () => {
 
     // 5. Proceed to checkout
     await page.getByRole("link", { name: "View Cart" }).click();
-    await expect(page).toHaveURL("/cart");
+    await expect(page).toHaveURL(ROUTES.CART);
 
     // Verify the product is in the cart
     await expect(page.getByText(firstProductName!)).toBeVisible();
     await page.getByRole("link", { name: "Proceed to Checkout" }).click();
-    await expect(page).toHaveURL("/checkout");
+    await expect(page).toHaveURL(ROUTES.CHECKOUT);
 
     // 6. Place order
     await expect(
