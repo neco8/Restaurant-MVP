@@ -83,8 +83,8 @@ export default function CheckoutRoute() {
   return (
     <CheckoutPage cartItems={cartItems}>
       {error && <p role="alert">{error}</p>}
-      {clientSecret ? (
-        <StripePaymentForm clientSecret={clientSecret} paymentIntentId={paymentIntentId ?? undefined} />
+      {clientSecret && paymentIntentId ? (
+        <StripePaymentForm clientSecret={clientSecret} paymentIntentId={paymentIntentId} />
       ) : (
         <button disabled={cartItems.length === 0}>Place Order</button>
       )}
