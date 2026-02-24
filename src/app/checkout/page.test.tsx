@@ -12,3 +12,9 @@ test("shows Place Order button", async () => {
   render(page);
   expect(screen.getByRole("button", { name: "Place Order" })).toBeInTheDocument();
 });
+
+test("shows Order Summary heading", async () => {
+  const page = await CheckoutPage();
+  render(page);
+  expect(screen.getByRole("heading", { name: "Order Summary" })).toBeInTheDocument();
+});
