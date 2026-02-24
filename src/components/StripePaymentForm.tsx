@@ -4,11 +4,11 @@ import { useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { useRouter } from "next/navigation";
-import { ROUTES } from "@/lib";
+import { ROUTES, clearCart } from "@/lib";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
-function PaymentForm({ paymentIntentId }: { paymentIntentId: string }) {
+function PaymentForm() {
   const stripe = useStripe();
   const elements = useElements();
   const router = useRouter();
@@ -32,6 +32,7 @@ function PaymentForm({ paymentIntentId }: { paymentIntentId: string }) {
       setError(result.error.message ?? "Payment failed");
       setLoading(false);
     } else if (result.paymentIntent?.status === "succeeded") {
+      clearCart();
       router.push(ROUTES.ORDER_COMPLETE(result.paymentIntent.id));
     }
   }
@@ -49,15 +50,15 @@ function PaymentForm({ paymentIntentId }: { paymentIntentId: string }) {
 
 export function StripePaymentForm({
   clientSecret,
-  paymentIntentId,
 }: {
   clientSecret: string;
-  paymentIntentId: string;
-  amountInCents: number;
+  paymentIntentId?: string;
 }) {
   return (
-    <Elements stripe={stripePromise} options={{ clientSecret }}>
-      <PaymentForm paymentIntentId={paymentIntentId} />
-    </Elements>
+    <div data-testid="stripe-elements">
+      <Elements stripe={stripePromise} options={{ clientSecret }}>
+        <PaymentForm />
+      </Elements>
+    </div>
   );
 }

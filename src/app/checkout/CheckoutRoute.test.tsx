@@ -33,6 +33,7 @@ describe("CheckoutRoute", () => {
 
   it("passes paymentIntentId from API response to StripePaymentForm", async () => {
     global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
       json: () =>
         Promise.resolve({
           clientSecret: "pi_abc123_secret_def456",
@@ -55,6 +56,7 @@ describe("CheckoutRoute", () => {
     // Use a clientSecret where split("_secret_")[0] would give the WRONG id
     // to prove the code uses the API-provided paymentIntentId, not a parsed one
     global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
       json: () =>
         Promise.resolve({
           clientSecret: "pi_wrong_id_secret_xyz",

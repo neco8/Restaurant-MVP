@@ -6,7 +6,15 @@ import { orderTotal, lineTotal, formatPrice, getCartItems } from "@/lib";
 import { StripePaymentForm } from "@/components/StripePaymentForm";
 
 // Named export for unit tests (pure rendering, no Stripe/localStorage)
-export function CheckoutPage({ cartItems = [] }: { cartItems?: CartItem[] } = {}) {
+export function CheckoutPage({
+  cartItems = [],
+  loading = false,
+  children,
+}: {
+  cartItems?: CartItem[];
+  loading?: boolean;
+  children?: React.ReactNode;
+} = {}) {
   return (
     <div>
       <h1>Checkout</h1>
@@ -29,7 +37,11 @@ export function CheckoutPage({ cartItems = [] }: { cartItems?: CartItem[] } = {}
           </>
         )}
       </section>
-      <button disabled={cartItems.length === 0}>Place Order</button>
+      {children ?? (loading ? (
+        <p role="status">Preparing payment…</p>
+      ) : (
+        <button disabled={cartItems.length === 0}>Place Order</button>
+      ))}
     </div>
   );
 }
@@ -39,6 +51,7 @@ export default function CheckoutRoute() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const items = getCartItems();
@@ -47,32 +60,34 @@ export default function CheckoutRoute() {
 
   useEffect(() => {
     if (cartItems.length === 0) return;
-    const amountInCents = Math.round(orderTotal(cartItems) * 100);
     fetch("/api/create-payment-intent", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amountInCents }),
+      body: JSON.stringify({
+        cartItems: cartItems.map((item) => ({ id: item.id, quantity: item.quantity })),
+      }),
     })
-      .then((r) => r.json())
-      .then((data: { clientSecret: string }) => {
+      .then((r) => {
+        if (!r.ok) throw new Error("Server error");
+        return r.json();
+      })
+      .then((data: { clientSecret: string; paymentIntentId: string }) => {
         setClientSecret(data.clientSecret);
-        setPaymentIntentId(data.clientSecret.split("_secret_")[0]);
+        setPaymentIntentId(data.paymentIntentId);
+      })
+      .catch(() => {
+        setError("Something went wrong. Please try again.");
       });
   }, [cartItems]);
 
-  const amountInCents = Math.round(orderTotal(cartItems) * 100);
-
   return (
-    <div>
-      {clientSecret && paymentIntentId ? (
-        <StripePaymentForm
-          clientSecret={clientSecret}
-          paymentIntentId={paymentIntentId}
-          amountInCents={amountInCents}
-        />
+    <CheckoutPage cartItems={cartItems}>
+      {error && <p role="alert">{error}</p>}
+      {clientSecret ? (
+        <StripePaymentForm clientSecret={clientSecret} paymentIntentId={paymentIntentId ?? undefined} />
       ) : (
         <button disabled={cartItems.length === 0}>Place Order</button>
       )}
-    </div>
+    </CheckoutPage>
   );
 }
