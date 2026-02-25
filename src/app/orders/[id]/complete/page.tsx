@@ -5,16 +5,32 @@ type Props = {
 };
 
 export default async function OrderCompletePage({ params }: Props) {
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-
   let status = "Payment Failed";
-  try {
-    const paymentIntent = await stripe.paymentIntents.retrieve(params.id);
-    if (paymentIntent.status === "succeeded") {
-      status = "Payment Complete";
+
+  if (process.env.MOCK_STRIPE === "true") {
+    status = "Payment Complete";
+  } else {
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+    try {
+      const paymentIntent = await stripe.paymentIntents.retrieve(params.id);
+      switch (paymentIntent.status) {
+        case "succeeded":
+          status = "Payment Complete";
+          break;
+        case "processing":
+          status = "Payment Processing";
+          break;
+        case "canceled":
+        case "requires_payment_method":
+        case "requires_confirmation":
+        case "requires_action":
+        case "requires_capture":
+          status = "Payment Failed";
+          break;
+      }
+    } catch {
+      // Payment intent not found or other error
     }
-  } catch {
-    // Payment intent not found or other error
   }
 
   return (

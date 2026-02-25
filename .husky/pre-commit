@@ -1,0 +1,4 @@
+npx tsc --noEmit
+npm run lint
+npx prisma validate
+npm run build

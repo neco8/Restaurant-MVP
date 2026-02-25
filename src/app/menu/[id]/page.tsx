@@ -1,15 +1,18 @@
 import ProductDetail from "@/components/ProductDetail";
-import { defaultProductRepository, type Product } from "@/lib";
+import { defaultProductRepository } from "@/lib";
+import { price } from "@/lib/price";
 
-type Props = {
+export default async function ProductDetailPage({
+  params,
+}: {
   params: { id: string };
-  getProduct?: () => Promise<Product>;
-};
-
-export default async function ProductDetailPage({ params, getProduct }: Props) {
-  const product = getProduct
-    ? await getProduct()
-    : (await defaultProductRepository().findAll()).find((p) => p.id === params.id) ??
-      { id: params.id, name: "", price: 0, description: "" };
+}) {
+  const products = await defaultProductRepository().findAll();
+  const product = products.find((p) => p.id === params.id) ?? {
+    id: params.id,
+    name: "",
+    price: price(0),
+    description: "",
+  };
   return <ProductDetail product={product} />;
 }

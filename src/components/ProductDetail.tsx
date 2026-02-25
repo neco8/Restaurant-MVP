@@ -11,11 +11,11 @@ export default function ProductDetail({
   product: Product;
   onAddToCart?: () => void;
 }) {
-  const [cartCount, setCartCount] = useState(0);
+  const [addedCount, setAddedCount] = useState(0);
 
   function handleAddToCart() {
-    addToCart({ id: product.id, name: product.name, price: product.price });
-    setCartCount(cartCount + 1);
+    addToCart(product.id);
+    setAddedCount(addedCount + 1);
     onAddToCart?.();
   }
 
@@ -25,7 +25,7 @@ export default function ProductDetail({
       <span data-testid="product-price">{formatPrice(product.price)}</span>
       <span data-testid="product-description">{product.description}</span>
       <button onClick={handleAddToCart}>Add to Cart</button>
-      <span data-testid="cart-count">{cartCount}</span>
+      <span data-testid="added-count">{addedCount}</span>
       <a href={ROUTES.CART}>View Cart</a>
     </>
   );
