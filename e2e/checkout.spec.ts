@@ -1,11 +1,41 @@
 import { test, expect, type Page } from "@playwright/test";
 import { ROUTES } from "../src/lib/routes";
 
+async function findFrameInput(page: Page, name: string, timeout = 30_000) {
+  const deadline = Date.now() + timeout;
+  while (Date.now() < deadline) {
+    for (const frame of page.frames()) {
+      try {
+        const el = await frame.$(`input[name="${name}"]`);
+        if (el) return el;
+      } catch {
+        /* frame not ready */
+      }
+    }
+    await page.waitForTimeout(250);
+  }
+  throw new Error(`Stripe field "${name}" not found in any frame within ${timeout}ms`);
+}
+
 async function fillStripePayment(page: Page) {
-  await expect(page.locator("iframe[title='Card number']")).toBeVisible({ timeout: 15000 });
-  await page.frameLocator("iframe[title='Card number']").locator("input").fill("4242424242424242");
-  await page.frameLocator("iframe[title='Expiration date']").locator("input").fill("1230");
-  await page.frameLocator("iframe[title='Security code']").locator("input").fill("123");
+  await expect(page.locator('[data-testid="stripe-elements"] iframe')).toBeAttached({ timeout: 30_000 });
+
+  const cardNumber = await findFrameInput(page, "number");
+  await cardNumber.fill("4242424242424242");
+
+  const expiry = await findFrameInput(page, "expiry");
+  await expiry.fill("1230");
+
+  const cvc = await findFrameInput(page, "cvc");
+  await cvc.fill("123");
+
+  // PaymentElement may show a postal code field for US currency
+  try {
+    const postalCode = await findFrameInput(page, "postalCode", 3_000);
+    await postalCode.fill("10001");
+  } catch {
+    // Postal code not required for this configuration
+  }
 }
 
 test("checkout: browse menu → add to cart → pay → order confirmed → cart emptied", async ({ page }) => {
@@ -30,12 +60,12 @@ test("checkout: browse menu → add to cart → pay → order confirmed → cart
   await expect(page.getByText(productName!)).toBeVisible();
   await expect(page.getByTestId("checkout-total")).toBeVisible();
 
-  // Pay with test card
+  // Pay with Stripe test card
   await fillStripePayment(page);
   await page.getByRole("button", { name: "Place Order" }).click();
 
   // Order confirmed
-  await expect(page).toHaveURL(/\/orders\/.+\/complete/);
+  await expect(page).toHaveURL(/\/orders\/.+\/complete/, { timeout: 30_000 });
   await expect(page.getByRole("heading", { name: "Thank you for your order" })).toBeVisible();
   await expect(page.getByTestId("payment-status")).toHaveText("Payment Complete");
 

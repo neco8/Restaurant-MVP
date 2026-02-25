@@ -4,8 +4,6 @@ import { defaultProductRepository } from "@/lib/defaultProductRepository";
 import { orderTotal } from "@/lib/totals";
 import { parseQuantity } from "@/lib/quantity";
 
-let mockCounter = 0;
-
 export async function POST(request: Request) {
   let body;
   try {
@@ -37,14 +35,6 @@ export async function POST(request: Request) {
   }
 
   const amountInCents = Math.round(orderTotal(orderLines) * 100);
-
-  if (process.env.MOCK_STRIPE === "true") {
-    const id = `pi_mock_${++mockCounter}`;
-    return NextResponse.json({
-      clientSecret: `${id}_secret_mock`,
-      paymentIntentId: id,
-    });
-  }
 
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
