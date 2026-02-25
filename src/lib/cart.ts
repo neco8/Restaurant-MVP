@@ -41,6 +41,11 @@ export function hydrateCart(storedItems: StoredCartItem[], products: Product[]):
   return result;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function decreaseCartItem(id: string): void {
+  // TODO: implement
+}
+
 export function clearCart(): void {
   localStorage.removeItem(CART_KEY);
 }

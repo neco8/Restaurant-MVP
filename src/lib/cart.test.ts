@@ -1,4 +1,4 @@
-import { addToCart, getStoredCartItems, clearCart, hydrateCart } from "./cart";
+import { addToCart, getStoredCartItems, clearCart, hydrateCart, decreaseCartItem } from "./cart";
 import { quantity } from "./quantity";
 import { price } from "./price";
 import type { Product } from "./types";
@@ -51,4 +51,11 @@ test("hydrateCart combines storedItem quantity with product name and price", () 
 
 test("hydrateCart drops storedItems whose id is not found in products", () => {
   expect(hydrateCart([{ id: "999", quantity: quantity(1) }], products)).toEqual([]);
+});
+
+test("decreaseCartItem decrements quantity for existing item", () => {
+  addToCart("1");
+  addToCart("1");
+  decreaseCartItem("1");
+  expect(getStoredCartItems()).toEqual([{ id: "1", quantity: quantity(1) }]);
 });
