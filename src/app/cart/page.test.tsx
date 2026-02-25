@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { CartPage } from "./page";
+import { CartPage } from "./CartPage";
 
 test("shows Cart heading", () => {
   render(<CartPage />);

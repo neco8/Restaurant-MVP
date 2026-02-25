@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { getCartItems } from "@/lib";
-import CheckoutRoute, { CheckoutPage } from "./page";
+import CheckoutRoute from "./page";
+import { CheckoutPage } from "./CheckoutPage";
 
 vi.mock("@/lib", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib")>();
