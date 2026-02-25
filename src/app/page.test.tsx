@@ -1,14 +1,21 @@
 import { render, screen } from "@testing-library/react";
 import Home from "./page";
 
-vi.mock("next/image", () => ({
-  default: ({ src, alt }: { src: string; alt: string }) => (
-    <img src={src} alt={alt} />
-  ),
-}));
+describe("Home page structure", () => {
+  test("shows restaurant heading", () => {
+    render(<Home />);
+    expect(screen.getByRole("heading", { level: 1 })).toBeInTheDocument();
+  });
 
-test("shows Menu link to /menu", () => {
-  render(<Home />);
-  const link = screen.getByRole("link", { name: "Menu" });
-  expect(link).toHaveAttribute("href", "/menu");
+  test("shows Menu link to /menu", () => {
+    render(<Home />);
+    const link = screen.getByRole("link", { name: /menu/i });
+    expect(link).toHaveAttribute("href", "/menu");
+  });
+
+  test("shows Cart link to /cart", () => {
+    render(<Home />);
+    const link = screen.getByRole("link", { name: /cart/i });
+    expect(link).toHaveAttribute("href", "/cart");
+  });
 });

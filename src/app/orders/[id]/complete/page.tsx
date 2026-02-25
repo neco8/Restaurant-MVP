@@ -34,10 +34,12 @@ export default async function OrderCompletePage({ params }: Props) {
   }
 
   return (
-    <div>
-      <h1>Thank you for your order</h1>
-      <p>Order ID: <span data-testid="order-id">{params.id}</span></p>
-      <p data-testid="payment-status">{status}</p>
+    <div className="max-w-2xl mx-auto px-4 py-16 text-center">
+      <h1 className="text-3xl font-bold mb-6">Thank you for your order</h1>
+      <p className="text-stone-600 mb-2 dark:text-stone-400">
+        Order ID: <span data-testid="order-id" className="font-mono">{params.id}</span>
+      </p>
+      <p data-testid="payment-status" className="text-lg font-semibold">{status}</p>
     </div>
   );
 }

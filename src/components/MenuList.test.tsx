@@ -38,3 +38,30 @@ test("shows product price on card", () => {
   render(<MenuList products={[product]} />);
   expect(screen.getByTestId("product-price")).toHaveTextContent("$9.90");
 });
+
+describe("MenuList structure", () => {
+  const products = [
+    { id: "1", name: "Ramen", price: price(8.0), description: "Delicious" },
+    { id: "2", name: "Gyoza", price: price(5.5), description: "Crispy" },
+  ];
+
+  test("renders h1 heading", () => {
+    render(<MenuList products={products} />);
+    expect(screen.getByRole("heading", { level: 1 })).toBeInTheDocument();
+  });
+
+  test("renders one link per product", () => {
+    render(<MenuList products={products} />);
+    expect(screen.getAllByRole("link")).toHaveLength(products.length);
+  });
+
+  test("each product card has product-name element", () => {
+    render(<MenuList products={products} />);
+    expect(screen.getAllByTestId("product-name")).toHaveLength(products.length);
+  });
+
+  test("each product card has product-price element", () => {
+    render(<MenuList products={products} />);
+    expect(screen.getAllByTestId("product-price")).toHaveLength(products.length);
+  });
+});

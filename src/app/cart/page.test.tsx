@@ -85,3 +85,25 @@ test("shows empty cart message when no items", () => {
   render(<CartView />);
   expect(screen.getByText("Your cart is empty")).toBeInTheDocument();
 });
+
+describe("CartView structure", () => {
+  test("renders exactly one heading", () => {
+    render(<CartView />);
+    expect(screen.getAllByRole("heading")).toHaveLength(1);
+  });
+
+  test("heading is h1", () => {
+    render(<CartView />);
+    expect(screen.getByRole("heading", { level: 1 })).toBeInTheDocument();
+  });
+
+  test("Proceed to Checkout link points to /checkout", () => {
+    render(<CartView />);
+    expect(screen.getByRole("link", { name: "Proceed to Checkout" })).toHaveAttribute("href", "/checkout");
+  });
+
+  test("renders exactly one link", () => {
+    render(<CartView />);
+    expect(screen.getAllByRole("link")).toHaveLength(1);
+  });
+});
