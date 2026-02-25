@@ -13,13 +13,13 @@ test("getStoredCartItems returns empty array when cart is empty", () => {
 
 test("addToCart stores item id and quantity in localStorage", () => {
   addToCart("1");
-  expect(getStoredCartItems()).toEqual([{ id: "1", quantity: quantity(1) }]);
+  expect(getStoredCartItems()).toEqual([{ id: "1", quantity: quantity(1)._unsafeUnwrap() }]);
 });
 
 test("addToCart increments quantity for existing item", () => {
   addToCart("1");
   addToCart("1");
-  expect(getStoredCartItems()).toEqual([{ id: "1", quantity: quantity(2) }]);
+  expect(getStoredCartItems()).toEqual([{ id: "1", quantity: quantity(2)._unsafeUnwrap() }]);
 });
 
 test("addToCart keeps separate entries for different items", () => {
@@ -44,20 +44,20 @@ test("hydrateCart returns empty array when storedItems are empty", () => {
 });
 
 test("hydrateCart combines storedItem quantity with product name and price", () => {
-  expect(hydrateCart([{ id: "1", quantity: quantity(2) }], products)).toEqual([
-    { id: "1", name: "Ramen", price: price(12.00), quantity: quantity(2) },
+  expect(hydrateCart([{ id: "1", quantity: quantity(2)._unsafeUnwrap() }], products)).toEqual([
+    { id: "1", name: "Ramen", price: price(12.00), quantity: quantity(2)._unsafeUnwrap() },
   ]);
 });
 
 test("hydrateCart drops storedItems whose id is not found in products", () => {
-  expect(hydrateCart([{ id: "999", quantity: quantity(1) }], products)).toEqual([]);
+  expect(hydrateCart([{ id: "999", quantity: quantity(1)._unsafeUnwrap() }], products)).toEqual([]);
 });
 
 test("decreaseCartItem decrements quantity for existing item", () => {
   addToCart("1");
   addToCart("1");
   decreaseCartItem("1");
-  expect(getStoredCartItems()).toEqual([{ id: "1", quantity: quantity(1) }]);
+  expect(getStoredCartItems()).toEqual([{ id: "1", quantity: quantity(1)._unsafeUnwrap() }]);
 });
 
 test("decreaseCartItem removes item when quantity reaches zero", () => {
@@ -69,5 +69,5 @@ test("decreaseCartItem removes item when quantity reaches zero", () => {
 test("decreaseCartItem does nothing for nonexistent item", () => {
   addToCart("1");
   decreaseCartItem("999");
-  expect(getStoredCartItems()).toEqual([{ id: "1", quantity: quantity(1) }]);
+  expect(getStoredCartItems()).toEqual([{ id: "1", quantity: quantity(1)._unsafeUnwrap() }]);
 });

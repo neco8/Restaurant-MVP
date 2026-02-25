@@ -29,18 +29,18 @@ test("parseQuantity returns err for non-number", () => {
   expect(parseQuantity("1").isErr()).toBe(true);
 });
 
-test("quantity returns value for positive integer", () => {
-  expect(quantity(3)).toBe(3);
+test("quantity returns ok with value for positive integer", () => {
+  expect(quantity(3)).toEqual(ok(3));
 });
 
-test("quantity throws for invalid value", () => {
-  expect(() => quantity(0)).toThrow();
+test("quantity returns err for invalid value", () => {
+  expect(quantity(0).isErr()).toBe(true);
 });
 
 test("decreaseQuantity returns ok with decreased quantity for quantity greater than one", () => {
-  expect(decreaseQuantity(quantity(2))).toEqual(ok(1));
+  expect(decreaseQuantity(quantity(2)._unsafeUnwrap())).toEqual(ok(1));
 });
 
 test("decreaseQuantity returns err for quantity one", () => {
-  expect(decreaseQuantity(quantity(1)).isErr()).toBe(true);
+  expect(decreaseQuantity(quantity(1)._unsafeUnwrap()).isErr()).toBe(true);
 });

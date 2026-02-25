@@ -10,12 +10,8 @@ export function parseQuantity(value: unknown): Result<Quantity, string> {
   return ok(value as Quantity);
 }
 
-export function quantity(value: number): Quantity {
-  const result = parseQuantity(value);
-  if (result.isErr()) {
-    throw new Error(result.error);
-  }
-  return result.value;
+export function quantity(value: number): Result<Quantity, string> {
+  return parseQuantity(value);
 }
 
 export function decreaseQuantity(q: Quantity): Result<Quantity, string> {

@@ -23,9 +23,13 @@ export function addToCart(id: string): void {
   const storedItems = getStoredCartItems();
   const existing = storedItems.find((item) => item.id === id);
   if (existing) {
-    existing.quantity = quantity(existing.quantity + 1);
+    const increased = quantity(existing.quantity + 1);
+    if (increased.isErr()) return;
+    existing.quantity = increased.value;
   } else {
-    storedItems.push({ id, quantity: quantity(1) });
+    const initial = quantity(1);
+    if (initial.isErr()) return;
+    storedItems.push({ id, quantity: initial.value });
   }
   localStorage.setItem(CART_KEY, JSON.stringify(storedItems));
 }
