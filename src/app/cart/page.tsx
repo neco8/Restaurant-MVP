@@ -12,7 +12,7 @@ export default function CartRoute() {
     const storedItems = getStoredCartItems();
     if (storedItems.length === 0) return;
     fetch("/api/products")
-      .then((r) => r.json())
+      .then((res) => res.json())
       .then((products: Product[]) => {
         setCartItems(hydrateCart(storedItems, products));
       });

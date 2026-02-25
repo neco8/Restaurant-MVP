@@ -25,7 +25,7 @@ export async function POST(request: Request) {
 
   const orderLines = [];
   for (const storedItem of storedItems) {
-    const product = products.find((p) => p.id === storedItem.id);
+    const product = products.find((candidate) => candidate.id === storedItem.id);
     if (!product) {
       return NextResponse.json({ error: "Unknown product id" }, { status: 400 });
     }

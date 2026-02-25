@@ -17,16 +17,16 @@ export default function CheckoutRoute() {
     if (storedItems.length === 0) return;
 
     Promise.all([
-      fetch("/api/products").then((r) => r.json()) as Promise<Product[]>,
+      fetch("/api/products").then((res) => res.json()) as Promise<Product[]>,
       fetch("/api/create-payment-intent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          cartItems: storedItems.map((e) => ({ id: e.id, quantity: e.quantity })),
+          cartItems: storedItems.map((item) => ({ id: item.id, quantity: item.quantity })),
         }),
-      }).then((r) => {
-        if (!r.ok) throw new Error("Server error");
-        return r.json() as Promise<{ clientSecret: string; paymentIntentId: string }>;
+      }).then((res) => {
+        if (!res.ok) throw new Error("Server error");
+        return res.json() as Promise<{ clientSecret: string; paymentIntentId: string }>;
       }),
     ])
       .then(([products, payment]) => {
