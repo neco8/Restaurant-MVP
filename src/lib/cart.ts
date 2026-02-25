@@ -33,7 +33,7 @@ export function addToCart(id: string): void {
 export function hydrateCart(storedItems: StoredCartItem[], products: Product[]): CartItem[] {
   const result: CartItem[] = [];
   for (const storedItem of storedItems) {
-    const product = products.find((p) => p.id === storedItem.id);
+    const product = products.find((candidate) => candidate.id === storedItem.id);
     if (product) {
       result.push({ id: storedItem.id, name: product.name, price: product.price, quantity: storedItem.quantity });
     }
