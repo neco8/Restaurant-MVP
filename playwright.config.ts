@@ -1,5 +1,23 @@
 import { defineConfig, devices } from "@playwright/test";
 
+function proxyConfig() {
+  const proxyUrl =
+    process.env.GLOBAL_AGENT_HTTP_PROXY ||
+    process.env.https_proxy ||
+    process.env.HTTPS_PROXY;
+  if (!proxyUrl) return {};
+
+  const url = new URL(proxyUrl);
+  return {
+    proxy: {
+      server: `${url.protocol}//${url.host}`,
+      bypass: "localhost,127.0.0.1",
+      ...(url.username ? { username: decodeURIComponent(url.username) } : {}),
+      ...(url.password ? { password: decodeURIComponent(url.password) } : {}),
+    },
+  };
+}
+
 export default defineConfig({
   testDir: "./e2e",
   fullyParallel: true,
@@ -14,6 +32,8 @@ export default defineConfig({
   use: {
     baseURL: "http://localhost:3000",
     trace: "on-first-retry",
+    ignoreHTTPSErrors: true,
+    ...proxyConfig(),
   },
   projects: [
     {
