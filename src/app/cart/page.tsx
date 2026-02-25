@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { CartItem, Product } from "@/lib";
-import { getStoredCartItems, hydrateCart, decreaseCartItem, quantity } from "@/lib";
+import { getStoredCartItems, hydrateCart, decreaseCartItem, decreaseQuantity } from "@/lib";
 import { CartView } from "./CartView";
 
 export default function CartRoute() {
@@ -21,11 +21,11 @@ export default function CartRoute() {
   function handleDecreaseItem(id: string) {
     decreaseCartItem(id);
     setCartItems((prev) =>
-      prev
-        .filter((item) => !(item.id === id && item.quantity <= 1))
-        .map((item) =>
-          item.id === id ? { ...item, quantity: quantity(item.quantity - 1) } : item,
-        ),
+      prev.reduce<CartItem[]>((acc, item) => {
+        if (item.id !== id) return [...acc, item];
+        const decreased = decreaseQuantity(item.quantity);
+        return decreased ? [...acc, { ...item, quantity: decreased }] : acc;
+      }, []),
     );
   }
 
