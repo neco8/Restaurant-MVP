@@ -1,8 +1,8 @@
-import Stripe from "stripe";
 import { NextResponse } from "next/server";
 import { defaultProductRepository } from "@/lib/defaultProductRepository";
 import { orderTotal } from "@/lib/totals";
 import { parseQuantity } from "@/lib/quantity";
+import { createStripeClient } from "@/server/stripeClient";
 
 export async function POST(request: Request) {
   let body;
@@ -36,7 +36,7 @@ export async function POST(request: Request) {
 
   const amountInCents = Math.round(orderTotal(orderLines) * 100);
 
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+  const stripe = createStripeClient();
 
   try {
     const paymentIntent = await stripe.paymentIntents.create({

@@ -1,4 +1,4 @@
-import Stripe from "stripe";
+import { createStripeClient } from "@/server/stripeClient";
 
 type Props = {
   params: { id: string };
@@ -7,7 +7,7 @@ type Props = {
 export default async function OrderCompletePage({ params }: Props) {
   let status = "Payment Failed";
 
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+  const stripe = createStripeClient();
   try {
     const paymentIntent = await stripe.paymentIntents.retrieve(params.id);
     switch (paymentIntent.status) {
