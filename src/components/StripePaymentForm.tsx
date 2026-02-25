@@ -38,13 +38,13 @@ function PaymentForm({ paymentIntentId }: { paymentIntentId: string }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-5">
       <PaymentElement />
-      {error && <p role="alert" className="text-red-600 text-sm">{error}</p>}
+      {error && <p role="alert" className="text-red-500 text-sm font-medium bg-red-50 border border-red-200 rounded-xl px-4 py-3 dark:bg-red-950/30 dark:border-red-800 dark:text-red-400">{error}</p>}
       <button
         type="submit"
         disabled={!stripe || loading}
-        className="w-full rounded-lg bg-stone-900 text-white px-6 py-3 font-medium shadow-sm hover:bg-stone-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-stone-200"
+        className="w-full rounded-full bg-amber-600 text-white px-6 py-3.5 font-semibold shadow-lg shadow-amber-600/20 hover:bg-amber-700 hover:shadow-amber-700/25 active:scale-[0.98] transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none dark:bg-amber-500 dark:text-stone-950 dark:hover:bg-amber-400 dark:shadow-amber-500/20"
       >
         {loading ? "Processing..." : "Place Order"}
       </button>

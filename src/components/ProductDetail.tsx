@@ -20,28 +20,28 @@ export default function ProductDetail({
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
-      <span data-testid="product-price" className="block text-2xl font-semibold text-stone-700 mb-4 dark:text-stone-300">
+    <div className="max-w-2xl mx-auto px-6 py-12">
+      <h1 className="text-4xl font-extrabold tracking-tight mb-3">{product.name}</h1>
+      <span data-testid="product-price" className="block text-2xl font-bold text-amber-700 mb-4 dark:text-amber-400">
         {formatPrice(product.price)}
       </span>
-      <span data-testid="product-description" className="block text-stone-600 mb-8 dark:text-stone-400">
+      <span data-testid="product-description" className="block text-stone-500 leading-relaxed mb-10 dark:text-stone-400">
         {product.description}
       </span>
-      <div className="flex items-center gap-4 mb-6">
+      <div className="flex items-center gap-4 mb-8">
         <button
           onClick={handleAddToCart}
-          className="rounded-lg bg-stone-900 text-white px-6 py-3 font-medium shadow-sm hover:bg-stone-800 transition-colors dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-stone-200"
+          className="rounded-full bg-amber-600 text-white px-8 py-3 font-semibold shadow-lg shadow-amber-600/20 hover:bg-amber-700 hover:shadow-amber-700/25 active:scale-[0.98] transition-all dark:bg-amber-500 dark:text-stone-950 dark:hover:bg-amber-400 dark:shadow-amber-500/20"
         >
           Add to Cart
         </button>
-        <span data-testid="added-count" className="text-sm text-stone-500">
+        <span data-testid="added-count" className="text-sm text-stone-400 tabular-nums">
           {addedCount}
         </span>
       </div>
       <a
         href={ROUTES.CART}
-        className="text-stone-600 underline underline-offset-4 hover:text-stone-900 transition-colors dark:text-stone-400 dark:hover:text-stone-100"
+        className="text-amber-700 font-medium underline underline-offset-4 decoration-amber-300 hover:decoration-amber-500 hover:text-amber-800 transition-colors dark:text-amber-400 dark:decoration-amber-600 dark:hover:decoration-amber-400 dark:hover:text-amber-300"
       >
         View Cart
       </a>
