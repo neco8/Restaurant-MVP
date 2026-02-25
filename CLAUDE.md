@@ -6,6 +6,12 @@ Future me, I know you. You're about to jump straight into writing code. STOP. Ta
 
 ---
 
+## Language Rule
+
+**All written output must be in English.** Code, comments, commit messages, test descriptions, documentation, and communication — everything in English. No exceptions.
+
+---
+
 ## The Philosophy: Why This Matters
 
 We don't write code to make machines happy. We write code to **prove that we understand the problem**. TDD is not a testing technique — it's a **thinking discipline**. And when you combine it with TPP and Outside-In Walking Skeleton, something beautiful happens: the design *emerges*. You don't force it. You don't guess it. You **discover** it, one tiny, deliberate step at a time.
@@ -92,12 +98,28 @@ Priority order (simpler = higher priority):
 
 Listen to me carefully, future self. **Your commits are your thought process made visible.** They're not just "save points." They're a story — the story of how you understood the problem and built the solution, one deliberate step at a time.
 
+### Commit Message Format
+
+```
+<prefix>: <summary>
+
+<optional short description>
+```
+
+Where `prefix` is one of: `acceptance red`, `red`, `green`, `refactor`.
+
+**Prefix rules — match the TDD state transition:**
+
+| Prefix            | When to use                                       | Records your…   |
+| ----------------- | ------------------------------------------------- | --------------- |
+| `acceptance red`  | E2E / acceptance test written and failing          | *intention*     |
+| `red`             | Unit / integration test written and failing        | *intention*     |
+| `green`           | Simplest production code that makes the test pass  | *solution*      |
+| `refactor`        | Restructure without changing behavior              | *understanding* |
+
 ### Commit Rules
 
-1. **One commit per TDD state transition.**
-   - Commit on RED: `test: add failing test for [behavior]` — The test is written and fails. Commit it. This records your *intention*.
-   - Commit on GREEN: `feat: make [behavior] pass` — The simplest code that passes. Commit it. This records your *solution*.
-   - Commit on REFACTOR: `refactor: [what you restructured]` — Clean it up. Commit it. This records your *understanding*.
+1. **One commit per TDD state transition.** One `red`, one `green`, one `refactor` — never combined.
 
 2. **Never bundle multiple behaviors into one commit.** If your commit message needs a bullet list, you committed too much.
 
@@ -107,20 +129,24 @@ Listen to me carefully, future self. **Your commits are your thought process mad
 
 5. **A commit should be revertable without breaking unrelated things.** If reverting one commit breaks three features, your commits are too coarse.
 
+6. **Scaffolding / config commits** (project setup, CI, tooling) use a plain descriptive prefix like `chore:` — they live outside the TDD cycle.
+
 ### Example Commit Sequence (Walking Skeleton)
 
 ```
-test: add acceptance test for displaying menu items (RED - outer loop)
-test: add unit test for MenuList component rendering empty state
-feat: implement MenuList component with empty state
-test: add unit test for MenuList rendering menu items
-feat: implement MenuList with item rendering
+chore: scaffold Next.js project with Prisma and Playwright
+acceptance red: add e2e test for full checkout flow
+
+red: add unit test for MenuList rendering empty state
+green: implement MenuList with empty state
+red: add unit test for MenuList rendering menu items
+green: implement MenuList with item rendering
 refactor: extract MenuItem into its own component
-test: add unit test for GetMenuItems use case
-feat: implement GetMenuItems use case with stub repository
-test: add unit test for MenuRepository
-feat: implement MenuRepository with in-memory store
-feat: wire all layers together — acceptance test passes (GREEN - outer loop)
+red: add unit test for GetMenuItems use case
+green: implement GetMenuItems use case with stub repository
+red: add unit test for MenuRepository
+green: implement MenuRepository with in-memory store
+green: wire all layers — acceptance test passes
 refactor: clean up dependency injection wiring
 ```
 
@@ -176,6 +202,26 @@ Good (following TPP):
 ```
 
 Feel the difference? The second approach *can't go wrong* because each step is so small that correctness is obvious.
+
+---
+
+## How to Explore This Product
+
+**Run the tests.** That's it.
+
+```bash
+# Unit tests (Vitest)
+npx vitest run
+
+# E2E tests (Playwright)
+npx playwright test
+```
+
+Tests are the **single source of truth** for what this system does. Don't read the source code to understand behavior — read the tests. Every behavior the product has is described by a test. Nothing more, nothing less.
+
+Want to know what `ProductDetail` does? Read `ProductDetail.test.tsx`. Want to know what the checkout flow looks like? Read the E2E test. The tests tell you exactly what the system promises to do — and if a behavior isn't tested, it doesn't exist as far as we're concerned.
+
+**No guessing. No assumptions. Just run the tests and read them.**
 
 ---
 
