@@ -1,5 +1,5 @@
 import ProductDetail from "@/components/ProductDetail";
-import type { Product } from "@/lib";
+import { defaultProductRepository, type Product } from "@/lib";
 
 type Props = {
   params: { id: string };
@@ -7,6 +7,9 @@ type Props = {
 };
 
 export default async function ProductDetailPage({ params, getProduct }: Props) {
-  const product = getProduct ? await getProduct() : { id: params.id, name: "", price: 0, description: "" };
+  const product = getProduct
+    ? await getProduct()
+    : (await defaultProductRepository().findAll()).find((p) => p.id === params.id) ??
+      { id: params.id, name: "", price: 0, description: "" };
   return <ProductDetail product={product} />;
 }
