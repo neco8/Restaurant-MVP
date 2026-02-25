@@ -1,4 +1,4 @@
-import { parseQuantity, quantity } from "./quantity";
+import { parseQuantity, quantity, decreaseQuantity } from "./quantity";
 
 test("parseQuantity returns value for positive integer", () => {
   expect(parseQuantity(1)).toBe(1);
@@ -34,4 +34,12 @@ test("quantity returns value for positive integer", () => {
 
 test("quantity throws for invalid value", () => {
   expect(() => quantity(0)).toThrow();
+});
+
+test("decreaseQuantity returns decreased quantity for quantity greater than one", () => {
+  expect(decreaseQuantity(quantity(2))).toBe(1);
+});
+
+test("decreaseQuantity returns null for quantity one", () => {
+  expect(decreaseQuantity(quantity(1))).toBeNull();
 });

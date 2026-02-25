@@ -15,3 +15,8 @@ export function quantity(value: number): Quantity {
   }
   return q;
 }
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function decreaseQuantity(q: Quantity): Quantity | null {
+  return null;
+}
