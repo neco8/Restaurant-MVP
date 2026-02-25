@@ -42,10 +42,14 @@ function RealPaymentForm({ paymentIntentId }: { paymentIntentId: string }) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="space-y-4">
       <PaymentElement />
-      {error && <p role="alert">{error}</p>}
-      <button type="submit" disabled={!stripe || loading}>
+      {error && <p role="alert" className="text-red-600 text-sm">{error}</p>}
+      <button
+        type="submit"
+        disabled={!stripe || loading}
+        className="w-full rounded-lg bg-stone-900 text-white px-6 py-3 font-medium shadow-sm hover:bg-stone-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-stone-200"
+      >
         {loading ? "Processing..." : "Place Order"}
       </button>
     </form>
@@ -69,14 +73,18 @@ function MockPaymentForm({ paymentIntentId }: { paymentIntentId: string }) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <iframe title="Card number" srcDoc={CARD_NUMBER_SRCDOC} />
-        <iframe title="Expiration date" srcDoc={FIELD_SRCDOC} />
-        <iframe title="Security code" srcDoc={FIELD_SRCDOC} />
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-3">
+        <iframe title="Card number" srcDoc={CARD_NUMBER_SRCDOC} className="w-full rounded border border-stone-300 dark:border-stone-600" />
+        <iframe title="Expiration date" srcDoc={FIELD_SRCDOC} className="w-full rounded border border-stone-300 dark:border-stone-600" />
+        <iframe title="Security code" srcDoc={FIELD_SRCDOC} className="w-full rounded border border-stone-300 dark:border-stone-600" />
       </div>
-      {error && <p role="alert">{error}</p>}
-      <button type="submit" disabled={loading}>
+      {error && <p role="alert" className="text-red-600 text-sm">{error}</p>}
+      <button
+        type="submit"
+        disabled={loading}
+        className="w-full rounded-lg bg-stone-900 text-white px-6 py-3 font-medium shadow-sm hover:bg-stone-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-stone-200"
+      >
         {loading ? "Processing..." : "Place Order"}
       </button>
     </form>
