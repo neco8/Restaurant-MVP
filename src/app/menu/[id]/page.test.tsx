@@ -16,3 +16,11 @@ test("shows product name as heading", async () => {
     screen.getByRole("heading", { name: "Ramen" })
   ).toBeInTheDocument();
 });
+
+test("shows product name from default repository when no getProduct provided", async () => {
+  const page = await ProductDetailPage({ params: { id: "1" } });
+  render(page);
+  expect(
+    screen.getByRole("heading", { name: "Ramen" })
+  ).toBeInTheDocument();
+});
