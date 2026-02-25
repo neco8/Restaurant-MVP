@@ -1,5 +1,5 @@
 import type { StoredCartItem, CartItem, Product } from "./types";
-import { quantity, parseQuantity } from "./quantity";
+import { quantity, parseQuantity, decreaseQuantity } from "./quantity";
 
 const CART_KEY = "cart";
 
@@ -45,11 +45,12 @@ export function decreaseCartItem(id: string): void {
   const storedItems = getStoredCartItems();
   const existing = storedItems.find((item) => item.id === id);
   if (!existing) return;
-  if (existing.quantity <= 1) {
+  const decreased = decreaseQuantity(existing.quantity);
+  if (decreased === null) {
     const filtered = storedItems.filter((item) => item.id !== id);
     localStorage.setItem(CART_KEY, JSON.stringify(filtered));
   } else {
-    existing.quantity = quantity(existing.quantity - 1);
+    existing.quantity = decreased;
     localStorage.setItem(CART_KEY, JSON.stringify(storedItems));
   }
 }
