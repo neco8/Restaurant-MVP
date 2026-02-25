@@ -129,6 +129,19 @@ test("does not show Place Order button when loading", () => {
   expect(screen.queryByRole("button", { name: "Place Order" })).not.toBeInTheDocument();
 });
 
+describe("CheckoutView structure", () => {
+  test("renders exactly two headings", () => {
+    render(<CheckoutView />);
+    expect(screen.getAllByRole("heading")).toHaveLength(2);
+  });
+
+  test("heading levels are h1 and h2", () => {
+    render(<CheckoutView />);
+    expect(screen.getByRole("heading", { level: 1 })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 2 })).toBeInTheDocument();
+  });
+});
+
 // ── CheckoutRoute (reads localStorage, fetches products + payment intent) ────
 
 function mockFetchForRoute() {

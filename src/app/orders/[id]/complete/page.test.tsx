@@ -71,3 +71,33 @@ it("shows Payment Failed when payment intent does not exist in Stripe", async ()
   render(page);
   expect(screen.getByTestId("payment-status")).toHaveTextContent("Payment Failed");
 });
+
+describe("OrderCompletePage structure", () => {
+  it("renders exactly one heading", async () => {
+    mockRetrieve.mockResolvedValue({ id: "pi_test_123", status: "succeeded" });
+    const page = await OrderCompletePage({ params: { id: "pi_test_123" } });
+    render(page);
+    expect(screen.getAllByRole("heading")).toHaveLength(1);
+  });
+
+  it("heading is h1", async () => {
+    mockRetrieve.mockResolvedValue({ id: "pi_test_123", status: "succeeded" });
+    const page = await OrderCompletePage({ params: { id: "pi_test_123" } });
+    render(page);
+    expect(screen.getByRole("heading", { level: 1 })).toBeInTheDocument();
+  });
+
+  it("renders order-id element", async () => {
+    mockRetrieve.mockResolvedValue({ id: "pi_test_123", status: "succeeded" });
+    const page = await OrderCompletePage({ params: { id: "pi_test_123" } });
+    render(page);
+    expect(screen.getByTestId("order-id")).toBeInTheDocument();
+  });
+
+  it("renders payment-status element", async () => {
+    mockRetrieve.mockResolvedValue({ id: "pi_test_123", status: "succeeded" });
+    const page = await OrderCompletePage({ params: { id: "pi_test_123" } });
+    render(page);
+    expect(screen.getByTestId("payment-status")).toBeInTheDocument();
+  });
+});

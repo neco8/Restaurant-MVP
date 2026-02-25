@@ -82,3 +82,42 @@ test("shows View Cart link", () => {
   );
   expect(screen.getByRole("link", { name: "View Cart" })).toBeInTheDocument();
 });
+
+describe("ProductDetail structure", () => {
+  const product = { id: "1", name: "Ramen", price: price(8.0), description: "Delicious" };
+
+  test("renders exactly one heading", () => {
+    render(<ProductDetail product={product} />);
+    expect(screen.getAllByRole("heading")).toHaveLength(1);
+  });
+
+  test("renders exactly one button", () => {
+    render(<ProductDetail product={product} />);
+    expect(screen.getAllByRole("button")).toHaveLength(1);
+  });
+
+  test("renders exactly one link", () => {
+    render(<ProductDetail product={product} />);
+    expect(screen.getAllByRole("link")).toHaveLength(1);
+  });
+
+  test("View Cart link points to /cart", () => {
+    render(<ProductDetail product={product} />);
+    expect(screen.getByRole("link", { name: "View Cart" })).toHaveAttribute("href", "/cart");
+  });
+
+  test("renders product-price element", () => {
+    render(<ProductDetail product={product} />);
+    expect(screen.getByTestId("product-price")).toBeInTheDocument();
+  });
+
+  test("renders product-description element", () => {
+    render(<ProductDetail product={product} />);
+    expect(screen.getByTestId("product-description")).toBeInTheDocument();
+  });
+
+  test("renders added-count element", () => {
+    render(<ProductDetail product={product} />);
+    expect(screen.getByTestId("added-count")).toBeInTheDocument();
+  });
+});
