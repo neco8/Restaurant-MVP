@@ -1,8 +1,18 @@
 import { describe, it, expect } from "vitest";
-import { GET } from "./route";
+import { price } from "@/lib/price";
+
+vi.mock("@/lib/server/defaultProductRepository", () => ({
+  defaultProductRepository: () => ({
+    findAll: async () => [
+      { id: "1", name: "Ramen", price: price(12.0), description: "Rich tonkotsu broth" },
+      { id: "2", name: "Gyoza", price: price(7.5), description: "Pan-fried dumplings" },
+    ],
+  }),
+}));
 
 describe("GET /api/products", () => {
   it("returns product list as JSON", async () => {
+    const { GET } = await import("./route");
     const response = await GET();
     const body = await response.json();
     expect(response.status).toBe(200);
@@ -11,6 +21,7 @@ describe("GET /api/products", () => {
   });
 
   it("returns products with id, name, price, and description", async () => {
+    const { GET } = await import("./route");
     const response = await GET();
     const body = await response.json();
     const product = body[0];

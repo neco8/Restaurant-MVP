@@ -14,7 +14,7 @@ vi.mock("stripe", () => {
 });
 
 const mockFindAll = vi.fn();
-vi.mock("@/lib/defaultProductRepository", () => ({
+vi.mock("@/lib/server/defaultProductRepository", () => ({
   defaultProductRepository: () => ({ findAll: mockFindAll }),
 }));
 

@@ -1,5 +1,5 @@
 import ProductDetail from "@/components/ProductDetail";
-import { defaultProductRepository } from "@/lib";
+import { defaultProductRepository } from "@/lib/server/defaultProductRepository";
 import { price } from "@/lib/price";
 
 export default async function ProductDetailPage({

@@ -1,25 +1,24 @@
-import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
+import { describe, it, expect, afterAll, afterEach } from "vitest";
 import pg from "pg";
 import { PrismaClient } from "@/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
+const TEST_DB = "postgresql://restaurant:restaurant@localhost:5432/restaurant_test";
+
 function createTestPrisma() {
-  const pool = new pg.Pool({
-    connectionString: "postgresql://restaurant:restaurant@localhost:5432/restaurant_test",
-  });
+  const pool = new pg.Pool({ connectionString: TEST_DB });
   const adapter = new PrismaPg(pool);
   return { prisma: new PrismaClient({ adapter }), pool };
 }
 
-describe("GET /api/products (integration)", () => {
-  let prisma: PrismaClient;
-  let pool: pg.Pool;
+const testCtx = createTestPrisma();
 
-  beforeAll(async () => {
-    const ctx = createTestPrisma();
-    prisma = ctx.prisma;
-    pool = ctx.pool;
-  });
+vi.mock("@/lib/server/prisma", () => ({
+  prisma: testCtx.prisma,
+}));
+
+describe("GET /api/products (integration)", () => {
+  const prisma = testCtx.prisma;
 
   afterEach(async () => {
     await prisma.product.deleteMany();
@@ -27,7 +26,7 @@ describe("GET /api/products (integration)", () => {
 
   afterAll(async () => {
     await prisma.$disconnect();
-    await pool.end();
+    await testCtx.pool.end();
   });
 
   it("returns products seeded in the database", async () => {

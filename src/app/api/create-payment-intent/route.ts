@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 import { NextResponse } from "next/server";
-import { defaultProductRepository } from "@/lib/defaultProductRepository";
+import { defaultProductRepository } from "@/lib/server/defaultProductRepository";
 import { orderTotal } from "@/lib/totals";
 import { parseQuantity } from "@/lib/quantity";
 
