@@ -59,3 +59,15 @@ test("decreaseCartItem decrements quantity for existing item", () => {
   decreaseCartItem("1");
   expect(getStoredCartItems()).toEqual([{ id: "1", quantity: quantity(1) }]);
 });
+
+test("decreaseCartItem removes item when quantity reaches zero", () => {
+  addToCart("1");
+  decreaseCartItem("1");
+  expect(getStoredCartItems()).toEqual([]);
+});
+
+test("decreaseCartItem does nothing for nonexistent item", () => {
+  addToCart("1");
+  decreaseCartItem("999");
+  expect(getStoredCartItems()).toEqual([{ id: "1", quantity: quantity(1) }]);
+});
