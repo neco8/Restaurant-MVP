@@ -1,5 +1,4 @@
 import { addToCart, getCartItems, clearCart } from "./cart";
-import type { CartItem } from "./types";
 
 beforeEach(() => {
   localStorage.clear();
