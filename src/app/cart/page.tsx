@@ -22,10 +22,10 @@ export default function CartRoute() {
     decreaseCartItem(id);
     setCartItems((prev) =>
       prev
+        .filter((item) => !(item.id === id && item.quantity <= 1))
         .map((item) =>
           item.id === id ? { ...item, quantity: quantity(item.quantity - 1) } : item,
-        )
-        .filter((item) => item.quantity >= 1),
+        ),
     );
   }
 
