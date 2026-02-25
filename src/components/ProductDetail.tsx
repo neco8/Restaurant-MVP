@@ -15,7 +15,7 @@ export default function ProductDetail({
 
   function handleAddToCart() {
     addToCart(product.id);
-    setAddedCount(addedCount + 1);
+    setAddedCount((prev) => prev + 1);
     onAddToCart?.();
   }
 
