@@ -22,7 +22,7 @@ export default function CheckoutRoute() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          cartItems: storedItems.map((e) => ({ id: e.id, quantity: e.quantity })),
+          cartItems: storedItems.map((item) => ({ id: item.id, quantity: item.quantity })),
         }),
       }).then((r) => {
         if (!r.ok) throw new Error("Server error");
