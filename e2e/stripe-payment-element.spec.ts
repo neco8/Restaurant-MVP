@@ -11,7 +11,7 @@ async function seedCartAndGoToCheckout(page: Page) {
   await page.evaluate(() => {
     localStorage.setItem(
       "cart",
-      JSON.stringify([{ id: "test-1", name: "Test Burger", price: 12.0, quantity: 1 }])
+      JSON.stringify([{ id: "1", name: "Ramen", price: 12.0, quantity: 1 }])
     );
   });
   await page.goto(ROUTES.CHECKOUT);
