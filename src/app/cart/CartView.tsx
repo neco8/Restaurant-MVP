@@ -1,7 +1,7 @@
 import type { CartItem } from "@/lib";
 import { ROUTES, formatPrice, lineTotal, orderTotal } from "@/lib";
 
-export function CartView({ cartItems = [] }: { cartItems?: CartItem[] } = {}) {
+export function CartView({ cartItems = [], onDecreaseItem }: { cartItems?: CartItem[]; onDecreaseItem?: (id: string) => void } = {}) {
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">Cart</h1>
@@ -16,6 +16,13 @@ export function CartView({ cartItems = [] }: { cartItems?: CartItem[] } = {}) {
                 {item.quantity > 1 && (
                   <span className="text-sm text-stone-500 mx-2">×{item.quantity}</span>
                 )}
+                <button
+                  onClick={() => onDecreaseItem?.(item.id)}
+                  className="rounded border border-stone-300 px-2 py-1 text-sm text-stone-600 hover:bg-stone-100 transition-colors dark:border-stone-600 dark:text-stone-400 dark:hover:bg-stone-800"
+                  aria-label="Decrease quantity"
+                >
+                  −
+                </button>
                 <span className="font-semibold">{formatPrice(lineTotal(item))}</span>
               </div>
             ))}

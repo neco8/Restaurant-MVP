@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { CartView } from "./CartView";
 import { quantity } from "@/lib/quantity";
 import { price } from "@/lib/price";
@@ -84,6 +85,27 @@ test("shows order total for multiple items", () => {
 test("shows empty cart message when no items", () => {
   render(<CartView />);
   expect(screen.getByText("Your cart is empty")).toBeInTheDocument();
+});
+
+test("shows Decrease quantity button for each cart item", () => {
+  render(
+    <CartView
+      cartItems={[{ id: "1", name: "Ramen", price: price(8.00), quantity: quantity(2) }]}
+    />
+  );
+  expect(screen.getByRole("button", { name: "Decrease quantity" })).toBeInTheDocument();
+});
+
+test("calls onDecreaseItem when Decrease quantity button is clicked", async () => {
+  const onDecreaseItem = vi.fn();
+  render(
+    <CartView
+      cartItems={[{ id: "1", name: "Ramen", price: price(8.00), quantity: quantity(2) }]}
+      onDecreaseItem={onDecreaseItem}
+    />
+  );
+  await userEvent.click(screen.getByRole("button", { name: "Decrease quantity" }));
+  expect(onDecreaseItem).toHaveBeenCalledWith("1");
 });
 
 describe("CartView structure", () => {
