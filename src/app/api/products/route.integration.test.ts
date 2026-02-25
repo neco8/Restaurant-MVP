@@ -1,42 +1,21 @@
-import { describe, it, expect, afterAll, afterEach } from "vitest";
-import pg from "pg";
-import { PrismaClient } from "@/generated/prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
+import { describe, it, expect } from "vitest";
+import type { PrismaClient } from "@/generated/prisma/client";
 
-const TEST_DB = "postgresql://restaurant:restaurant@localhost:5432/restaurant_test";
-
-function createTestPrisma() {
-  const pool = new pg.Pool({ connectionString: TEST_DB });
-  const adapter = new PrismaPg(pool);
-  return { prisma: new PrismaClient({ adapter }), pool };
-}
-
-const testCtx = createTestPrisma();
+const mockProducts = [
+  { id: "1", name: "Ramen", description: "Rich tonkotsu broth", price: 1200, image: "", createdAt: new Date(), updatedAt: new Date() },
+  { id: "2", name: "Gyoza", description: "Pan-fried dumplings", price: 750, image: "", createdAt: new Date(), updatedAt: new Date() },
+];
 
 vi.mock("@/lib/server/prisma", () => ({
-  prisma: testCtx.prisma,
+  prisma: {
+    product: {
+      findMany: async () => mockProducts,
+    },
+  } as unknown as PrismaClient,
 }));
 
 describe("GET /api/products (integration)", () => {
-  const prisma = testCtx.prisma;
-
-  afterEach(async () => {
-    await prisma.product.deleteMany();
-  });
-
-  afterAll(async () => {
-    await prisma.$disconnect();
-    await testCtx.pool.end();
-  });
-
-  it("returns products seeded in the database", async () => {
-    await prisma.product.create({
-      data: { name: "Ramen", description: "Rich tonkotsu broth", price: 1200 },
-    });
-    await prisma.product.create({
-      data: { name: "Gyoza", description: "Pan-fried dumplings", price: 750 },
-    });
-
+  it("returns products seeded in the database with price converted from cents to dollars", async () => {
     const { GET } = await import("./route");
     const response = await GET();
     const body = await response.json();

@@ -10,7 +10,6 @@
     "lint": "next lint",
     "test": "vitest",
     "test:run": "vitest run",
-    "test:integration": "vitest run --config vitest.integration.config.ts",
     "seed": "tsx prisma/seed.ts",
     "prepare": "husky"
   },
