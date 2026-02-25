@@ -2,18 +2,13 @@ import { test, expect, type Page } from "@playwright/test";
 import { ROUTES } from "../src/lib/routes";
 
 /**
- * Fill test card details inside the Stripe Payment Element iframe
+ * Fill test card details inside the Stripe Payment Element iframes.
+ * PaymentElement renders each sensitive field in its own dedicated iframe.
  */
 async function fillStripePayment(page: Page) {
-  const stripeFrame = page
-    .frameLocator("iframe[title='Secure payment input frame']")
-    .first();
-
-  await stripeFrame
-    .getByPlaceholder(/card number/i)
-    .fill("4242424242424242");
-  await stripeFrame.getByPlaceholder(/expir/i).fill("1230");
-  await stripeFrame.getByPlaceholder(/cvc/i).fill("123");
+  await page.frameLocator("iframe[title='Card number']").locator("input").fill("4242424242424242");
+  await page.frameLocator("iframe[title='Expiration date']").locator("input").fill("1230");
+  await page.frameLocator("iframe[title='Security code']").locator("input").fill("123");
 }
 
 test.describe("Checkout Flow", () => {
@@ -70,9 +65,8 @@ test.describe("Checkout Flow", () => {
 
     // Wait for Stripe Payment Element iframe to load
     await expect(
-      page.frameLocator("iframe[title='Secure payment input frame']").first()
-        .locator("body")
-    ).toBeAttached();
+      page.locator("iframe[title='Card number']")
+    ).toBeVisible({ timeout: 15000 });
 
     // Fill in test card details
     await fillStripePayment(page);
@@ -106,8 +100,8 @@ test.describe("Checkout Flow", () => {
     await expect(page).toHaveURL(ROUTES.CHECKOUT);
 
     await expect(
-      page.frameLocator("iframe[title='Secure payment input frame']").first().locator("body")
-    ).toBeAttached();
+      page.locator("iframe[title='Card number']")
+    ).toBeVisible({ timeout: 15000 });
     await fillStripePayment(page);
     await page.getByRole("button", { name: "Place Order" }).click();
 
