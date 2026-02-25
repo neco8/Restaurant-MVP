@@ -41,9 +41,17 @@ export function hydrateCart(storedItems: StoredCartItem[], products: Product[]):
   return result;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function decreaseCartItem(id: string): void {
-  // TODO: implement
+  const storedItems = getStoredCartItems();
+  const existing = storedItems.find((item) => item.id === id);
+  if (!existing) return;
+  if (existing.quantity <= 1) {
+    const filtered = storedItems.filter((item) => item.id !== id);
+    localStorage.setItem(CART_KEY, JSON.stringify(filtered));
+  } else {
+    existing.quantity = quantity(existing.quantity - 1);
+    localStorage.setItem(CART_KEY, JSON.stringify(storedItems));
+  }
 }
 
 export function clearCart(): void {
