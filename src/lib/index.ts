@@ -2,7 +2,6 @@
 // Run .claude/hooks/generate-barrel.sh to regenerate.
 
 export * from "./cart";
-export * from "./defaultProductRepository";
 export * from "./formatPrice";
 export * from "./getProducts";
 export * from "./inMemoryProductRepository";
