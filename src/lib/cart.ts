@@ -15,7 +15,7 @@ export function getStoredCartItems(): StoredCartItem[] {
       "id" in item &&
       typeof (item as Record<string, unknown>).id === "string" &&
       "quantity" in item &&
-      parseQuantity((item as Record<string, unknown>).quantity) !== null,
+      parseQuantity((item as Record<string, unknown>).quantity).isOk(),
   ) as StoredCartItem[];
 }
 
@@ -46,11 +46,11 @@ export function decreaseCartItem(id: string): void {
   const existing = storedItems.find((item) => item.id === id);
   if (!existing) return;
   const decreased = decreaseQuantity(existing.quantity);
-  if (decreased === null) {
+  if (decreased.isErr()) {
     const filtered = storedItems.filter((item) => item.id !== id);
     localStorage.setItem(CART_KEY, JSON.stringify(filtered));
   } else {
-    existing.quantity = decreased;
+    existing.quantity = decreased.value;
     localStorage.setItem(CART_KEY, JSON.stringify(storedItems));
   }
 }

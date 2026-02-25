@@ -1,21 +1,23 @@
+import { ok, err, type Result } from "neverthrow";
+
 declare const __brand: unique symbol;
 export type Quantity = number & { readonly [__brand]: "Quantity" };
 
-export function parseQuantity(value: unknown): Quantity | null {
+export function parseQuantity(value: unknown): Result<Quantity, string> {
   if (typeof value !== "number" || !Number.isInteger(value) || value < 1) {
-    return null;
+    return err(`Invalid quantity: ${String(value)}`);
   }
-  return value as Quantity;
+  return ok(value as Quantity);
 }
 
 export function quantity(value: number): Quantity {
-  const q = parseQuantity(value);
-  if (q === null) {
-    throw new Error(`Invalid quantity: ${value}`);
+  const result = parseQuantity(value);
+  if (result.isErr()) {
+    throw new Error(result.error);
   }
-  return q;
+  return result.value;
 }
 
-export function decreaseQuantity(q: Quantity): Quantity | null {
+export function decreaseQuantity(q: Quantity): Result<Quantity, string> {
   return parseQuantity(q - 1);
 }

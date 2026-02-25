@@ -24,7 +24,7 @@ export default function CartRoute() {
       prev.reduce<CartItem[]>((acc, item) => {
         if (item.id !== id) return [...acc, item];
         const decreased = decreaseQuantity(item.quantity);
-        return decreased ? [...acc, { ...item, quantity: decreased }] : acc;
+        return decreased.isOk() ? [...acc, { ...item, quantity: decreased.value }] : acc;
       }, []),
     );
   }
