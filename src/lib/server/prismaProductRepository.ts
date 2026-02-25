@@ -1,9 +1,17 @@
 import type { ProductRepository } from "../types";
 import type { PrismaClient } from "@/generated/prisma/client";
+import { price } from "../price";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function createPrismaProductRepository(prisma: PrismaClient): ProductRepository {
   return {
-    findAll: async () => [],
+    findAll: async () => {
+      const rows = await prisma.product.findMany();
+      return rows.map((row) => ({
+        id: row.id,
+        name: row.name,
+        description: row.description,
+        price: price(row.price / 100),
+      }));
+    },
   };
 }
