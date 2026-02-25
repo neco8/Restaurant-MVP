@@ -177,6 +177,33 @@ describe("StripePaymentForm props contract", () => {
   });
 });
 
+describe("StripePaymentForm structure", () => {
+  it("renders stripe-elements wrapper", () => {
+    render(<StripePaymentForm clientSecret="pi_test_secret" paymentIntentId="pi_test_123" />);
+    expect(screen.getByTestId("stripe-elements")).toBeInTheDocument();
+  });
+
+  it("renders payment-element from Stripe", () => {
+    render(<StripePaymentForm clientSecret="pi_test_secret" paymentIntentId="pi_test_123" />);
+    expect(screen.getByTestId("payment-element")).toBeInTheDocument();
+  });
+
+  it("renders exactly one button", () => {
+    render(<StripePaymentForm clientSecret="pi_test_secret" paymentIntentId="pi_test_123" />);
+    expect(screen.getAllByRole("button")).toHaveLength(1);
+  });
+
+  it("button text is Place Order", () => {
+    render(<StripePaymentForm clientSecret="pi_test_secret" paymentIntentId="pi_test_123" />);
+    expect(screen.getByRole("button")).toHaveTextContent("Place Order");
+  });
+
+  it("button is submit type", () => {
+    render(<StripePaymentForm clientSecret="pi_test_secret" paymentIntentId="pi_test_123" />);
+    expect(screen.getByRole("button")).toHaveAttribute("type", "submit");
+  });
+});
+
 describe("when payment status is processing", () => {
   it("clears cart and redirects to order complete when payment is processing", async () => {
     // BUG: For async payment methods (ACH, SEPA, etc.), confirmPayment
