@@ -338,4 +338,28 @@ describe("CheckoutRoute - payment intent fetch error handling", () => {
       );
     });
   });
+
+  test("still shows order summary when payment intent fails", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockImplementation((url: string) => {
+        if (url === "/api/products") {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve([{ id: "1", name: "Burger", price: 9.99, description: "Tasty" }]),
+          });
+        }
+        return Promise.resolve({
+          ok: false,
+          json: () => Promise.resolve({ error: "Internal Server Error" }),
+        });
+      })
+    );
+
+    render(<CheckoutRoute />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Burger")).toBeInTheDocument();
+    });
+  });
 });

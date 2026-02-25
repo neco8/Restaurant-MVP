@@ -25,6 +25,11 @@ test("checkout: browse menu → add to cart → pay → order confirmed → cart
   await expect(page.getByText(productName!)).toBeVisible();
   await page.getByRole("link", { name: "Proceed to Checkout" }).click();
 
+  // Verify order summary shows the added product
+  await expect(page.getByRole("heading", { name: "Order Summary" })).toBeVisible();
+  await expect(page.getByText(productName!)).toBeVisible();
+  await expect(page.getByTestId("checkout-total")).toBeVisible();
+
   // Pay with test card
   await fillStripePayment(page);
   await page.getByRole("button", { name: "Place Order" }).click();
