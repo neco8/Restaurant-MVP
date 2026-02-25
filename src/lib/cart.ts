@@ -21,7 +21,7 @@ export function getStoredCartItems(): StoredCartItem[] {
 
 export function addToCart(id: string): void {
   const storedItems = getStoredCartItems();
-  const existing = storedItems.find((e) => e.id === id);
+  const existing = storedItems.find((item) => item.id === id);
   if (existing) {
     existing.quantity = quantity(existing.quantity + 1);
   } else {
