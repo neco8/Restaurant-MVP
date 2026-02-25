@@ -1,8 +1,7 @@
-import { vi, describe, it, expect, beforeEach, expectTypeOf } from "vitest";
+import { vi, describe, it, expect, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as lib from "@/lib";
-import type { ComponentProps } from "react";
 import { StripePaymentForm } from "./StripePaymentForm";
 
 const mockConfirmPayment = vi.fn();
@@ -36,6 +35,7 @@ describe("StripePaymentForm", () => {
     render(
       <StripePaymentForm
         clientSecret="pi_test_secret_abc"
+        paymentIntentId="pi_test_123"
       />
     );
 
@@ -62,6 +62,7 @@ describe("StripePaymentForm", () => {
     render(
       <StripePaymentForm
         clientSecret="pi_test_secret_abc"
+        paymentIntentId="pi_test_123"
       />
     );
 
@@ -82,6 +83,7 @@ describe("StripePaymentForm", () => {
     render(
       <StripePaymentForm
         clientSecret="pi_test_secret_abc"
+        paymentIntentId="pi_test_123"
       />
     );
 
@@ -100,13 +102,14 @@ describe("StripePaymentForm", () => {
     render(
       <StripePaymentForm
         clientSecret="pi_test_secret_abc"
+        paymentIntentId="pi_test_123"
       />
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Place Order" }));
 
     await waitFor(() => {
-      expect(mockPush).toHaveBeenCalledWith("/orders/pi_abc123/complete");
+      expect(mockPush).toHaveBeenCalledWith("/orders/pi_test_123/complete");
     });
   });
 
@@ -114,9 +117,31 @@ describe("StripePaymentForm", () => {
     render(
       <StripePaymentForm
         clientSecret="pi_test_secret_abc"
+        paymentIntentId="pi_test_123"
       />
     );
     expect(screen.getByRole("button", { name: "Place Order" })).toBeInTheDocument();
+  });
+});
+
+describe("redirect uses server-authoritative paymentIntentId", () => {
+  it("redirects using paymentIntentId prop, not result.paymentIntent.id", async () => {
+    mockConfirmPayment.mockResolvedValue({
+      paymentIntent: { id: "pi_from_stripe_response", status: "succeeded" },
+    });
+
+    render(
+      <StripePaymentForm
+        clientSecret="pi_test_secret"
+        paymentIntentId="pi_from_api"
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Place Order" }));
+
+    await waitFor(() => {
+      expect(mockPush).toHaveBeenCalledWith("/orders/pi_from_api/complete");
+    });
   });
 });
 
@@ -131,6 +156,7 @@ describe("when payment succeeds", () => {
     render(
       <StripePaymentForm
         clientSecret="pi_test_secret"
+        paymentIntentId="pi_test_123"
       />
     );
 
@@ -145,16 +171,41 @@ describe("when payment succeeds", () => {
 });
 
 describe("StripePaymentForm props contract", () => {
-  it("renders with only clientSecret prop, without paymentIntentId or amountInCents", () => {
-    render(<StripePaymentForm clientSecret="pi_test_secret" />);
+  it("requires both clientSecret and paymentIntentId props", () => {
+    render(<StripePaymentForm clientSecret="pi_test_secret" paymentIntentId="pi_test_123" />);
     expect(screen.getByTestId("stripe-elements")).toBeInTheDocument();
   });
+});
 
-  it("does not accept paymentIntentId prop", () => {
-    expectTypeOf<ComponentProps<typeof StripePaymentForm>>().not.toHaveProperty("paymentIntentId");
-  });
+describe("when payment status is processing", () => {
+  it("clears cart and redirects to order complete when payment is processing", async () => {
+    // BUG: For async payment methods (ACH, SEPA, etc.), confirmPayment
+    // returns paymentIntent.status === "processing".
+    // The current code only handles "succeeded" and "error".
+    // Result: loading stays true forever, cart is NOT cleared, no redirect.
+    // The customer's payment IS being processed (money debited), but they
+    // get no confirmation. They may attempt to pay again → double charge.
+    mockConfirmPayment.mockResolvedValue({
+      paymentIntent: { id: "pi_processing_123", status: "processing" },
+    });
 
-  it("does not accept amountInCents prop", () => {
-    expectTypeOf<ComponentProps<typeof StripePaymentForm>>().not.toHaveProperty("amountInCents");
+    const clearCartSpy = vi.spyOn(lib, "clearCart").mockImplementation(() => {});
+
+    render(
+      <StripePaymentForm
+        clientSecret="pi_test_secret"
+        paymentIntentId="pi_test_123"
+      />
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: "Place Order" }));
+
+    await waitFor(() => {
+      expect(clearCartSpy).toHaveBeenCalledOnce();
+    });
+
+    expect(mockPush).toHaveBeenCalledWith("/orders/pi_test_123/complete");
+
+    clearCartSpy.mockRestore();
   });
 });

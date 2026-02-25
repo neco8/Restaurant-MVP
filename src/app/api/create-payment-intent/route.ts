@@ -1,6 +1,8 @@
 import Stripe from "stripe";
 import { NextResponse } from "next/server";
 import { defaultProductRepository } from "@/lib/defaultProductRepository";
+import { orderTotal } from "@/lib/totals";
+import { parseQuantity } from "@/lib/quantity";
 
 export async function POST(request: Request) {
   let body;
@@ -10,23 +12,29 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const { cartItems } = body;
+  const { cartItems: storedItems } = body;
 
-  if (!Array.isArray(cartItems) || cartItems.length === 0) {
+  if (!Array.isArray(storedItems) || storedItems.length === 0) {
     return NextResponse.json({ error: "cartItems is required" }, { status: 400 });
   }
 
   const repo = defaultProductRepository();
   const products = await repo.findAll();
 
-  let amountInCents = 0;
-  for (const item of cartItems) {
-    const product = products.find((p) => p.id === item.id);
+  const orderLines = [];
+  for (const storedItem of storedItems) {
+    const product = products.find((p) => p.id === storedItem.id);
     if (!product) {
       return NextResponse.json({ error: "Unknown product id" }, { status: 400 });
     }
-    amountInCents += Math.round(product.price * 100) * item.quantity;
+    const qty = parseQuantity(storedItem.quantity);
+    if (qty === null) {
+      return NextResponse.json({ error: "Invalid quantity" }, { status: 400 });
+    }
+    orderLines.push({ price: product.price, quantity: qty });
   }
+
+  const amountInCents = Math.round(orderTotal(orderLines) * 100);
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
   try {

@@ -45,8 +45,8 @@ test.describe("Checkout Flow", () => {
     // 4. Add to cart
     await page.getByRole("button", { name: "Add to Cart" }).click();
 
-    // Verify cart count feedback
-    await expect(page.getByTestId("cart-count")).toHaveText("1");
+    // Verify added count feedback
+    await expect(page.getByTestId("added-count")).toHaveText("1");
 
     // 5. Proceed to checkout
     await page.getByRole("link", { name: "View Cart" }).click();
@@ -92,7 +92,7 @@ test.describe("Checkout Flow", () => {
     await expect(productCards.first()).toBeVisible();
     await productCards.first().click();
     await page.getByRole("button", { name: "Add to Cart" }).click();
-    await expect(page.getByTestId("cart-count")).toHaveText("1");
+    await expect(page.getByTestId("added-count")).toHaveText("1");
 
     // Navigate to checkout and complete payment
     await page.getByRole("link", { name: "View Cart" }).click();
