@@ -1,22 +1,44 @@
-import type { CartItem } from "./types";
+import type { StoredCartItem, CartItem, Product } from "./types";
+import { quantity, parseQuantity } from "./quantity";
 
 const CART_KEY = "cart";
 
-export function getCartItems(): CartItem[] {
+export function getStoredCartItems(): StoredCartItem[] {
   if (typeof window === "undefined") return [];
   const raw = localStorage.getItem(CART_KEY);
-  return raw ? (JSON.parse(raw) as CartItem[]) : [];
+  if (!raw) return [];
+  const parsed: unknown[] = JSON.parse(raw);
+  return parsed.filter(
+    (item): item is StoredCartItem =>
+      item !== null &&
+      typeof item === "object" &&
+      "id" in item &&
+      typeof (item as Record<string, unknown>).id === "string" &&
+      "quantity" in item &&
+      parseQuantity((item as Record<string, unknown>).quantity) !== null,
+  ) as StoredCartItem[];
 }
 
-export function addToCart(item: { id: string; name: string; price: number }): void {
-  const items = getCartItems();
-  const existing = items.find((i) => i.id === item.id);
+export function addToCart(id: string): void {
+  const storedItems = getStoredCartItems();
+  const existing = storedItems.find((e) => e.id === id);
   if (existing) {
-    existing.quantity += 1;
+    existing.quantity = quantity(existing.quantity + 1);
   } else {
-    items.push({ ...item, quantity: 1 });
+    storedItems.push({ id, quantity: quantity(1) });
   }
-  localStorage.setItem(CART_KEY, JSON.stringify(items));
+  localStorage.setItem(CART_KEY, JSON.stringify(storedItems));
+}
+
+export function hydrateCart(storedItems: StoredCartItem[], products: Product[]): CartItem[] {
+  const result: CartItem[] = [];
+  for (const storedItem of storedItems) {
+    const product = products.find((p) => p.id === storedItem.id);
+    if (product) {
+      result.push({ id: storedItem.id, name: product.name, price: product.price, quantity: storedItem.quantity });
+    }
+  }
+  return result;
 }
 
 export function clearCart(): void {

@@ -8,7 +8,7 @@ import { ROUTES, clearCart } from "@/lib";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
-function PaymentForm() {
+function PaymentForm({ paymentIntentId }: { paymentIntentId: string }) {
   const stripe = useStripe();
   const elements = useElements();
   const router = useRouter();
@@ -31,9 +31,9 @@ function PaymentForm() {
     if (result.error) {
       setError(result.error.message ?? "Payment failed");
       setLoading(false);
-    } else if (result.paymentIntent?.status === "succeeded") {
+    } else if (result.paymentIntent?.status === "succeeded" || result.paymentIntent?.status === "processing") {
       clearCart();
-      router.push(ROUTES.ORDER_COMPLETE(result.paymentIntent.id));
+      router.push(ROUTES.ORDER_COMPLETE(paymentIntentId));
     }
   }
 
@@ -50,13 +50,15 @@ function PaymentForm() {
 
 export function StripePaymentForm({
   clientSecret,
+  paymentIntentId,
 }: {
   clientSecret: string;
+  paymentIntentId: string;
 }) {
   return (
     <div data-testid="stripe-elements">
       <Elements stripe={stripePromise} options={{ clientSecret }}>
-        <PaymentForm />
+        <PaymentForm paymentIntentId={paymentIntentId} />
       </Elements>
     </div>
   );

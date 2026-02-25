@@ -1,50 +1,52 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { CartItem } from "@/lib";
-import { getCartItems } from "@/lib";
+import type { CartItem, Product } from "@/lib";
+import { getStoredCartItems, hydrateCart } from "@/lib";
 import { StripePaymentForm } from "@/components/StripePaymentForm";
-import { CheckoutPage } from "./CheckoutPage";
+import { CheckoutView } from "./CheckoutView";
 
 export default function CheckoutRoute() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const items = getCartItems();
-    setCartItems(items);
-  }, []);
+    const storedItems = getStoredCartItems();
+    if (storedItems.length === 0) return;
 
-  useEffect(() => {
-    if (cartItems.length === 0) return;
-    fetch("/api/create-payment-intent", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        cartItems: cartItems.map((item) => ({ id: item.id, quantity: item.quantity })),
-      }),
-    })
-      .then((r) => {
+    Promise.all([
+      fetch("/api/products").then((r) => r.json()) as Promise<Product[]>,
+      fetch("/api/create-payment-intent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          cartItems: storedItems.map((e) => ({ id: e.id, quantity: e.quantity })),
+        }),
+      }).then((r) => {
         if (!r.ok) throw new Error("Server error");
-        return r.json();
-      })
-      .then((data: { clientSecret: string }) => {
-        setClientSecret(data.clientSecret);
+        return r.json() as Promise<{ clientSecret: string; paymentIntentId: string }>;
+      }),
+    ])
+      .then(([products, payment]) => {
+        setCartItems(hydrateCart(storedItems, products));
+        setClientSecret(payment.clientSecret);
+        setPaymentIntentId(payment.paymentIntentId);
       })
       .catch(() => {
         setError("Something went wrong. Please try again.");
       });
-  }, [cartItems]);
+  }, []);
 
   return (
-    <CheckoutPage cartItems={cartItems}>
+    <CheckoutView cartItems={cartItems}>
       {error && <p role="alert">{error}</p>}
-      {clientSecret ? (
-        <StripePaymentForm clientSecret={clientSecret} />
+      {clientSecret && paymentIntentId ? (
+        <StripePaymentForm clientSecret={clientSecret} paymentIntentId={paymentIntentId} />
       ) : (
         <button disabled={cartItems.length === 0}>Place Order</button>
       )}
-    </CheckoutPage>
+    </CheckoutView>
   );
 }
