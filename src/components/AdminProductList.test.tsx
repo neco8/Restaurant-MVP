@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import AdminProductList from "./AdminProductList";
 import { price } from "@/lib/price";
+import { ROUTES } from "@/lib";
 
 test("shows heading when no products", () => {
   render(<AdminProductList products={[]} />);
@@ -30,4 +31,10 @@ test("shows multiple products", () => {
   ];
   render(<AdminProductList products={products} />);
   expect(screen.getAllByTestId("admin-product-row")).toHaveLength(2);
+});
+
+test("shows Add Product link", () => {
+  render(<AdminProductList products={[]} />);
+  const link = screen.getByRole("link", { name: "Add Product" });
+  expect(link).toHaveAttribute("href", ROUTES.ADMIN_PRODUCTS_NEW);
 });
