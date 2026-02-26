@@ -1,12 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { useRouter } from "next/navigation";
 import { ROUTES, clearCart } from "@/lib";
-
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 function PaymentForm({ paymentIntentId }: { paymentIntentId: string }) {
   const stripe = useStripe();
@@ -59,9 +57,30 @@ export function StripePaymentForm({
   clientSecret: string;
   paymentIntentId: string;
 }) {
+  const [stripeError, setStripeError] = useState<string | null>(null);
+  const stripePromiseRef = useRef<ReturnType<typeof loadStripe> | null>(null);
+
+  if (!stripePromiseRef.current) {
+    stripePromiseRef.current = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+  }
+
+  useEffect(() => {
+    stripePromiseRef.current!.catch(() => {
+      setStripeError("Payment system could not be loaded. Please check your connection and try again.");
+    });
+  }, []);
+
+  if (stripeError) {
+    return (
+      <div data-testid="stripe-elements">
+        <p role="alert">{stripeError}</p>
+      </div>
+    );
+  }
+
   return (
     <div data-testid="stripe-elements">
-      <Elements stripe={stripePromise} options={{ clientSecret }}>
+      <Elements stripe={stripePromiseRef.current} options={{ clientSecret }}>
         <PaymentForm paymentIntentId={paymentIntentId} />
       </Elements>
     </div>
