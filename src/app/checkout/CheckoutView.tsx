@@ -4,10 +4,14 @@ import { formatPrice, lineTotal, orderTotal } from "@/lib";
 export function CheckoutView({
   cartItems = [],
   loading = false,
+  email = "",
+  onEmailChange,
   children,
 }: {
   cartItems?: CartItem[];
   loading?: boolean;
+  email?: string;
+  onEmailChange?: (email: string) => void;
   children?: React.ReactNode;
 } = {}) {
   return (
@@ -38,6 +42,17 @@ export function CheckoutView({
             </p>
           </>
         )}
+      </section>
+      <section className="rounded-2xl border border-stone-200 bg-white p-6 mb-10 shadow-sm dark:border-stone-700 dark:bg-stone-900">
+        <label htmlFor="email" className="block text-sm font-semibold mb-2">Email</label>
+        <input
+          id="email"
+          type="email"
+          placeholder="your@email.com"
+          value={email}
+          onChange={(e) => onEmailChange?.(e.target.value)}
+          className="w-full rounded-xl border border-stone-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-100"
+        />
       </section>
       {children ?? (loading ? (
         <p role="status" className="text-stone-400 text-center animate-pulse dark:text-stone-500">Preparing payment…</p>
