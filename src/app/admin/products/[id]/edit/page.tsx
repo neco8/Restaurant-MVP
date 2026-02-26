@@ -13,11 +13,17 @@ export default function AdminEditProductPage() {
 
   useEffect(() => {
     fetch(`/api/admin/products/${id}`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error("Product not found");
+        return res.json();
+      })
       .then((data) => {
         setName(data.name);
         setDescription(data.description);
         setPriceValue(String(data.price));
+      })
+      .catch(() => {
+        router.push(ROUTES.ADMIN_PRODUCTS);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
