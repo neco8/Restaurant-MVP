@@ -24,3 +24,23 @@ test.describe("Admin Products Page", () => {
     }
   });
 });
+
+test.describe("Admin Add Product", () => {
+  test.afterEach(async () => {
+    await cleanupProducts(["new-test-udon"]);
+  });
+
+  test("adds a new product via form and sees it in the list", async ({ page }) => {
+    await page.goto("/admin/products");
+    await page.getByRole("link", { name: "Add Product" }).click();
+    await expect(page).toHaveURL("/admin/products/new");
+
+    await page.getByLabel("Name").fill("New Test Udon");
+    await page.getByLabel("Description").fill("Thick wheat noodles");
+    await page.getByLabel("Price").fill("10.00");
+    await page.getByRole("button", { name: "Save" }).click();
+
+    await expect(page).toHaveURL("/admin/products");
+    await expect(page.getByText("New Test Udon")).toBeVisible();
+  });
+});
