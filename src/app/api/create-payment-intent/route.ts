@@ -49,7 +49,10 @@ export async function POST(request: Request) {
       clientSecret: paymentIntent.client_secret,
       paymentIntentId: paymentIntent.id,
     });
-  } catch {
+  } catch (error) {
+    if (error instanceof Error && "rawType" in error && error.rawType === "card_error") {
+      return NextResponse.json({ error: error.message }, { status: 402 });
+    }
     return NextResponse.json({ error: "Payment processing failed" }, { status: 500 });
   }
 }
