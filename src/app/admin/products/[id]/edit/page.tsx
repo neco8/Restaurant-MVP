@@ -37,6 +37,7 @@ export default function EditProductPage() {
 
     if (response.ok) {
       router.push(ROUTES.ADMIN_PRODUCTS);
+      router.refresh();
     }
   }
 

@@ -21,6 +21,7 @@ export default function NewProductPage() {
 
     if (response.ok) {
       router.push(ROUTES.ADMIN_PRODUCTS);
+      router.refresh();
     }
   }
 
