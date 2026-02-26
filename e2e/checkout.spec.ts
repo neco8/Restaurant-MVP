@@ -68,25 +68,27 @@ test.afterAll(async () => {
 });
 
 test("checkout: browse menu → add to cart → pay → order confirmed → cart emptied", async ({ page }) => {
-  // Browse menu and select a product
+  // Browse menu and select a specific product
   await page.goto(ROUTES.MENU);
-  const firstProduct = page.getByTestId("product-card").first();
-  const productName = await firstProduct.getByTestId("product-name").textContent();
-  await firstProduct.click();
+  const targetProduct = page
+    .getByTestId("product-card")
+    .filter({ hasText: CHECKOUT_PRODUCTS[0].name });
+  const productName = CHECKOUT_PRODUCTS[0].name;
+  await targetProduct.click();
 
   // Verify correct product detail page and add to cart
-  await expect(page.getByRole("heading", { name: productName! })).toBeVisible();
+  await expect(page.getByRole("heading", { name: productName })).toBeVisible();
   await page.getByRole("button", { name: "Add to Cart" }).click();
   await expect(page.getByTestId("added-count")).toHaveText("1");
 
   // Proceed through cart to checkout
   await page.getByRole("link", { name: "View Cart" }).click();
-  await expect(page.getByText(productName!)).toBeVisible();
+  await expect(page.getByText(productName)).toBeVisible();
   await page.getByRole("link", { name: "Proceed to Checkout" }).click();
 
   // Verify order summary shows the added product
   await expect(page.getByRole("heading", { name: "Order Summary" })).toBeVisible();
-  await expect(page.getByText(productName!)).toBeVisible();
+  await expect(page.getByText(productName)).toBeVisible();
   await expect(page.getByTestId("checkout-total")).toBeVisible();
 
   // Pay with Stripe test card
