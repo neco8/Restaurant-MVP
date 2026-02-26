@@ -67,3 +67,23 @@ test.describe("Admin Edit Product", () => {
     await expect(page.getByText("Updated Ramen")).toBeVisible();
   });
 });
+
+test.describe("Admin Delete Product", () => {
+  test.beforeAll(async () => {
+    await cleanupProducts(productIds);
+    await seedTestProducts(TEST_PRODUCTS);
+  });
+
+  test.afterAll(async () => {
+    await cleanupProducts(productIds);
+  });
+
+  test("deletes a product and it disappears from the list", async ({ page }) => {
+    await page.goto("/admin/products");
+    await expect(page.getByText(TEST_PRODUCTS[0].name)).toBeVisible();
+
+    await page.getByRole("button", { name: `Delete ${TEST_PRODUCTS[0].name}` }).click();
+
+    await expect(page.getByText(TEST_PRODUCTS[0].name)).not.toBeVisible();
+  });
+});
