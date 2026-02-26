@@ -19,6 +19,8 @@ export type CreateProductInput = {
   price: Price;
 };
 
+export type UpdateProductInput = Partial<CreateProductInput>;
+
 export type StoredCartItem = {
   id: string;
   quantity: Quantity;
@@ -33,5 +35,8 @@ export type CartItem = {
 
 export type ProductRepository = {
   findAll: () => Promise<Product[]>;
+  findById: (id: string) => Promise<Product | null>;
   create: (input: CreateProductInput) => Promise<Product>;
+  update: (id: string, input: UpdateProductInput) => Promise<Product>;
+  delete: (id: string) => Promise<void>;
 };
