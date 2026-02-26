@@ -15,6 +15,10 @@ vi.mock("@/lib", async (importOriginal) => {
   };
 });
 
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
+}));
+
 test("shows Products heading", async () => {
   vi.mocked(getProducts).mockResolvedValue([]);
   const page = await AdminProductsPage();

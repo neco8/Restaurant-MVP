@@ -4,7 +4,12 @@ import Link from "next/link";
 import type { Product } from "@/lib";
 import { formatPrice, ROUTES } from "@/lib";
 
-export default function AdminProductList({ products }: { products: Product[] }) {
+type AdminProductListProps = {
+  products: Product[];
+  onDelete?: (id: string) => void;
+};
+
+export default function AdminProductList({ products, onDelete }: AdminProductListProps) {
   return (
     <div>
       <h1>Products</h1>
@@ -29,6 +34,11 @@ export default function AdminProductList({ products }: { products: Product[] }) 
                   <Link href={ROUTES.ADMIN_PRODUCTS_EDIT(product.id)}>
                     Edit {product.name}
                   </Link>
+                  {onDelete && (
+                    <button onClick={() => onDelete(product.id)}>
+                      Delete {product.name}
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}
