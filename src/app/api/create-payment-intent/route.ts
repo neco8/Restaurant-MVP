@@ -58,6 +58,6 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "Payment system is busy. Please try again in a moment." }, { status: 503 });
       }
     }
-    return NextResponse.json({ error: "Payment processing failed" }, { status: 500 });
+    return NextResponse.json({ error: "Payment could not be processed. Please try again later." }, { status: 500 });
   }
 }
