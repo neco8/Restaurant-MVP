@@ -28,3 +28,7 @@ export type CartItem = {
 export type ProductRepository = {
   findAll: () => Promise<Product[]>;
 };
+
+export type EmailSender = {
+  send: (options: { to: string; subject: string; body: string }) => Promise<void>;
+};
