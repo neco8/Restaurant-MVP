@@ -44,3 +44,26 @@ test.describe("Admin Add Product", () => {
     await expect(page.getByText("New Test Udon")).toBeVisible();
   });
 });
+
+test.describe("Admin Edit Product", () => {
+  test.beforeAll(async () => {
+    await cleanupProducts(productIds);
+    await seedTestProducts(TEST_PRODUCTS);
+  });
+
+  test.afterAll(async () => {
+    await cleanupProducts(productIds);
+  });
+
+  test("edits an existing product and sees updated name in the list", async ({ page }) => {
+    await page.goto("/admin/products");
+    await page.getByRole("link", { name: `Edit ${TEST_PRODUCTS[0].name}` }).click();
+    await expect(page).toHaveURL(`/admin/products/${TEST_PRODUCTS[0].id}/edit`);
+
+    await page.getByLabel("Name").fill("Updated Ramen");
+    await page.getByRole("button", { name: "Save" }).click();
+
+    await expect(page).toHaveURL("/admin/products");
+    await expect(page.getByText("Updated Ramen")).toBeVisible();
+  });
+});
