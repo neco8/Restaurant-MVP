@@ -27,11 +27,11 @@ export async function POST(request: Request) {
     if (!product) {
       return NextResponse.json({ error: "Unknown product id" }, { status: 400 });
     }
-    const qty = parseQuantity(storedItem.quantity);
-    if (qty === null) {
+    const qtyResult = parseQuantity(storedItem.quantity);
+    if (qtyResult.isErr()) {
       return NextResponse.json({ error: "Invalid quantity" }, { status: 400 });
     }
-    orderLines.push({ price: product.price, quantity: qty });
+    orderLines.push({ price: product.price, quantity: qtyResult.value });
   }
 
   const amountInCents = Math.round(orderTotal(orderLines) * 100);

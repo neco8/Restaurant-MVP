@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { CartView } from "./CartView";
 import { quantity } from "@/lib/quantity";
 import { price } from "@/lib/price";
@@ -11,7 +12,7 @@ test("shows Cart heading", () => {
 test("shows product name when cartItems provided", () => {
   render(
     <CartView
-      cartItems={[{ id: "1", name: "Ramen", price: price(8.00), quantity: quantity(1) }]}
+      cartItems={[{ id: "1", name: "Ramen", price: price(8.00), quantity: quantity(1)._unsafeUnwrap() }]}
     />
   );
   expect(screen.getByText("Ramen")).toBeInTheDocument();
@@ -27,7 +28,7 @@ test("shows Proceed to Checkout link", () => {
 test("shows item price when cart has one item", () => {
   render(
     <CartView
-      cartItems={[{ id: "1", name: "Ramen", price: price(8.00), quantity: quantity(1) }]}
+      cartItems={[{ id: "1", name: "Ramen", price: price(8.00), quantity: quantity(1)._unsafeUnwrap() }]}
     />
   );
   expect(screen.getByText("$8.00")).toBeInTheDocument();
@@ -36,7 +37,7 @@ test("shows item price when cart has one item", () => {
 test("shows item quantity", () => {
   render(
     <CartView
-      cartItems={[{ id: "1", name: "Ramen", price: price(8.00), quantity: quantity(2) }]}
+      cartItems={[{ id: "1", name: "Ramen", price: price(8.00), quantity: quantity(2)._unsafeUnwrap() }]}
     />
   );
   expect(screen.getByText("×2")).toBeInTheDocument();
@@ -45,7 +46,7 @@ test("shows item quantity", () => {
 test("does not show quantity badge when quantity is one", () => {
   render(
     <CartView
-      cartItems={[{ id: "1", name: "Ramen", price: price(8.00), quantity: quantity(1) }]}
+      cartItems={[{ id: "1", name: "Ramen", price: price(8.00), quantity: quantity(1)._unsafeUnwrap() }]}
     />
   );
   expect(screen.queryByText("×1")).not.toBeInTheDocument();
@@ -54,7 +55,7 @@ test("does not show quantity badge when quantity is one", () => {
 test("shows line total for item with quantity greater than one", () => {
   render(
     <CartView
-      cartItems={[{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(2) }]}
+      cartItems={[{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(2)._unsafeUnwrap() }]}
     />
   );
   expect(screen.getByText("$19.98")).toBeInTheDocument();
@@ -63,7 +64,7 @@ test("shows line total for item with quantity greater than one", () => {
 test("shows order total for single item", () => {
   render(
     <CartView
-      cartItems={[{ id: "1", name: "Ramen", price: price(8.00), quantity: quantity(1) }]}
+      cartItems={[{ id: "1", name: "Ramen", price: price(8.00), quantity: quantity(1)._unsafeUnwrap() }]}
     />
   );
   expect(screen.getByText("Total: $8.00")).toBeInTheDocument();
@@ -73,8 +74,8 @@ test("shows order total for multiple items", () => {
   render(
     <CartView
       cartItems={[
-        { id: "1", name: "Ramen", price: price(8.00), quantity: quantity(1) },
-        { id: "2", name: "Gyoza", price: price(5.50), quantity: quantity(2) },
+        { id: "1", name: "Ramen", price: price(8.00), quantity: quantity(1)._unsafeUnwrap() },
+        { id: "2", name: "Gyoza", price: price(5.50), quantity: quantity(2)._unsafeUnwrap() },
       ]}
     />
   );
@@ -84,6 +85,27 @@ test("shows order total for multiple items", () => {
 test("shows empty cart message when no items", () => {
   render(<CartView />);
   expect(screen.getByText("Your cart is empty")).toBeInTheDocument();
+});
+
+test("shows Decrease quantity button for each cart item", () => {
+  render(
+    <CartView
+      cartItems={[{ id: "1", name: "Ramen", price: price(8.00), quantity: quantity(2)._unsafeUnwrap() }]}
+    />
+  );
+  expect(screen.getByRole("button", { name: "Decrease quantity" })).toBeInTheDocument();
+});
+
+test("calls onDecreaseItem when Decrease quantity button is clicked", async () => {
+  const onDecreaseItem = vi.fn();
+  render(
+    <CartView
+      cartItems={[{ id: "1", name: "Ramen", price: price(8.00), quantity: quantity(2)._unsafeUnwrap() }]}
+      onDecreaseItem={onDecreaseItem}
+    />
+  );
+  await userEvent.click(screen.getByRole("button", { name: "Decrease quantity" }));
+  expect(onDecreaseItem).toHaveBeenCalledWith("1");
 });
 
 describe("CartView structure", () => {

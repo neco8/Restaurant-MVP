@@ -1,5 +1,5 @@
 import type { StoredCartItem, CartItem, Product } from "./types";
-import { quantity, parseQuantity } from "./quantity";
+import { quantity, parseQuantity, decreaseQuantity } from "./quantity";
 
 const CART_KEY = "cart";
 
@@ -15,7 +15,7 @@ export function getStoredCartItems(): StoredCartItem[] {
       "id" in item &&
       typeof (item as Record<string, unknown>).id === "string" &&
       "quantity" in item &&
-      parseQuantity((item as Record<string, unknown>).quantity) !== null,
+      parseQuantity((item as Record<string, unknown>).quantity).isOk(),
   ) as StoredCartItem[];
 }
 
@@ -23,9 +23,13 @@ export function addToCart(id: string): void {
   const storedItems = getStoredCartItems();
   const existing = storedItems.find((item) => item.id === id);
   if (existing) {
-    existing.quantity = quantity(existing.quantity + 1);
+    const increased = quantity(existing.quantity + 1);
+    if (increased.isErr()) return;
+    existing.quantity = increased.value;
   } else {
-    storedItems.push({ id, quantity: quantity(1) });
+    const initial = quantity(1);
+    if (initial.isErr()) return;
+    storedItems.push({ id, quantity: initial.value });
   }
   localStorage.setItem(CART_KEY, JSON.stringify(storedItems));
 }
@@ -39,6 +43,20 @@ export function hydrateCart(storedItems: StoredCartItem[], products: Product[]):
     }
   }
   return result;
+}
+
+export function decreaseCartItem(id: string): void {
+  const storedItems = getStoredCartItems();
+  const existing = storedItems.find((item) => item.id === id);
+  if (!existing) return;
+  const decreased = decreaseQuantity(existing.quantity);
+  if (decreased.isErr()) {
+    const filtered = storedItems.filter((item) => item.id !== id);
+    localStorage.setItem(CART_KEY, JSON.stringify(filtered));
+  } else {
+    existing.quantity = decreased.value;
+    localStorage.setItem(CART_KEY, JSON.stringify(storedItems));
+  }
 }
 
 export function clearCart(): void {
