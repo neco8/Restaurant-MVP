@@ -3,17 +3,9 @@ import AdminProductsClient from "./AdminProductsClient";
 import { price } from "@/lib/price";
 import type { Product } from "@/lib";
 
-const mockPush = vi.fn();
-const mockRefresh = vi.fn();
-
-vi.mock("next/navigation", () => ({
-  useRouter: () => ({ push: mockPush, refresh: mockRefresh }),
+vi.mock("@/app/admin/products/actions", () => ({
+  deleteProductAction: vi.fn(),
 }));
-
-beforeEach(() => {
-  vi.resetAllMocks();
-  global.fetch = vi.fn();
-});
 
 test("updates displayed products when initialProducts prop changes", () => {
   const oldProducts: Product[] = [

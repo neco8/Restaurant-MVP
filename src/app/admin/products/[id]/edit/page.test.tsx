@@ -2,12 +2,14 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import EditProductPage from "./page";
 
-const mockPush = vi.fn();
-const mockRefresh = vi.fn();
+const mockUpdateProductAction = vi.fn();
 
 vi.mock("next/navigation", () => ({
-  useRouter: () => ({ push: mockPush, refresh: mockRefresh }),
   useParams: () => ({ id: "42" }),
+}));
+
+vi.mock("../../actions", () => ({
+  updateProductAction: (...args: unknown[]) => mockUpdateProductAction(...args),
 }));
 
 beforeEach(() => {
@@ -15,14 +17,12 @@ beforeEach(() => {
   global.fetch = vi.fn();
 });
 
-test("calls router.refresh after successful update to invalidate cache", async () => {
+test("calls updateProductAction with correct data when submitted", async () => {
   const user = userEvent.setup();
-  vi.mocked(global.fetch)
-    .mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({ name: "Ramen", description: "Tonkotsu", price: 12.0 }),
-    } as Response)
-    .mockResolvedValueOnce({ ok: true } as Response);
+  vi.mocked(global.fetch).mockResolvedValueOnce({
+    ok: true,
+    json: async () => ({ name: "Ramen", description: "Tonkotsu", price: 12.0 }),
+  } as Response);
 
   render(<EditProductPage />);
 
@@ -34,5 +34,9 @@ test("calls router.refresh after successful update to invalidate cache", async (
   await user.type(screen.getByLabelText("Name"), "Updated Ramen");
   await user.click(screen.getByRole("button", { name: "Save" }));
 
-  expect(mockRefresh).toHaveBeenCalled();
+  expect(mockUpdateProductAction).toHaveBeenCalledWith("42", {
+    name: "Updated Ramen",
+    description: "Tonkotsu",
+    price: 12,
+  });
 });

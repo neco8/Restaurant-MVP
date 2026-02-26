@@ -9,7 +9,7 @@ export type ProductFormData = {
 };
 
 type ProductFormProps = {
-  onSubmit: (data: ProductFormData) => void;
+  onSubmit: (data: ProductFormData) => void | Promise<void>;
   initialValues?: ProductFormData;
 };
 
@@ -18,9 +18,9 @@ export default function ProductForm({ onSubmit, initialValues }: ProductFormProp
   const [description, setDescription] = useState(initialValues?.description ?? "");
   const [price, setPrice] = useState(initialValues?.price ?? "");
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    onSubmit({ name, description, price });
+    await onSubmit({ name, description, price });
   }
 
   return (

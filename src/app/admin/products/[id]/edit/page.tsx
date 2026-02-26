@@ -1,13 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import ProductForm from "@/components/ProductForm";
 import type { ProductFormData } from "@/components/ProductForm";
-import { ROUTES } from "@/lib";
+import { updateProductAction } from "../../actions";
 
 export default function EditProductPage() {
-  const router = useRouter();
   const params = useParams();
   const id = params.id as string;
   const [initialValues, setInitialValues] = useState<ProductFormData | null>(null);
@@ -25,20 +24,11 @@ export default function EditProductPage() {
   }, [id]);
 
   async function handleSubmit(data: ProductFormData) {
-    const response = await fetch(`/api/admin/products/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: data.name,
-        description: data.description,
-        price: parseFloat(data.price),
-      }),
+    await updateProductAction(id, {
+      name: data.name,
+      description: data.description,
+      price: parseFloat(data.price),
     });
-
-    if (response.ok) {
-      router.push(ROUTES.ADMIN_PRODUCTS);
-      router.refresh();
-    }
   }
 
   if (!initialValues) {
