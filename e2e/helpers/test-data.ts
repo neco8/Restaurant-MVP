@@ -69,3 +69,15 @@ export async function cleanupProducts(ids: string[]): Promise<void> {
     await pool.end();
   }
 }
+
+export async function cleanupProductsByName(names: string[]): Promise<void> {
+  const pool = createPool();
+  try {
+    await pool.query(
+      `DELETE FROM "Product" WHERE name = ANY($1)`,
+      [names]
+    );
+  } finally {
+    await pool.end();
+  }
+}
