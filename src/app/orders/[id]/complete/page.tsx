@@ -2,6 +2,7 @@ import { createStripeClient } from "@/server/stripeClient";
 
 type Props = {
   params: { id: string };
+  searchParams?: { email?: string };
 };
 
 export default async function OrderCompletePage({ params }: Props) {

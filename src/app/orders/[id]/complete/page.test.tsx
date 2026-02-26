@@ -10,11 +10,22 @@ vi.mock("stripe", () => {
   return { default: MockStripe };
 });
 
+const mockSendEmail = vi.fn().mockResolvedValue(undefined);
+
+vi.mock("@/lib/sendOrderConfirmationEmail", () => ({
+  sendOrderConfirmationEmail: (...args: unknown[]) => mockSendEmail(...args),
+}));
+
+vi.mock("@/server/nodemailerEmailSender", () => ({
+  createNodemailerEmailSender: () => ({ send: vi.fn() }),
+}));
+
 import OrderCompletePage from "./page";
 
 beforeEach(() => {
   process.env.STRIPE_SECRET_KEY = "sk_test_fake";
   mockRetrieve.mockReset();
+  mockSendEmail.mockClear();
 });
 
 it("shows Thank you for your order heading", async () => {
@@ -70,6 +81,61 @@ it("shows Payment Failed when payment intent does not exist in Stripe", async ()
   const page = await OrderCompletePage({ params: { id: "invalid_id" } });
   render(page);
   expect(screen.getByTestId("payment-status")).toHaveTextContent("Payment Failed");
+});
+
+describe("email notification", () => {
+  it("shows email sent confirmation when payment succeeds and email is provided", async () => {
+    mockRetrieve.mockResolvedValue({ id: "pi_test_123", status: "succeeded" });
+    const page = await OrderCompletePage({
+      params: { id: "pi_test_123" },
+      searchParams: { email: "customer@example.com" },
+    });
+    render(page);
+    expect(screen.getByTestId("email-sent")).toHaveTextContent(
+      "Confirmation email sent to customer@example.com"
+    );
+  });
+
+  it("calls sendOrderConfirmationEmail when payment succeeds and email provided", async () => {
+    mockRetrieve.mockResolvedValue({ id: "pi_test_123", status: "succeeded" });
+    await OrderCompletePage({
+      params: { id: "pi_test_123" },
+      searchParams: { email: "customer@example.com" },
+    });
+    expect(mockSendEmail).toHaveBeenCalledWith(
+      { to: "customer@example.com", orderId: "pi_test_123" },
+      expect.anything(),
+    );
+  });
+
+  it("does not show email sent when payment failed", async () => {
+    mockRetrieve.mockResolvedValue({ id: "pi_test_123", status: "requires_payment_method" });
+    const page = await OrderCompletePage({
+      params: { id: "pi_test_123" },
+      searchParams: { email: "customer@example.com" },
+    });
+    render(page);
+    expect(screen.queryByTestId("email-sent")).not.toBeInTheDocument();
+  });
+
+  it("does not show email sent when no email provided", async () => {
+    mockRetrieve.mockResolvedValue({ id: "pi_test_123", status: "succeeded" });
+    const page = await OrderCompletePage({
+      params: { id: "pi_test_123" },
+      searchParams: {},
+    });
+    render(page);
+    expect(screen.queryByTestId("email-sent")).not.toBeInTheDocument();
+  });
+
+  it("does not call sendOrderConfirmationEmail when payment failed", async () => {
+    mockRetrieve.mockResolvedValue({ id: "pi_test_123", status: "requires_payment_method" });
+    await OrderCompletePage({
+      params: { id: "pi_test_123" },
+      searchParams: { email: "customer@example.com" },
+    });
+    expect(mockSendEmail).not.toHaveBeenCalled();
+  });
 });
 
 describe("OrderCompletePage structure", () => {
