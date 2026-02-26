@@ -30,6 +30,11 @@ jobs:
       - name: Unit tests
         run: npm run test:run
 
+      - name: Deploy database migrations
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
       - name: Build
         run: npm run build
         env:
