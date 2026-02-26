@@ -129,6 +129,21 @@ test("does not show Place Order button when loading", () => {
   expect(screen.queryByRole("button", { name: "Place Order" })).not.toBeInTheDocument();
 });
 
+test("shows email input field", () => {
+  render(<CheckoutView />);
+  expect(screen.getByLabelText("Email")).toBeInTheDocument();
+});
+
+test("email input has email type", () => {
+  render(<CheckoutView />);
+  expect(screen.getByLabelText("Email")).toHaveAttribute("type", "email");
+});
+
+test("email input has placeholder", () => {
+  render(<CheckoutView />);
+  expect(screen.getByLabelText("Email")).toHaveAttribute("placeholder", "your@email.com");
+});
+
 describe("CheckoutView structure", () => {
   test("renders exactly two headings", () => {
     render(<CheckoutView />);
