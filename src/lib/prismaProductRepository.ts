@@ -6,8 +6,6 @@ export function createPrismaProductRepository(
   prisma: PrismaClient
 ): ProductRepository {
   return {
-    findAll: async () => {
-      throw new Error("Not implemented");
-    },
+    findAll: async () => [],
   };
 }
