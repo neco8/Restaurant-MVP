@@ -50,8 +50,13 @@ export async function POST(request: Request) {
       paymentIntentId: paymentIntent.id,
     });
   } catch (error) {
-    if (error instanceof Error && "rawType" in error && error.rawType === "card_error") {
-      return NextResponse.json({ error: error.message }, { status: 402 });
+    if (error instanceof Error && "rawType" in error) {
+      if (error.rawType === "card_error") {
+        return NextResponse.json({ error: error.message }, { status: 402 });
+      }
+      if (error.rawType === "rate_limit_error") {
+        return NextResponse.json({ error: "Payment system is busy. Please try again in a moment." }, { status: 503 });
+      }
     }
     return NextResponse.json({ error: "Payment processing failed" }, { status: 500 });
   }
