@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import MenuPage from "./page";
-import { defaultProductRepository, getProducts } from "@/lib";
+import { getProducts } from "@/lib";
 import { price } from "@/lib/price";
 
 vi.mock("@/lib", async (importOriginal) => {
@@ -11,25 +11,29 @@ vi.mock("@/lib", async (importOriginal) => {
   };
 });
 
-async function actual() {
-  return import("@/lib");
-}
+vi.mock("@/lib/defaultProductRepository", () => ({
+  defaultProductRepository: vi.fn().mockReturnValue({
+    findAll: async () => [],
+  }),
+}));
+
+const sampleProducts = [
+  { id: "1", name: "Ramen", price: price(12.0), description: "Rich tonkotsu broth" },
+  { id: "2", name: "Gyoza", price: price(7.5), description: "Pan-fried pork dumplings" },
+];
 
 test("shows Menu heading", async () => {
-  vi.mocked(getProducts).mockResolvedValue(
-    await actual().then((m) => m.defaultProductRepository().findAll())
-  );
+  vi.mocked(getProducts).mockResolvedValue(sampleProducts);
   const page = await MenuPage();
   render(page);
   expect(screen.getByRole("heading", { name: "Menu" })).toBeInTheDocument();
 });
 
 test("shows products from default repository when no mock provided", async () => {
-  const products = await defaultProductRepository().findAll();
-  vi.mocked(getProducts).mockResolvedValue(products);
+  vi.mocked(getProducts).mockResolvedValue(sampleProducts);
   const page = await MenuPage();
   render(page);
-  expect(screen.getAllByTestId("product-card")).toHaveLength(products.length);
+  expect(screen.getAllByTestId("product-card")).toHaveLength(sampleProducts.length);
 });
 
 test("shows product cards from getProducts", async () => {

@@ -13,6 +13,8 @@ LIB_DIR="$PROJECT_DIR/src/lib"
     ! -name "*.test.ts" \
     ! -name "*.spec.ts" \
     ! -name "index.ts" \
+    ! -name "defaultProductRepository.ts" \
+    ! -name "prismaProductRepository.ts" \
     | sort \
     | while read -r file; do
         module="${file##*/}"
