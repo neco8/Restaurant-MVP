@@ -47,15 +47,18 @@ export default function AdminEditProductPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-12">
-      <h1 className="text-4xl font-extrabold tracking-tight mb-8">
+    <div className="max-w-2xl mx-auto px-6 py-16 sm:py-24">
+      <p className="font-sans text-[0.65rem] font-light tracking-widest-3 uppercase text-muted mb-4">
+        Administration
+      </p>
+      <h1 className="font-serif text-5xl sm:text-6xl font-light tracking-tight leading-[0.9] mb-16">
         Edit Product
       </h1>
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-8">
         <div>
           <label
             htmlFor="name"
-            className="block text-sm font-medium mb-1"
+            className="block font-sans text-xs font-medium tracking-widest-2 uppercase text-muted mb-2"
           >
             Name
           </label>
@@ -65,13 +68,13 @@ export default function AdminEditProductPage() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            className="w-full rounded-lg border border-stone-300 px-3 py-2 dark:border-stone-600 dark:bg-stone-800"
+            className="w-full border-b border-border bg-transparent px-0 py-3 font-serif text-lg focus:outline-none focus:border-accent transition-colors duration-200 dark:border-border"
           />
         </div>
         <div>
           <label
             htmlFor="description"
-            className="block text-sm font-medium mb-1"
+            className="block font-sans text-xs font-medium tracking-widest-2 uppercase text-muted mb-2"
           >
             Description
           </label>
@@ -79,13 +82,13 @@ export default function AdminEditProductPage() {
             id="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full rounded-lg border border-stone-300 px-3 py-2 dark:border-stone-600 dark:bg-stone-800"
+            className="w-full border-b border-border bg-transparent px-0 py-3 font-serif text-lg focus:outline-none focus:border-accent transition-colors duration-200 dark:border-border"
           />
         </div>
         <div>
           <label
             htmlFor="price"
-            className="block text-sm font-medium mb-1"
+            className="block font-sans text-xs font-medium tracking-widest-2 uppercase text-muted mb-2"
           >
             Price
           </label>
@@ -97,12 +100,12 @@ export default function AdminEditProductPage() {
             value={priceValue}
             onChange={(e) => setPriceValue(e.target.value)}
             required
-            className="w-full rounded-lg border border-stone-300 px-3 py-2 dark:border-stone-600 dark:bg-stone-800"
+            className="w-full border-b border-border bg-transparent px-0 py-3 font-serif text-lg focus:outline-none focus:border-accent transition-colors duration-200 dark:border-border"
           />
         </div>
         <button
           type="submit"
-          className="rounded-lg bg-amber-600 px-6 py-2 text-white font-semibold hover:bg-amber-700 transition-colors"
+          className="font-sans text-xs font-medium tracking-widest-2 uppercase bg-foreground text-background px-10 py-4 hover:bg-accent transition-colors duration-300"
         >
           Update Product
         </button>

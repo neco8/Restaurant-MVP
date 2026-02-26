@@ -8,6 +8,10 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        serif: ["'Garamond'", "'Georgia'", "'Times New Roman'", "serif"],
+        sans: ["var(--font-sans)", "system-ui", "sans-serif"],
+      },
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
@@ -17,6 +21,10 @@ const config: Config = {
         "surface-hover": "var(--surface-hover)",
         border: "var(--border)",
         muted: "var(--muted)",
+      },
+      letterSpacing: {
+        "widest-2": "0.25em",
+        "widest-3": "0.35em",
       },
     },
   },
