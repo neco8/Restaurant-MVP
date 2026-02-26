@@ -263,5 +263,26 @@ describe("POST /api/create-payment-intent", () => {
 
       expect(response.status).toBe(500);
     });
+
+    it("returns 402 with Stripe message when Stripe throws a card_error", async () => {
+      const cardError = new Error("Your card was declined.");
+      Object.assign(cardError, { type: "StripeCardError", rawType: "card_error" });
+      mockCreate.mockRejectedValueOnce(cardError);
+      const { POST } = await import("./route");
+      const request = new Request(
+        "http://localhost/api/create-payment-intent",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cartItems: [{ id: "1", quantity: 1 }] }),
+        }
+      );
+
+      const response = await POST(request);
+      const body = await response.json();
+
+      expect(response.status).toBe(402);
+      expect(body.error).toBe("Your card was declined.");
+    });
   });
 });
