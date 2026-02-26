@@ -32,11 +32,13 @@ export default function CheckoutRoute() {
         cartItems: storedItems.map((item) => ({ id: item.id, quantity: item.quantity })),
       }),
     })
-      .then((res) => {
-        if (!res.ok) throw new Error("Server error");
-        return res.json() as Promise<{ clientSecret: string; paymentIntentId: string }>;
-      })
-      .then((payment) => {
+      .then(async (res) => {
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          setError(body.error || "Something went wrong. Please try again.");
+          return;
+        }
+        const payment = await res.json() as { clientSecret: string; paymentIntentId: string };
         setClientSecret(payment.clientSecret);
         setPaymentIntentId(payment.paymentIntentId);
       })
