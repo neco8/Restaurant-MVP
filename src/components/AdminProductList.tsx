@@ -17,6 +17,7 @@ export default function AdminProductList({ products }: { products: Product[] }) 
             <tr>
               <th>Name</th>
               <th>Price</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -24,6 +25,11 @@ export default function AdminProductList({ products }: { products: Product[] }) 
               <tr key={product.id} data-testid="admin-product-row">
                 <td>{product.name}</td>
                 <td>{formatPrice(product.price)}</td>
+                <td>
+                  <Link href={ROUTES.ADMIN_PRODUCTS_EDIT(product.id)}>
+                    Edit {product.name}
+                  </Link>
+                </td>
               </tr>
             ))}
           </tbody>

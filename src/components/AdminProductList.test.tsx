@@ -38,3 +38,12 @@ test("shows Add Product link", () => {
   const link = screen.getByRole("link", { name: "Add Product" });
   expect(link).toHaveAttribute("href", ROUTES.ADMIN_PRODUCTS_NEW);
 });
+
+test("shows Edit link for each product", () => {
+  const products = [
+    { id: "42", name: "Ramen", price: price(12.0), description: "Tonkotsu" },
+  ];
+  render(<AdminProductList products={products} />);
+  const link = screen.getByRole("link", { name: "Edit Ramen" });
+  expect(link).toHaveAttribute("href", ROUTES.ADMIN_PRODUCTS_EDIT("42"));
+});
