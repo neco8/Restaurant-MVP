@@ -1,5 +1,8 @@
 import MenuList from "@/components/MenuList";
-import { getProducts, defaultProductRepository } from "@/lib";
+import { getProducts } from "@/lib";
+import { defaultProductRepository } from "@/lib/defaultProductRepository";
+
+export const dynamic = "force-dynamic";
 
 export default async function MenuPage() {
   const products = await getProducts(defaultProductRepository());

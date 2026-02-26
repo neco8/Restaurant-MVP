@@ -1,5 +1,15 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { GET } from "./route";
+import { price } from "@/lib/price";
+
+vi.mock("@/lib/defaultProductRepository", () => ({
+  defaultProductRepository: () => ({
+    findAll: async () => [
+      { id: "1", name: "Ramen", price: price(12.0), description: "Rich tonkotsu broth" },
+      { id: "2", name: "Gyoza", price: price(7.5), description: "Pan-fried dumplings" },
+    ],
+  }),
+}));
 
 describe("GET /api/products", () => {
   it("returns product list as JSON", async () => {
