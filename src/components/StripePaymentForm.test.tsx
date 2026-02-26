@@ -170,6 +170,50 @@ describe("when payment succeeds", () => {
   });
 });
 
+describe("email in redirect URL", () => {
+  it("includes email as query parameter in redirect URL when provided", async () => {
+    mockConfirmPayment.mockResolvedValue({
+      paymentIntent: { id: "pi_123", status: "succeeded" },
+    });
+
+    render(
+      <StripePaymentForm
+        clientSecret="pi_test_secret"
+        paymentIntentId="pi_test_123"
+        email="customer@example.com"
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Place Order" }));
+
+    await waitFor(() => {
+      expect(mockPush).toHaveBeenCalledWith(
+        "/orders/pi_test_123/complete?email=customer%40example.com"
+      );
+    });
+  });
+
+  it("does not include email query parameter when email is empty", async () => {
+    mockConfirmPayment.mockResolvedValue({
+      paymentIntent: { id: "pi_123", status: "succeeded" },
+    });
+
+    render(
+      <StripePaymentForm
+        clientSecret="pi_test_secret"
+        paymentIntentId="pi_test_123"
+        email=""
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Place Order" }));
+
+    await waitFor(() => {
+      expect(mockPush).toHaveBeenCalledWith("/orders/pi_test_123/complete");
+    });
+  });
+});
+
 describe("StripePaymentForm props contract", () => {
   it("requires both clientSecret and paymentIntentId props", () => {
     render(<StripePaymentForm clientSecret="pi_test_secret" paymentIntentId="pi_test_123" />);
