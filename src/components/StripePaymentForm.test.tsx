@@ -204,6 +204,26 @@ describe("StripePaymentForm structure", () => {
   });
 });
 
+describe("when Stripe.js fails to load", () => {
+  it("shows error message instead of payment form", async () => {
+    const { loadStripe } = await import("@stripe/stripe-js");
+    vi.mocked(loadStripe).mockRejectedValueOnce(new Error("Failed to load Stripe.js"));
+
+    render(
+      <StripePaymentForm
+        clientSecret="pi_test_secret"
+        paymentIntentId="pi_test_123"
+      />
+    );
+
+    await waitFor(() => {
+      expect(screen.getByRole("alert")).toHaveTextContent(
+        "Payment system could not be loaded"
+      );
+    });
+  });
+});
+
 describe("when payment status is processing", () => {
   it("clears cart and redirects to order complete when payment is processing", async () => {
     // BUG: For async payment methods (ACH, SEPA, etc.), confirmPayment
