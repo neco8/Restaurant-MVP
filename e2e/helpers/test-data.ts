@@ -1,6 +1,14 @@
 import pg from "pg";
 
-export const TEST_PRODUCTS = [
+export type TestProduct = {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  image: string;
+};
+
+export const TEST_PRODUCTS: TestProduct[] = [
   {
     id: "test-product-ramen",
     name: "Test Ramen",
@@ -33,7 +41,7 @@ function createPool() {
 }
 
 export async function seedTestProducts(
-  products: typeof TEST_PRODUCTS
+  products: TestProduct[]
 ): Promise<void> {
   const pool = createPool();
   try {
@@ -50,10 +58,9 @@ export async function seedTestProducts(
   }
 }
 
-export async function cleanupTestProducts(): Promise<void> {
+export async function cleanupProducts(ids: string[]): Promise<void> {
   const pool = createPool();
   try {
-    const ids = TEST_PRODUCTS.map((p) => p.id);
     await pool.query(
       `DELETE FROM "Product" WHERE id = ANY($1)`,
       [ids]

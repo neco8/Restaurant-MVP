@@ -1,5 +1,25 @@
 import { test, expect, type Page } from "@playwright/test";
 import { ROUTES } from "../src/lib/routes";
+import { seedTestProducts, cleanupProducts, type TestProduct } from "./helpers/test-data";
+
+const CHECKOUT_PRODUCTS: TestProduct[] = [
+  {
+    id: "checkout-test-ramen",
+    name: "Checkout Ramen",
+    description: "Ramen for checkout test",
+    price: 1200,
+    image: "",
+  },
+  {
+    id: "checkout-test-gyoza",
+    name: "Checkout Gyoza",
+    description: "Gyoza for checkout test",
+    price: 750,
+    image: "",
+  },
+];
+
+const productIds = CHECKOUT_PRODUCTS.map((p) => p.id);
 
 async function findFrameInput(page: Page, name: string, timeout = 30_000) {
   const deadline = Date.now() + timeout;
@@ -37,6 +57,15 @@ async function fillStripePayment(page: Page) {
     // Postal code not required for this configuration
   }
 }
+
+test.beforeAll(async () => {
+  await cleanupProducts(productIds);
+  await seedTestProducts(CHECKOUT_PRODUCTS);
+});
+
+test.afterAll(async () => {
+  await cleanupProducts(productIds);
+});
 
 test("checkout: browse menu → add to cart → pay → order confirmed → cart emptied", async ({ page }) => {
   // Browse menu and select a product
