@@ -10,5 +10,7 @@ export function createPrismaProductRepository(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   prisma: PrismaProductClient
 ): ProductRepository {
-  throw new Error("Not implemented");
+  return {
+    findAll: async () => [],
+  };
 }
