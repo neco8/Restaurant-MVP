@@ -10,5 +10,6 @@ export * from "./price";
 export * from "./prismaProductRepository";
 export * from "./quantity";
 export * from "./routes";
+export * from "./sendOrderConfirmationEmail";
 export * from "./totals";
 export * from "./types";
