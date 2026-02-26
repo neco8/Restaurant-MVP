@@ -11,6 +11,7 @@ export default function CheckoutRoute() {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
 
   useEffect(() => {
     const storedItems = getStoredCartItems();
@@ -46,10 +47,10 @@ export default function CheckoutRoute() {
   }, []);
 
   return (
-    <CheckoutView cartItems={cartItems}>
+    <CheckoutView cartItems={cartItems} email={email} onEmailChange={setEmail}>
       {error && <p role="alert">{error}</p>}
       {clientSecret && paymentIntentId ? (
-        <StripePaymentForm clientSecret={clientSecret} paymentIntentId={paymentIntentId} />
+        <StripePaymentForm clientSecret={clientSecret} paymentIntentId={paymentIntentId} email={email} />
       ) : (
         <button disabled={cartItems.length === 0}>Place Order</button>
       )}

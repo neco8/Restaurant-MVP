@@ -6,7 +6,7 @@ import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-
 import { useRouter } from "next/navigation";
 import { ROUTES, clearCart } from "@/lib";
 
-function PaymentForm({ paymentIntentId }: { paymentIntentId: string }) {
+function PaymentForm({ paymentIntentId, email }: { paymentIntentId: string; email?: string }) {
   const stripe = useStripe();
   const elements = useElements();
   const router = useRouter();
@@ -31,7 +31,10 @@ function PaymentForm({ paymentIntentId }: { paymentIntentId: string }) {
       setLoading(false);
     } else if (result.paymentIntent?.status === "succeeded" || result.paymentIntent?.status === "processing") {
       clearCart();
-      router.push(ROUTES.ORDER_COMPLETE(paymentIntentId));
+      const completeUrl = email
+        ? `${ROUTES.ORDER_COMPLETE(paymentIntentId)}?email=${encodeURIComponent(email)}`
+        : ROUTES.ORDER_COMPLETE(paymentIntentId);
+      router.push(completeUrl);
     }
   }
 
@@ -53,9 +56,11 @@ function PaymentForm({ paymentIntentId }: { paymentIntentId: string }) {
 export function StripePaymentForm({
   clientSecret,
   paymentIntentId,
+  email,
 }: {
   clientSecret: string;
   paymentIntentId: string;
+  email?: string;
 }) {
   const [stripeError, setStripeError] = useState<string | null>(null);
   const stripePromiseRef = useRef<ReturnType<typeof loadStripe> | null>(null);
@@ -81,7 +86,7 @@ export function StripePaymentForm({
   return (
     <div data-testid="stripe-elements">
       <Elements stripe={stripePromiseRef.current} options={{ clientSecret }}>
-        <PaymentForm paymentIntentId={paymentIntentId} />
+        <PaymentForm paymentIntentId={paymentIntentId} email={email} />
       </Elements>
     </div>
   );
