@@ -13,6 +13,12 @@ export type Product = {
   description: string;
 };
 
+export type CreateProductInput = {
+  name: string;
+  description: string;
+  price: Price;
+};
+
 export type StoredCartItem = {
   id: string;
   quantity: Quantity;
@@ -27,4 +33,5 @@ export type CartItem = {
 
 export type ProductRepository = {
   findAll: () => Promise<Product[]>;
+  create: (input: CreateProductInput) => Promise<Product>;
 };

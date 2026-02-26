@@ -1,9 +1,8 @@
 import { getProducts } from "./getProducts";
 import { price } from "./price";
-import type { ProductRepository } from "./types";
 
 test("returns empty list when repository has no products", async () => {
-  const repository: ProductRepository = { findAll: async () => [] };
+  const repository = { findAll: async () => [] };
   const result = await getProducts(repository);
   expect(result).toEqual([]);
 });

@@ -1,18 +1,7 @@
-import type { Price } from "./price";
-import type { Product } from "./types";
-
-export type CreateProductInput = {
-  name: string;
-  description: string;
-  price: Price;
-};
-
-export type WritableProductRepository = {
-  create: (input: CreateProductInput) => Promise<Product>;
-};
+import type { CreateProductInput, Product, ProductRepository } from "./types";
 
 export async function addProduct(
-  repository: WritableProductRepository,
+  repository: Pick<ProductRepository, "create">,
   input: CreateProductInput
 ): Promise<Product> {
   return repository.create(input);
