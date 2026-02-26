@@ -12,5 +12,7 @@ export function createPrismaProductRepository(
   prisma: PrismaLike
 ): ProductRepository {
   void prisma;
-  throw new Error("Not implemented");
+  return {
+    findAll: async () => [],
+  };
 }
