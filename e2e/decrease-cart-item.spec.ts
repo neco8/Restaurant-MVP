@@ -1,5 +1,27 @@
 import { test, expect } from "@playwright/test";
 import { ROUTES } from "../src/lib/routes";
+import { seedTestProducts, cleanupProducts, type TestProduct } from "./helpers/test-data";
+
+const DECREASE_CART_PRODUCTS: TestProduct[] = [
+  {
+    id: "decrease-cart-test-product",
+    name: "Decrease Cart Test Ramen",
+    description: "Ramen for decrease cart item test",
+    price: 900,
+    image: "",
+  },
+];
+
+const productIds = DECREASE_CART_PRODUCTS.map((p) => p.id);
+
+test.beforeAll(async () => {
+  await cleanupProducts(productIds);
+  await seedTestProducts(DECREASE_CART_PRODUCTS);
+});
+
+test.afterAll(async () => {
+  await cleanupProducts(productIds);
+});
 
 test("cart: add items → decrease quantity → item removed when quantity reaches zero", async ({
   page,
