@@ -41,3 +41,11 @@ test("shows product cards from getProducts", async () => {
   render(page);
   expect(screen.getByTestId("product-name")).toHaveTextContent("Ramen");
 });
+
+test("shows error message when getProducts fails", async () => {
+  vi.mocked(getProducts).mockRejectedValue(new Error("DB error"));
+  const page = await MenuPage();
+  render(page);
+  expect(screen.getByRole("heading", { name: "Menu" })).toBeInTheDocument();
+  expect(screen.getByText(/failed to load/i)).toBeInTheDocument();
+});
