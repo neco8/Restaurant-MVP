@@ -26,11 +26,13 @@ test.afterAll(async () => {
 test("cart: add items → decrease quantity → item removed when quantity reaches zero", async ({
   page,
 }) => {
-  // Browse menu and select a product
+  // Browse menu and select a specific product
   await page.goto(ROUTES.MENU);
-  const firstProduct = page.getByTestId("product-card").first();
-  const productName = await firstProduct.getByTestId("product-name").textContent();
-  await firstProduct.click();
+  const targetProduct = page
+    .getByTestId("product-card")
+    .filter({ hasText: DECREASE_CART_PRODUCTS[0].name });
+  const productName = DECREASE_CART_PRODUCTS[0].name;
+  await targetProduct.click();
 
   // Add product to cart twice (quantity = 2)
   await page.getByRole("button", { name: "Add to Cart" }).click();
@@ -40,16 +42,16 @@ test("cart: add items → decrease quantity → item removed when quantity reach
 
   // Navigate to cart
   await page.getByRole("link", { name: "View Cart" }).click();
-  await expect(page.getByText(productName!)).toBeVisible();
+  await expect(page.getByText(productName)).toBeVisible();
   await expect(page.getByText("×2")).toBeVisible();
 
   // Decrease quantity from 2 to 1
   await page.getByRole("button", { name: "Decrease quantity" }).click();
   await expect(page.getByText("×2")).not.toBeVisible();
-  await expect(page.getByText(productName!)).toBeVisible();
+  await expect(page.getByText(productName)).toBeVisible();
 
   // Decrease quantity from 1 to 0 — item is removed
   await page.getByRole("button", { name: "Decrease quantity" }).click();
-  await expect(page.getByText(productName!)).not.toBeVisible();
+  await expect(page.getByText(productName)).not.toBeVisible();
   await expect(page.getByText("Your cart is empty")).toBeVisible();
 });

@@ -20,7 +20,9 @@ test.describe("Menu Page", () => {
   test("displays products from the database", async ({ page }) => {
     await page.goto("/menu");
     for (const product of TEST_PRODUCTS) {
-      await expect(page.getByText(product.name)).toBeVisible();
+      await expect(
+        page.getByTestId("product-name").getByText(product.name, { exact: true })
+      ).toBeVisible();
     }
   });
 });
