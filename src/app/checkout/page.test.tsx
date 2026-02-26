@@ -407,3 +407,55 @@ describe("CheckoutRoute - payment intent fetch error handling", () => {
     });
   });
 });
+
+// ── CheckoutRoute — stale cart items ─────────────────────────────────────────
+
+describe("CheckoutRoute - stale cart items", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  test("creates payment intent with only valid items when cart has stale product ids", async () => {
+    vi.mocked(getStoredCartItems).mockReturnValue([
+      { id: "1", quantity: quantity(1)._unsafeUnwrap() },
+      { id: "stale-id", quantity: quantity(1)._unsafeUnwrap() },
+    ]);
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockImplementation((url: string, options?: RequestInit) => {
+        if (url === "/api/products") {
+          return Promise.resolve({
+            ok: true,
+            json: () =>
+              Promise.resolve([
+                { id: "1", name: "Burger", price: 9.99, description: "Tasty burger" },
+              ]),
+          });
+        }
+        // Simulate server-side product validation
+        const body = JSON.parse(options?.body as string);
+        const unknownItem = body.cartItems.find(
+          (item: { id: string }) => !["1", "2"].includes(item.id)
+        );
+        if (unknownItem) {
+          return Promise.resolve({
+            ok: false,
+            json: () => Promise.resolve({ error: "Unknown product id" }),
+          });
+        }
+        return Promise.resolve({
+          ok: true,
+          json: () =>
+            Promise.resolve({ clientSecret: "pi_test_secret_abc", paymentIntentId: "pi_test_123" }),
+        });
+      })
+    );
+
+    render(<CheckoutRoute />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("stripe-payment-form")).toBeInTheDocument();
+    });
+  });
+});
