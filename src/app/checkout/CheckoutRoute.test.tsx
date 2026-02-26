@@ -64,6 +64,35 @@ describe("CheckoutRoute", () => {
     expect(form.dataset.paymentIntentId).toBe("pi_abc123");
   });
 
+  it("sends email to create-payment-intent API", async () => {
+    mockFetch({
+      clientSecret: "pi_abc123_secret_def456",
+      paymentIntentId: "pi_abc123",
+    });
+
+    const { default: CheckoutRoute } = await import("./page");
+    render(<CheckoutRoute />);
+
+    // Type email in the input
+    const { default: userEvent } = await import("@testing-library/user-event");
+    const user = userEvent.setup();
+    const emailInput = screen.getByLabelText("Email");
+    await user.type(emailInput, "test@example.com");
+
+    await waitFor(() => {
+      expect(screen.getByTestId("stripe-payment-form")).toBeInTheDocument();
+    });
+
+    // Verify the email was sent in the payment intent request
+    const fetchCalls = (global.fetch as ReturnType<typeof vi.fn>).mock.calls;
+    const paymentCall = fetchCalls.find(
+      (call: unknown[]) => call[0] === "/api/create-payment-intent"
+    );
+    expect(paymentCall).toBeDefined();
+    const body = JSON.parse(paymentCall![1].body);
+    expect(body.email).toBe("test@example.com");
+  });
+
   it("does not derive paymentIntentId by parsing client_secret", async () => {
     mockFetch({
       clientSecret: "pi_wrong_id_secret_xyz",
