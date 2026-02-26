@@ -11,7 +11,7 @@ model Product {
   id          String      @id @default(cuid())
   name        String
   description String
-  price       Int // in dollars
+  price       Int // in cents
   image       String      @default("")
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
@@ -21,7 +21,7 @@ model Product {
 model Order {
   id        String      @id @default(cuid())
   status    String      @default("pending") // pending, completed
-  total     Int // in dollars
+  total     Int // in cents
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
   items     OrderItem[]
