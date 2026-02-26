@@ -305,5 +305,45 @@ describe("POST /api/create-payment-intent", () => {
       expect(response.status).toBe(503);
       expect(body.error).toBe("Payment system is busy. Please try again in a moment.");
     });
+
+    it("returns 500 with generic message when Stripe throws an api_error", async () => {
+      const apiError = new Error("Internal Stripe failure");
+      Object.assign(apiError, { type: "StripeAPIError", rawType: "api_error" });
+      mockCreate.mockRejectedValueOnce(apiError);
+      const { POST } = await import("./route");
+      const request = new Request(
+        "http://localhost/api/create-payment-intent",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cartItems: [{ id: "1", quantity: 1 }] }),
+        }
+      );
+
+      const response = await POST(request);
+      const body = await response.json();
+
+      expect(response.status).toBe(500);
+      expect(body.error).toBe("Payment could not be processed. Please try again later.");
+    });
+
+    it("returns 500 with generic message when a non-Stripe error is thrown", async () => {
+      mockCreate.mockRejectedValueOnce(new Error("Something unexpected"));
+      const { POST } = await import("./route");
+      const request = new Request(
+        "http://localhost/api/create-payment-intent",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cartItems: [{ id: "1", quantity: 1 }] }),
+        }
+      );
+
+      const response = await POST(request);
+      const body = await response.json();
+
+      expect(response.status).toBe(500);
+      expect(body.error).toBe("Payment could not be processed. Please try again later.");
+    });
   });
 });
