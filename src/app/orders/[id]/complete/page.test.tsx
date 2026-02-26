@@ -72,6 +72,51 @@ it("shows Payment Failed when payment intent does not exist in Stripe", async ()
   expect(screen.getByTestId("payment-status")).toHaveTextContent("Payment Failed");
 });
 
+describe("status explanation messages", () => {
+  it("shows explanation when payment is processing", async () => {
+    mockRetrieve.mockResolvedValue({ id: "pi_test_123", status: "processing" });
+    const page = await OrderCompletePage({ params: { id: "pi_test_123" } });
+    render(page);
+    expect(screen.getByTestId("payment-explanation")).toHaveTextContent(
+      "Your payment is being processed. You will receive confirmation shortly."
+    );
+  });
+
+  it("shows retry guidance when payment method was rejected", async () => {
+    mockRetrieve.mockResolvedValue({ id: "pi_test_123", status: "requires_payment_method" });
+    const page = await OrderCompletePage({ params: { id: "pi_test_123" } });
+    render(page);
+    expect(screen.getByTestId("payment-explanation")).toHaveTextContent(
+      "Your payment method was not accepted. Please return to checkout and try again."
+    );
+  });
+
+  it("shows canceled message when payment is canceled", async () => {
+    mockRetrieve.mockResolvedValue({ id: "pi_test_123", status: "canceled" });
+    const page = await OrderCompletePage({ params: { id: "pi_test_123" } });
+    render(page);
+    expect(screen.getByTestId("payment-explanation")).toHaveTextContent(
+      "This payment was canceled."
+    );
+  });
+
+  it("shows contact-support message when Stripe retrieval fails", async () => {
+    mockRetrieve.mockRejectedValue(new Error("No such payment_intent"));
+    const page = await OrderCompletePage({ params: { id: "invalid_id" } });
+    render(page);
+    expect(screen.getByTestId("payment-explanation")).toHaveTextContent(
+      "We could not retrieve your payment status. Please contact support if you were charged."
+    );
+  });
+
+  it("does not show explanation when payment succeeded", async () => {
+    mockRetrieve.mockResolvedValue({ id: "pi_test_123", status: "succeeded" });
+    const page = await OrderCompletePage({ params: { id: "pi_test_123" } });
+    render(page);
+    expect(screen.queryByTestId("payment-explanation")).not.toBeInTheDocument();
+  });
+});
+
 describe("OrderCompletePage structure", () => {
   it("renders exactly one heading", async () => {
     mockRetrieve.mockResolvedValue({ id: "pi_test_123", status: "succeeded" });
