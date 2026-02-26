@@ -19,7 +19,6 @@ function proxyConfig() {
 }
 
 export default defineConfig({
-  globalSetup: "./e2e/global-setup.ts",
   testDir: "./e2e",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
