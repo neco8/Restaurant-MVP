@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { defaultProductRepository } from "@/lib/defaultProductRepository";
+import { defaultProductRepository } from "@/server/productRepository";
 import { orderTotal } from "@/lib/totals";
 import { parseQuantity } from "@/lib/quantity";
 import { createStripeClient } from "@/server/stripeClient";

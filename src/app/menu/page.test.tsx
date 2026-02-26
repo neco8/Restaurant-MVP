@@ -1,7 +1,12 @@
 import { render, screen } from "@testing-library/react";
 import MenuPage from "./page";
-import { defaultProductRepository, getProducts } from "@/lib";
+import { getProducts } from "@/lib";
+import { defaultProductRepository as inMemoryRepo } from "@/lib/defaultProductRepository";
 import { price } from "@/lib/price";
+
+vi.mock("@/server/productRepository", () => ({
+  defaultProductRepository: () => inMemoryRepo(),
+}));
 
 vi.mock("@/lib", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib")>();
@@ -11,13 +16,9 @@ vi.mock("@/lib", async (importOriginal) => {
   };
 });
 
-async function actual() {
-  return import("@/lib");
-}
-
 test("shows Menu heading", async () => {
   vi.mocked(getProducts).mockResolvedValue(
-    await actual().then((m) => m.defaultProductRepository().findAll())
+    await inMemoryRepo().findAll()
   );
   const page = await MenuPage();
   render(page);
@@ -25,7 +26,7 @@ test("shows Menu heading", async () => {
 });
 
 test("shows products from default repository when no mock provided", async () => {
-  const products = await defaultProductRepository().findAll();
+  const products = await inMemoryRepo().findAll();
   vi.mocked(getProducts).mockResolvedValue(products);
   const page = await MenuPage();
   render(page);
