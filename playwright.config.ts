@@ -45,5 +45,10 @@ export default defineConfig({
     command: "npm run build && npm start",
     url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
+    env: {
+      DATABASE_URL:
+        process.env.DATABASE_URL_TEST ??
+        "postgresql://app:app@localhost:5432/restaurant_mvp",
+    },
   },
 });
