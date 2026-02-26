@@ -19,20 +19,21 @@ export default function CheckoutRoute() {
     fetch("/api/products")
       .then((res) => res.json() as Promise<Product[]>)
       .then((products) => {
-        setCartItems(hydrateCart(storedItems, products));
-      })
-      .catch(() => {
-        setError("Something went wrong. Please try again.");
-      });
+        const hydrated = hydrateCart(storedItems, products);
+        setCartItems(hydrated);
 
-    fetch("/api/create-payment-intent", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        cartItems: storedItems.map((item) => ({ id: item.id, quantity: item.quantity })),
-      }),
-    })
+        if (hydrated.length === 0) return;
+
+        return fetch("/api/create-payment-intent", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            cartItems: hydrated.map((item) => ({ id: item.id, quantity: item.quantity })),
+          }),
+        });
+      })
       .then(async (res) => {
+        if (!res) return;
         if (!res.ok) {
           const body = await res.json().catch(() => ({}));
           setError(body.error || "Something went wrong. Please try again.");
