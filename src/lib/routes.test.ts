@@ -23,3 +23,15 @@ test("ROUTES.CHECKOUT is /checkout", () => {
 test("ROUTES.ORDER_COMPLETE builds an order confirmation path from an id", () => {
   expect(ROUTES.ORDER_COMPLETE("pi_123")).toBe("/orders/pi_123/complete");
 });
+
+test("ROUTES.ADMIN_PRODUCTS is /admin/products", () => {
+  expect(ROUTES.ADMIN_PRODUCTS).toBe("/admin/products");
+});
+
+test("ROUTES.ADMIN_PRODUCTS_NEW is /admin/products/new", () => {
+  expect(ROUTES.ADMIN_PRODUCTS_NEW).toBe("/admin/products/new");
+});
+
+test("ROUTES.ADMIN_PRODUCTS_EDIT builds an edit path from an id", () => {
+  expect(ROUTES.ADMIN_PRODUCTS_EDIT("abc")).toBe("/admin/products/abc/edit");
+});
