@@ -345,7 +345,7 @@ describe("CheckoutRoute - payment intent fetch error handling", () => {
     });
   });
 
-  test("error message text is user-friendly on server error", async () => {
+  test("shows server-provided error message when API returns an error field", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn().mockImplementation((url: string) => {
@@ -357,10 +357,22 @@ describe("CheckoutRoute - payment intent fetch error handling", () => {
         }
         return Promise.resolve({
           ok: false,
-          json: () => Promise.resolve({ error: "Internal Server Error" }),
+          json: () => Promise.resolve({ error: "Your card was declined." }),
         });
       })
     );
+
+    render(<CheckoutRoute />);
+
+    await waitFor(() => {
+      expect(screen.getByRole("alert")).toHaveTextContent(
+        "Your card was declined."
+      );
+    });
+  });
+
+  test("falls back to generic message when network request fails", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("Network error")));
 
     render(<CheckoutRoute />);
 

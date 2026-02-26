@@ -49,7 +49,15 @@ export async function POST(request: Request) {
       clientSecret: paymentIntent.client_secret,
       paymentIntentId: paymentIntent.id,
     });
-  } catch {
-    return NextResponse.json({ error: "Payment processing failed" }, { status: 500 });
+  } catch (error) {
+    if (error instanceof Error && "rawType" in error) {
+      if (error.rawType === "card_error") {
+        return NextResponse.json({ error: error.message }, { status: 402 });
+      }
+      if (error.rawType === "rate_limit_error") {
+        return NextResponse.json({ error: "Payment system is busy. Please try again in a moment." }, { status: 503 });
+      }
+    }
+    return NextResponse.json({ error: "Payment could not be processed. Please try again later." }, { status: 500 });
   }
 }
