@@ -3,18 +3,18 @@ import { ROUTES, formatPrice, lineTotal, orderTotal } from "@/lib";
 
 export function CartView({ cartItems = [], onDecreaseItem }: { cartItems?: CartItem[]; onDecreaseItem?: (id: string) => void } = {}) {
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Cart</h1>
+    <div className="max-w-2xl mx-auto px-6 py-12">
+      <h1 className="text-4xl font-extrabold tracking-tight mb-10">Cart</h1>
       {cartItems.length === 0 ? (
-        <p className="text-stone-500 mb-8">Your cart is empty</p>
+        <p className="text-stone-400 mb-10 dark:text-stone-500">Your cart is empty</p>
       ) : (
-        <div className="mb-8">
-          <div className="divide-y divide-stone-200 dark:divide-stone-700">
+        <div className="mb-10 rounded-2xl border border-stone-200 bg-white p-6 shadow-sm dark:border-stone-700 dark:bg-stone-900">
+          <div className="divide-y divide-stone-100 dark:divide-stone-800">
             {cartItems.map((item) => (
               <div key={item.id} className="flex items-center justify-between py-4">
-                <span className="font-medium">{item.name}</span>
+                <span className="font-semibold">{item.name}</span>
                 {item.quantity > 1 && (
-                  <span className="text-sm text-stone-500 mx-2">×{item.quantity}</span>
+                  <span className="text-sm text-stone-400 mx-2 tabular-nums">×{item.quantity}</span>
                 )}
                 <button
                   onClick={() => onDecreaseItem?.(item.id)}
@@ -23,18 +23,18 @@ export function CartView({ cartItems = [], onDecreaseItem }: { cartItems?: CartI
                 >
                   −
                 </button>
-                <span className="font-semibold">{formatPrice(lineTotal(item))}</span>
+                <span className="font-bold tabular-nums">{formatPrice(lineTotal(item))}</span>
               </div>
             ))}
           </div>
-          <p className="text-lg font-bold mt-4 pt-4 border-t border-stone-300 dark:border-stone-600">
+          <p className="text-lg font-extrabold mt-4 pt-4 border-t border-stone-200 dark:border-stone-700">
             Total: {formatPrice(orderTotal(cartItems))}
           </p>
         </div>
       )}
       <a
         href={ROUTES.CHECKOUT}
-        className="inline-block rounded-lg bg-stone-900 text-white px-6 py-3 font-medium shadow-sm hover:bg-stone-800 transition-colors dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-stone-200"
+        className="inline-block rounded-full bg-amber-600 text-white px-8 py-3 font-semibold shadow-lg shadow-amber-600/20 hover:bg-amber-700 hover:shadow-amber-700/25 active:scale-[0.98] transition-all dark:bg-amber-500 dark:text-stone-950 dark:hover:bg-amber-400 dark:shadow-amber-500/20"
       >
         Proceed to Checkout
       </a>

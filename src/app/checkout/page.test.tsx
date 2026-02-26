@@ -140,6 +140,38 @@ describe("CheckoutView structure", () => {
     expect(screen.getByRole("heading", { level: 1 })).toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 2 })).toBeInTheDocument();
   });
+
+  test("h1 text is Checkout", () => {
+    render(<CheckoutView />);
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Checkout");
+  });
+
+  test("h2 text is Order Summary", () => {
+    render(<CheckoutView />);
+    expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent("Order Summary");
+  });
+
+  test("renders exactly one button in empty state", () => {
+    render(<CheckoutView />);
+    expect(screen.getAllByRole("button")).toHaveLength(1);
+  });
+
+  test("renders order summary list when items present", () => {
+    render(<CheckoutView cartItems={[{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(1)._unsafeUnwrap() }]} />);
+    expect(screen.getByRole("list")).toBeInTheDocument();
+  });
+
+  test("renders one list item per cart item", () => {
+    render(
+      <CheckoutView
+        cartItems={[
+          { id: "1", name: "Burger", price: price(9.99), quantity: quantity(1)._unsafeUnwrap() },
+          { id: "2", name: "Fries", price: price(3.49), quantity: quantity(1)._unsafeUnwrap() },
+        ]}
+      />
+    );
+    expect(screen.getAllByRole("listitem")).toHaveLength(2);
+  });
 });
 
 // ── CheckoutRoute (reads localStorage, fetches products + payment intent) ────
