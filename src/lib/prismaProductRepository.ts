@@ -1,7 +1,15 @@
-import type { ProductRepository } from "./types";
+import { price } from "./price";
+import type { Product, ProductRepository } from "./types";
+
+export type PrismaProductRow = {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+};
 
 export type PrismaProductDelegate = {
-  findMany: () => Promise<unknown[]>;
+  findMany: () => Promise<PrismaProductRow[]>;
 };
 
 export type PrismaLike = {
@@ -11,8 +19,15 @@ export type PrismaLike = {
 export function createPrismaProductRepository(
   prisma: PrismaLike
 ): ProductRepository {
-  void prisma;
   return {
-    findAll: async () => [],
+    findAll: async (): Promise<Product[]> => {
+      const rows = await prisma.product.findMany();
+      return rows.map((row) => ({
+        id: row.id,
+        name: row.name,
+        description: row.description,
+        price: price(row.price / 100),
+      }));
+    },
   };
 }
