@@ -284,5 +284,26 @@ describe("POST /api/create-payment-intent", () => {
       expect(response.status).toBe(402);
       expect(body.error).toBe("Your card was declined.");
     });
+
+    it("returns 503 when Stripe throws a rate_limit_error", async () => {
+      const rateLimitError = new Error("Too many requests");
+      Object.assign(rateLimitError, { type: "StripeRateLimitError", rawType: "rate_limit_error" });
+      mockCreate.mockRejectedValueOnce(rateLimitError);
+      const { POST } = await import("./route");
+      const request = new Request(
+        "http://localhost/api/create-payment-intent",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cartItems: [{ id: "1", quantity: 1 }] }),
+        }
+      );
+
+      const response = await POST(request);
+      const body = await response.json();
+
+      expect(response.status).toBe(503);
+      expect(body.error).toBe("Payment system is busy. Please try again in a moment.");
+    });
   });
 });
