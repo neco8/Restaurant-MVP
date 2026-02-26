@@ -11,7 +11,7 @@ model Product {
   id          String      @id @default(cuid())
   name        String
   description String
-  price       Int // in dollars
+  price       Int // in cents
   image       String      @default("")
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
