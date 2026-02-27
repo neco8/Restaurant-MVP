@@ -63,4 +63,13 @@ describe("GET /api/admin/orders", () => {
       },
     ]);
   });
+
+  test("returns empty array when no orders", async () => {
+    mockFindMany.mockResolvedValue([]);
+
+    const res = await GET();
+    const data = await res.json();
+
+    expect(data).toEqual([]);
+  });
 });
