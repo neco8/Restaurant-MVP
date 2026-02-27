@@ -1,4 +1,4 @@
-import type { StoredCartItem, CartItem, Product } from "./types";
+import type { StoredCartItem, CartItem, Product, CartState } from "./types";
 import { quantity, parseQuantity, decreaseQuantity } from "./quantity";
 
 const CART_KEY = "cart";
@@ -61,4 +61,11 @@ export function decreaseCartItem(id: string): void {
 
 export function clearCart(): void {
   localStorage.removeItem(CART_KEY);
+}
+
+export function isCartEmpty(state: CartState): boolean {
+  if (state.status === "loading") {
+    return state.storedItems.length === 0;
+  }
+  return state.items.length === 0;
 }
