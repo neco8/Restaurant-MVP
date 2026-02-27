@@ -18,7 +18,7 @@ type Props = {
   onStatusUpdate?: (orderId: string, newStatus: string) => void;
 };
 
-export default function AdminOrderList({ orders }: Props) {
+export default function AdminOrderList({ orders, onStatusUpdate }: Props) {
   if (orders.length === 0) {
     return <p className="font-serif text-base font-light italic text-muted">No orders found.</p>;
   }
@@ -31,6 +31,7 @@ export default function AdminOrderList({ orders }: Props) {
           <th className="text-left py-3 px-4 font-sans text-xs font-medium tracking-widest-2 uppercase text-muted">Total</th>
           <th className="text-left py-3 px-4 font-sans text-xs font-medium tracking-widest-2 uppercase text-muted">Date</th>
           <th className="text-left py-3 px-4 font-sans text-xs font-medium tracking-widest-2 uppercase text-muted">Items</th>
+          <th className="text-left py-3 px-4 font-sans text-xs font-medium tracking-widest-2 uppercase text-muted">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -51,6 +52,16 @@ export default function AdminOrderList({ orders }: Props) {
                   </li>
                 ))}
               </ul>
+            </td>
+            <td className="py-4 px-4">
+              {order.status === "pending" && onStatusUpdate && (
+                <button
+                  onClick={() => onStatusUpdate(order.id, "completed")}
+                  className="font-sans text-xs tracking-wider uppercase text-accent hover:text-foreground transition-colors duration-200"
+                >
+                  Mark as completed
+                </button>
+              )}
             </td>
           </tr>
         ))}
