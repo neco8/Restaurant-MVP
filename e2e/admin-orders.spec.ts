@@ -91,7 +91,7 @@ test.describe("Admin Order List", () => {
     await expect(page.getByText("$27.00")).toBeVisible();
     await expect(page.getByText("$12.00")).toBeVisible();
 
-    await expect(page.getByText("Order Test Ramen")).toBeVisible();
+    await expect(page.getByText("Order Test Ramen").first()).toBeVisible();
     await expect(page.getByText("Order Test Gyoza")).toBeVisible();
   });
 });
