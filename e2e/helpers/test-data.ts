@@ -81,3 +81,51 @@ export async function cleanupProductsByName(names: string[]): Promise<void> {
     await pool.end();
   }
 }
+
+export type TestOrderItem = {
+  id: string;
+  productId: string;
+  quantity: number;
+  price: number; // in cents
+};
+
+export type TestOrder = {
+  id: string;
+  status: string;
+  total: number; // in cents
+  items: TestOrderItem[];
+};
+
+export async function seedTestOrders(orders: TestOrder[]): Promise<void> {
+  const pool = createPool();
+  try {
+    for (const order of orders) {
+      await pool.query(
+        `INSERT INTO "Order" (id, status, total, "createdAt", "updatedAt")
+         VALUES ($1, $2, $3, NOW(), NOW())
+         ON CONFLICT (id) DO UPDATE SET status = $2, total = $3, "updatedAt" = NOW()`,
+        [order.id, order.status, order.total]
+      );
+      for (const item of order.items) {
+        await pool.query(
+          `INSERT INTO "OrderItem" (id, quantity, price, "productId", "orderId")
+           VALUES ($1, $2, $3, $4, $5)
+           ON CONFLICT (id) DO UPDATE SET quantity = $2, price = $3`,
+          [item.id, item.quantity, item.price, item.productId, order.id]
+        );
+      }
+    }
+  } finally {
+    await pool.end();
+  }
+}
+
+export async function cleanupOrders(ids: string[]): Promise<void> {
+  const pool = createPool();
+  try {
+    await pool.query(`DELETE FROM "OrderItem" WHERE "orderId" = ANY($1)`, [ids]);
+    await pool.query(`DELETE FROM "Order" WHERE id = ANY($1)`, [ids]);
+  } finally {
+    await pool.end();
+  }
+}
