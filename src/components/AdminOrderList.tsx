@@ -38,7 +38,15 @@ export default function AdminOrderList({ orders }: Props) {
             <td>{order.status}</td>
             <td>${order.total.toFixed(2)}</td>
             <td>{new Date(order.createdAt).toLocaleDateString()}</td>
-            <td></td>
+            <td>
+              <ul>
+                {order.items.map((item) => (
+                  <li key={item.id}>
+                    <span>{item.productName}</span> ×{item.quantity}
+                  </li>
+                ))}
+              </ul>
+            </td>
           </tr>
         ))}
       </tbody>
