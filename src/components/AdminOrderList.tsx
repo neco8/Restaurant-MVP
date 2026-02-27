@@ -22,5 +22,26 @@ export default function AdminOrderList({ orders }: Props) {
     return <p>No orders found.</p>;
   }
 
-  return null;
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>Status</th>
+          <th>Total</th>
+          <th>Date</th>
+          <th>Items</th>
+        </tr>
+      </thead>
+      <tbody>
+        {orders.map((order) => (
+          <tr key={order.id}>
+            <td>{order.status}</td>
+            <td>${order.total.toFixed(2)}</td>
+            <td>{new Date(order.createdAt).toLocaleDateString()}</td>
+            <td></td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
 }
