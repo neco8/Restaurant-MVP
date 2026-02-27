@@ -9,8 +9,9 @@ const geistSans = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Restaurant",
-  description: "Fresh flavors, crafted with care",
+  title: "蓮華 RENGE — Classical Japanese-Chinese Cuisine",
+  description:
+    "Classical Japanese-Chinese cuisine, refined. A place where the traditions of Japan and China converge in quiet elegance.",
 };
 
 export default function RootLayout({

@@ -10,7 +10,8 @@ describe("Home page — Renge Japanese-Chinese Restaurant", () => {
 
   test("shows Japanese characters 蓮華", () => {
     render(<Home />);
-    expect(screen.getByText("蓮華")).toBeInTheDocument();
+    const elements = screen.getAllByText("蓮華");
+    expect(elements.length).toBeGreaterThanOrEqual(1);
   });
 
   test("shows tagline about classical Japanese-Chinese cuisine", () => {
