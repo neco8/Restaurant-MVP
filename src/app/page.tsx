@@ -50,7 +50,14 @@ export default function Home() {
               key={dish.japanese}
               className="group grid grid-cols-1 sm:grid-cols-[1fr_2fr] gap-6 sm:gap-10 items-start"
             >
-              <div className="aspect-[4/3] bg-surface-hover overflow-hidden" />
+              <div className="aspect-[4/3] bg-surface-hover overflow-hidden">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={dish.image}
+                  alt={dish.english}
+                  className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+                />
+              </div>
               <div className="flex flex-col justify-center">
                 <p className="font-serif text-2xl sm:text-3xl font-light tracking-wide text-foreground mb-1">
                   {dish.japanese}
