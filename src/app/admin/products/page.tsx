@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { Product } from "@/lib";
 import { ROUTES } from "@/lib";
 import AdminProductList from "@/components/AdminProductList";
+import AdminNav from "@/components/AdminNav";
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -24,7 +25,8 @@ export default function AdminProductsPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-16 sm:py-24">
-      <div className="flex items-center justify-between mb-12">
+      <AdminNav />
+      <div className="flex items-center justify-between mb-12 mt-8">
         <div>
           <p className="font-sans text-[0.65rem] font-light tracking-widest-3 uppercase text-muted mb-4">
             Administration

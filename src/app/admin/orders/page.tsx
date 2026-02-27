@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import AdminOrderList from "@/components/AdminOrderList";
+import AdminNav from "@/components/AdminNav";
 import type { AdminOrder } from "@/components/AdminOrderList";
 
 export default function AdminOrdersPage() {
@@ -28,7 +29,8 @@ export default function AdminOrdersPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-16 sm:py-24">
-      <div className="mb-12">
+      <AdminNav />
+      <div className="mb-12 mt-8">
         <p className="font-sans text-[0.65rem] font-light tracking-widest-3 uppercase text-muted mb-4">
           Administration
         </p>
