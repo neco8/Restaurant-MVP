@@ -3,16 +3,22 @@ import userEvent from "@testing-library/user-event";
 import { CartView } from "./CartView";
 import { quantity } from "@/lib/quantity";
 import { price } from "@/lib/price";
+import type { CartState } from "@/lib";
+
+const loaded = (items: CartState & { status: "loaded" } extends { items: infer I } ? I : never): CartState => ({
+  status: "loaded",
+  items,
+});
 
 test("shows Cart heading", () => {
   render(<CartView />);
   expect(screen.getByRole("heading", { name: "Cart" })).toBeInTheDocument();
 });
 
-test("shows product name when cartItems provided", () => {
+test("shows product name when cart has items", () => {
   render(
     <CartView
-      cartItems={[{ id: "1", name: "Ramen", price: price(8.00), quantity: quantity(1)._unsafeUnwrap() }]}
+      cartState={loaded([{ id: "1", name: "Ramen", price: price(8.00), quantity: quantity(1)._unsafeUnwrap() }])}
     />
   );
   expect(screen.getByText("Ramen")).toBeInTheDocument();
@@ -28,7 +34,7 @@ test("shows Proceed to Checkout link", () => {
 test("shows item price when cart has one item", () => {
   render(
     <CartView
-      cartItems={[{ id: "1", name: "Ramen", price: price(8.00), quantity: quantity(1)._unsafeUnwrap() }]}
+      cartState={loaded([{ id: "1", name: "Ramen", price: price(8.00), quantity: quantity(1)._unsafeUnwrap() }])}
     />
   );
   expect(screen.getByText("$8.00")).toBeInTheDocument();
@@ -37,7 +43,7 @@ test("shows item price when cart has one item", () => {
 test("shows item quantity", () => {
   render(
     <CartView
-      cartItems={[{ id: "1", name: "Ramen", price: price(8.00), quantity: quantity(2)._unsafeUnwrap() }]}
+      cartState={loaded([{ id: "1", name: "Ramen", price: price(8.00), quantity: quantity(2)._unsafeUnwrap() }])}
     />
   );
   expect(screen.getByText("×2")).toBeInTheDocument();
@@ -46,7 +52,7 @@ test("shows item quantity", () => {
 test("does not show quantity badge when quantity is one", () => {
   render(
     <CartView
-      cartItems={[{ id: "1", name: "Ramen", price: price(8.00), quantity: quantity(1)._unsafeUnwrap() }]}
+      cartState={loaded([{ id: "1", name: "Ramen", price: price(8.00), quantity: quantity(1)._unsafeUnwrap() }])}
     />
   );
   expect(screen.queryByText("×1")).not.toBeInTheDocument();
@@ -55,7 +61,7 @@ test("does not show quantity badge when quantity is one", () => {
 test("shows line total for item with quantity greater than one", () => {
   render(
     <CartView
-      cartItems={[{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(2)._unsafeUnwrap() }]}
+      cartState={loaded([{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(2)._unsafeUnwrap() }])}
     />
   );
   expect(screen.getByText("$19.98")).toBeInTheDocument();
@@ -64,7 +70,7 @@ test("shows line total for item with quantity greater than one", () => {
 test("shows order total for single item", () => {
   render(
     <CartView
-      cartItems={[{ id: "1", name: "Ramen", price: price(8.00), quantity: quantity(1)._unsafeUnwrap() }]}
+      cartState={loaded([{ id: "1", name: "Ramen", price: price(8.00), quantity: quantity(1)._unsafeUnwrap() }])}
     />
   );
   expect(screen.getByText("Total: $8.00")).toBeInTheDocument();
@@ -73,24 +79,42 @@ test("shows order total for single item", () => {
 test("shows order total for multiple items", () => {
   render(
     <CartView
-      cartItems={[
+      cartState={loaded([
         { id: "1", name: "Ramen", price: price(8.00), quantity: quantity(1)._unsafeUnwrap() },
         { id: "2", name: "Gyoza", price: price(5.50), quantity: quantity(2)._unsafeUnwrap() },
-      ]}
+      ])}
     />
   );
   expect(screen.getByText("Total: $19.00")).toBeInTheDocument();
 });
 
-test("shows empty cart message when no items", () => {
-  render(<CartView />);
+test("shows empty cart message when loaded with no items", () => {
+  render(<CartView cartState={loaded([])} />);
   expect(screen.getByText("Your cart is empty")).toBeInTheDocument();
+});
+
+test("does not show empty cart message when loading with stored items", () => {
+  render(
+    <CartView
+      cartState={{ status: "loading", storedItems: [{ id: "1", quantity: quantity(1)._unsafeUnwrap() }] }}
+    />
+  );
+  expect(screen.queryByText("Your cart is empty")).not.toBeInTheDocument();
+});
+
+test("shows loading indicator when loading with stored items", () => {
+  render(
+    <CartView
+      cartState={{ status: "loading", storedItems: [{ id: "1", quantity: quantity(1)._unsafeUnwrap() }] }}
+    />
+  );
+  expect(screen.getByRole("status")).toBeInTheDocument();
 });
 
 test("shows Decrease quantity button for each cart item", () => {
   render(
     <CartView
-      cartItems={[{ id: "1", name: "Ramen", price: price(8.00), quantity: quantity(2)._unsafeUnwrap() }]}
+      cartState={loaded([{ id: "1", name: "Ramen", price: price(8.00), quantity: quantity(2)._unsafeUnwrap() }])}
     />
   );
   expect(screen.getByRole("button", { name: "Decrease quantity" })).toBeInTheDocument();
@@ -100,7 +124,7 @@ test("calls onDecreaseItem when Decrease quantity button is clicked", async () =
   const onDecreaseItem = vi.fn();
   render(
     <CartView
-      cartItems={[{ id: "1", name: "Ramen", price: price(8.00), quantity: quantity(2)._unsafeUnwrap() }]}
+      cartState={loaded([{ id: "1", name: "Ramen", price: price(8.00), quantity: quantity(2)._unsafeUnwrap() }])}
       onDecreaseItem={onDecreaseItem}
     />
   );
