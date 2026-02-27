@@ -85,8 +85,8 @@ test.describe("Admin Order List", () => {
       page.getByRole("heading", { name: "Orders" })
     ).toBeVisible();
 
-    await expect(page.getByText("pending")).toBeVisible();
-    await expect(page.getByText("completed")).toBeVisible();
+    await expect(page.getByRole("cell", { name: "pending", exact: true })).toBeVisible();
+    await expect(page.getByRole("cell", { name: "completed", exact: true })).toBeVisible();
 
     await expect(page.getByText("$27.00")).toBeVisible();
     await expect(page.getByText("$12.00")).toBeVisible();
