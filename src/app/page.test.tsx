@@ -64,4 +64,15 @@ describe("Home page — Renge Japanese-Chinese Restaurant", () => {
     expect(screen.getByText("$32")).toBeInTheDocument();
     expect(screen.getByText("$88")).toBeInTheDocument();
   });
+
+  test("displays dish images with alt text", () => {
+    render(<Home />);
+    const images = screen.getAllByRole("img");
+    expect(images).toHaveLength(5);
+    expect(images[0]).toHaveAttribute("alt", "Black Vinegar Sweet & Sour Pork");
+    expect(images[1]).toHaveAttribute("alt", "Chili Prawns");
+    expect(images[2]).toHaveAttribute("alt", "White Sesame Tantanmen");
+    expect(images[3]).toHaveAttribute("alt", "Heritage Mapo Tofu");
+    expect(images[4]).toHaveAttribute("alt", "Peking Duck");
+  });
 });
