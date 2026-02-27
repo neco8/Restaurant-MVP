@@ -1,7 +1,7 @@
-import { addToCart, getStoredCartItems, clearCart, hydrateCart, decreaseCartItem } from "./cart";
+import { addToCart, getStoredCartItems, clearCart, hydrateCart, decreaseCartItem, isCartEmpty } from "./cart";
 import { quantity } from "./quantity";
 import { price } from "./price";
-import type { Product } from "./types";
+import type { Product, CartState } from "./types";
 
 beforeEach(() => {
   localStorage.clear();
@@ -70,4 +70,26 @@ test("decreaseCartItem does nothing for nonexistent item", () => {
   addToCart("1");
   decreaseCartItem("999");
   expect(getStoredCartItems()).toEqual([{ id: "1", quantity: quantity(1)._unsafeUnwrap() }]);
+});
+
+// ── isCartEmpty ────────────────────────────────────────────────────────────────
+
+test("isCartEmpty returns true when loading with no stored items", () => {
+  const state: CartState = { status: "loading", storedItems: [] };
+  expect(isCartEmpty(state)).toBe(true);
+});
+
+test("isCartEmpty returns false when loading with stored items", () => {
+  const state: CartState = { status: "loading", storedItems: [{ id: "1", quantity: quantity(1)._unsafeUnwrap() }] };
+  expect(isCartEmpty(state)).toBe(false);
+});
+
+test("isCartEmpty returns true when loaded with no items", () => {
+  const state: CartState = { status: "loaded", items: [] };
+  expect(isCartEmpty(state)).toBe(true);
+});
+
+test("isCartEmpty returns false when loaded with items", () => {
+  const state: CartState = { status: "loaded", items: [{ id: "1", name: "Ramen", price: price(12.00), quantity: quantity(1)._unsafeUnwrap() }] };
+  expect(isCartEmpty(state)).toBe(false);
 });

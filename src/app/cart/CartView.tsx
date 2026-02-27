@@ -1,19 +1,25 @@
-import type { CartItem } from "@/lib";
-import { ROUTES, formatPrice, lineTotal, orderTotal } from "@/lib";
+import type { CartState } from "@/lib";
+import { ROUTES, formatPrice, isCartEmpty, lineTotal, orderTotal } from "@/lib";
 
-export function CartView({ cartItems = [], onDecreaseItem }: { cartItems?: CartItem[]; onDecreaseItem?: (id: string) => void } = {}) {
+export function CartView({ cartState = { status: "loaded", items: [] }, onDecreaseItem }: { cartState?: CartState; onDecreaseItem?: (id: string) => void } = {}) {
+  const items = cartState.status === "loaded" ? cartState.items : [];
+  const empty = isCartEmpty(cartState);
+  const loading = cartState.status === "loading" && !empty;
+
   return (
     <div className="max-w-2xl mx-auto px-6 py-16 sm:py-24">
       <p className="font-sans text-[0.65rem] font-light tracking-widest-3 uppercase text-muted mb-4">
         Your Order
       </p>
       <h1 className="font-serif text-5xl sm:text-6xl font-light tracking-tight leading-[0.9] mb-16">Cart</h1>
-      {cartItems.length === 0 ? (
+      {loading ? (
+        <p role="status" className="font-serif text-base italic text-muted mb-12 animate-pulse">Loading cart…</p>
+      ) : empty ? (
         <p className="font-serif text-base font-light italic text-muted mb-12">Your cart is empty</p>
       ) : (
         <div className="mb-12">
           <div className="divide-y divide-border">
-            {cartItems.map((item) => (
+            {items.map((item) => (
               <div key={item.id} className="flex items-center justify-between py-5">
                 <span className="font-serif text-lg font-normal">{item.name}</span>
                 {item.quantity > 1 && (
@@ -31,7 +37,7 @@ export function CartView({ cartItems = [], onDecreaseItem }: { cartItems?: CartI
             ))}
           </div>
           <p className="font-serif text-xl font-normal mt-6 pt-6 border-t border-foreground">
-            Total: {formatPrice(orderTotal(cartItems))}
+            Total: {formatPrice(orderTotal(items))}
           </p>
         </div>
       )}

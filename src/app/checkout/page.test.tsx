@@ -2,6 +2,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { getStoredCartItems } from "@/lib";
 import { quantity } from "@/lib/quantity";
 import { price } from "@/lib/price";
+import type { CartState } from "@/lib";
 import CheckoutRoute from "./page";
 import { CheckoutView } from "./CheckoutView";
 
@@ -18,6 +19,11 @@ vi.mock("@/components/StripePaymentForm", () => ({
     <div data-testid="stripe-payment-form">{clientSecret}</div>
   ),
 }));
+
+const loaded = (items: CartState & { status: "loaded" } extends { items: infer I } ? I : never): CartState => ({
+  status: "loaded",
+  items,
+});
 
 // ── CheckoutView (pure presentational view, no side-effects) ────────────────
 
@@ -36,72 +42,90 @@ test("shows Order Summary heading", () => {
   expect(screen.getByRole("heading", { name: "Order Summary" })).toBeInTheDocument();
 });
 
-test("shows empty cart message when no items", () => {
-  render(<CheckoutView />);
+test("shows empty cart message when loaded with no items", () => {
+  render(<CheckoutView cartState={loaded([])} />);
   expect(screen.getByText("Your cart is empty")).toBeInTheDocument();
 });
 
+test("does not show empty cart message when loading with stored items", () => {
+  render(
+    <CheckoutView
+      cartState={{ status: "loading", storedItems: [{ id: "1", quantity: quantity(1)._unsafeUnwrap() }] }}
+    />
+  );
+  expect(screen.queryByText("Your cart is empty")).not.toBeInTheDocument();
+});
+
+test("shows loading indicator when loading with stored items", () => {
+  render(
+    <CheckoutView
+      cartState={{ status: "loading", storedItems: [{ id: "1", quantity: quantity(1)._unsafeUnwrap() }] }}
+    />
+  );
+  expect(screen.getByRole("status")).toBeInTheDocument();
+});
+
 test("shows item name when cart has one item", () => {
-  render(<CheckoutView cartItems={[{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(1)._unsafeUnwrap() }]} />);
+  render(<CheckoutView cartState={loaded([{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(1)._unsafeUnwrap() }])} />);
   expect(screen.getByText("Burger")).toBeInTheDocument();
 });
 
 test("shows item price when cart has one item", () => {
-  render(<CheckoutView cartItems={[{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(1)._unsafeUnwrap() }]} />);
+  render(<CheckoutView cartState={loaded([{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(1)._unsafeUnwrap() }])} />);
   expect(screen.getByText("$9.99")).toBeInTheDocument();
 });
 
 test("Place Order button is disabled when cart is empty", () => {
-  render(<CheckoutView />);
+  render(<CheckoutView cartState={loaded([])} />);
   expect(screen.getByRole("button", { name: "Place Order" })).toBeDisabled();
 });
 
 test("Place Order button is enabled when cart has items", () => {
-  render(<CheckoutView cartItems={[{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(1)._unsafeUnwrap() }]} />);
+  render(<CheckoutView cartState={loaded([{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(1)._unsafeUnwrap() }])} />);
   expect(screen.getByRole("button", { name: "Place Order" })).toBeEnabled();
 });
 
 test("shows item quantity when greater than one", () => {
-  render(<CheckoutView cartItems={[{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(2)._unsafeUnwrap() }]} />);
+  render(<CheckoutView cartState={loaded([{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(2)._unsafeUnwrap() }])} />);
   expect(screen.getByText("×2")).toBeInTheDocument();
 });
 
 test("does not show quantity badge when quantity is one", () => {
-  render(<CheckoutView cartItems={[{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(1)._unsafeUnwrap() }]} />);
+  render(<CheckoutView cartState={loaded([{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(1)._unsafeUnwrap() }])} />);
   expect(screen.queryByText("×1")).not.toBeInTheDocument();
 });
 
 test("total reflects quantity", () => {
-  render(<CheckoutView cartItems={[{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(2)._unsafeUnwrap() }]} />);
+  render(<CheckoutView cartState={loaded([{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(2)._unsafeUnwrap() }])} />);
   expect(screen.getByText("Total: $19.98")).toBeInTheDocument();
 });
 
 test("shows line total for item with quantity greater than one", () => {
-  render(<CheckoutView cartItems={[{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(2)._unsafeUnwrap() }]} />);
+  render(<CheckoutView cartState={loaded([{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(2)._unsafeUnwrap() }])} />);
   expect(screen.getByText("$19.98")).toBeInTheDocument();
 });
 
 test("shows order total for multiple items", () => {
   render(
     <CheckoutView
-      cartItems={[
+      cartState={loaded([
         { id: "1", name: "Burger", price: price(9.99), quantity: quantity(1)._unsafeUnwrap() },
         { id: "2", name: "Fries", price: price(3.49), quantity: quantity(1)._unsafeUnwrap() },
-      ]}
+      ])}
     />
   );
   expect(screen.getByText("Total: $13.48")).toBeInTheDocument();
 });
 
 test("checkout total section has checkout-total testid", () => {
-  render(<CheckoutView cartItems={[{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(1)._unsafeUnwrap() }]} />);
+  render(<CheckoutView cartState={loaded([{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(1)._unsafeUnwrap() }])} />);
   expect(screen.getByTestId("checkout-total")).toBeInTheDocument();
 });
 
 test("shows loading indicator when loading is true", () => {
   render(
     <CheckoutView
-      cartItems={[{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(1)._unsafeUnwrap() }]}
+      cartState={loaded([{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(1)._unsafeUnwrap() }])}
       loading={true}
     />
   );
@@ -112,7 +136,7 @@ test("shows loading indicator when loading is true", () => {
 test("does not show loading indicator when loading is false", () => {
   render(
     <CheckoutView
-      cartItems={[{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(1)._unsafeUnwrap() }]}
+      cartState={loaded([{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(1)._unsafeUnwrap() }])}
       loading={false}
     />
   );
@@ -122,7 +146,7 @@ test("does not show loading indicator when loading is false", () => {
 test("does not show Place Order button when loading", () => {
   render(
     <CheckoutView
-      cartItems={[{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(1)._unsafeUnwrap() }]}
+      cartState={loaded([{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(1)._unsafeUnwrap() }])}
       loading={true}
     />
   );
@@ -157,17 +181,17 @@ describe("CheckoutView structure", () => {
   });
 
   test("renders order summary list when items present", () => {
-    render(<CheckoutView cartItems={[{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(1)._unsafeUnwrap() }]} />);
+    render(<CheckoutView cartState={loaded([{ id: "1", name: "Burger", price: price(9.99), quantity: quantity(1)._unsafeUnwrap() }])} />);
     expect(screen.getByRole("list")).toBeInTheDocument();
   });
 
   test("renders one list item per cart item", () => {
     render(
       <CheckoutView
-        cartItems={[
+        cartState={loaded([
           { id: "1", name: "Burger", price: price(9.99), quantity: quantity(1)._unsafeUnwrap() },
           { id: "2", name: "Fries", price: price(3.49), quantity: quantity(1)._unsafeUnwrap() },
-        ]}
+        ])}
       />
     );
     expect(screen.getAllByRole("listitem")).toHaveLength(2);
@@ -219,19 +243,19 @@ describe("CheckoutRoute", () => {
     expect(screen.getByRole("heading", { name: "Order Summary" })).toBeInTheDocument();
   });
 
-  test("shows empty cart message when localStorage is empty", () => {
+  test("shows empty cart message when localStorage is empty", async () => {
     render(<CheckoutRoute />);
-    expect(screen.getByText("Your cart is empty")).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText("Your cart is empty")).toBeInTheDocument());
   });
 
-  test("shows Place Order button while cart is empty", () => {
+  test("shows Place Order button while cart is empty", async () => {
     render(<CheckoutRoute />);
-    expect(screen.getByRole("button", { name: "Place Order" })).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole("button", { name: "Place Order" })).toBeInTheDocument());
   });
 
-  test("Place Order button is disabled while cart is empty", () => {
+  test("Place Order button is disabled while cart is empty", async () => {
     render(<CheckoutRoute />);
-    expect(screen.getByRole("button", { name: "Place Order" })).toBeDisabled();
+    await waitFor(() => expect(screen.getByRole("button", { name: "Place Order" })).toBeDisabled());
   });
 
   test("shows item name from server products", async () => {

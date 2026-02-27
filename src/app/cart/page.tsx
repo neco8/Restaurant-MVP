@@ -1,33 +1,41 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { CartItem, Product } from "@/lib";
+import type { CartState, Product } from "@/lib";
 import { getStoredCartItems, hydrateCart, decreaseCartItem, decreaseQuantity } from "@/lib";
 import { CartView } from "./CartView";
 
 export default function CartRoute() {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartState, setCartState] = useState<CartState>({ status: "loading", storedItems: [] });
 
   useEffect(() => {
     const storedItems = getStoredCartItems();
-    if (storedItems.length === 0) return;
+    if (storedItems.length === 0) {
+      setCartState({ status: "loaded", items: [] });
+      return;
+    }
+    setCartState({ status: "loading", storedItems });
     fetch("/api/products")
       .then((res) => res.json())
       .then((products: Product[]) => {
-        setCartItems(hydrateCart(storedItems, products));
+        setCartState({ status: "loaded", items: hydrateCart(storedItems, products) });
       });
   }, []);
 
   function handleDecreaseItem(id: string) {
     decreaseCartItem(id);
-    setCartItems((prev) =>
-      prev.reduce<CartItem[]>((acc, item) => {
-        if (item.id !== id) return [...acc, item];
-        const decreased = decreaseQuantity(item.quantity);
-        return decreased.isOk() ? [...acc, { ...item, quantity: decreased.value }] : acc;
-      }, []),
-    );
+    setCartState((prev) => {
+      if (prev.status !== "loaded") return prev;
+      return {
+        status: "loaded",
+        items: prev.items.reduce<typeof prev.items>((acc, item) => {
+          if (item.id !== id) return [...acc, item];
+          const decreased = decreaseQuantity(item.quantity);
+          return decreased.isOk() ? [...acc, { ...item, quantity: decreased.value }] : acc;
+        }, []),
+      };
+    });
   }
 
-  return <CartView cartItems={cartItems} onDecreaseItem={handleDecreaseItem} />;
+  return <CartView cartState={cartState} onDecreaseItem={handleDecreaseItem} />;
 }

@@ -25,6 +25,10 @@ export type CartItem = {
   quantity: Quantity;
 };
 
+export type CartState =
+  | { status: "loading"; storedItems: StoredCartItem[] }
+  | { status: "loaded"; items: CartItem[] };
+
 export type ProductRepository = {
   findAll: () => Promise<Product[]>;
 };
