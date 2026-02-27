@@ -17,6 +17,10 @@ type Props = {
   orders: AdminOrder[];
 };
 
-export default function AdminOrderList({}: Props) {
+export default function AdminOrderList({ orders }: Props) {
+  if (orders.length === 0) {
+    return <p>No orders found.</p>;
+  }
+
   return null;
 }
