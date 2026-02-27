@@ -15,6 +15,7 @@ export type AdminOrderItem = {
 
 type Props = {
   orders: AdminOrder[];
+  onStatusUpdate?: (orderId: string, newStatus: string) => void;
 };
 
 export default function AdminOrderList({ orders }: Props) {
