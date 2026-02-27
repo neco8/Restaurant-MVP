@@ -32,4 +32,23 @@ describe("AdminOrderList", () => {
     expect(screen.getByText("$27.00")).toBeInTheDocument();
     expect(screen.getByText("$12.00")).toBeInTheDocument();
   });
+
+  test("renders item details for each order", () => {
+    const orders: AdminOrder[] = [
+      {
+        id: "o1",
+        status: "pending",
+        total: 27,
+        createdAt: "2026-01-15T10:00:00.000Z",
+        items: [
+          { id: "i1", productName: "Ramen", quantity: 1, price: 12 },
+          { id: "i2", productName: "Gyoza", quantity: 2, price: 7.5 },
+        ],
+      },
+    ];
+    render(<AdminOrderList orders={orders} />);
+
+    expect(screen.getByText("Ramen")).toBeInTheDocument();
+    expect(screen.getByText("Gyoza")).toBeInTheDocument();
+  });
 });
