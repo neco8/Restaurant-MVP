@@ -6,20 +6,24 @@ import { formatPrice, ROUTES } from "@/lib";
 
 export default function MenuList({ products }: { products: Product[] }) {
   return (
-    <div className="max-w-5xl mx-auto px-6 py-12">
-      <h1 className="text-4xl font-extrabold tracking-tight mb-10">Menu</h1>
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="max-w-4xl mx-auto px-6 py-16 sm:py-24">
+      <p className="font-sans text-[0.65rem] font-light tracking-widest-3 uppercase text-muted mb-4">
+        Our Selection
+      </p>
+      <h1 className="font-serif text-5xl sm:text-6xl font-light tracking-tight leading-[0.9] mb-16">Menu</h1>
+      <div className="divide-y divide-border">
         {products.map((product) => (
           <Link
             key={product.id}
             href={ROUTES.MENU_ITEM(product.id)}
             data-testid="product-card"
-            className="group block rounded-2xl border border-stone-200 bg-white p-6 shadow-sm hover:shadow-lg hover:border-amber-300 hover:-translate-y-0.5 transition-all duration-200 dark:border-stone-700 dark:bg-stone-900 dark:hover:border-amber-500/50"
+            className="group flex items-baseline justify-between py-5 hover:pl-4 transition-all duration-300"
           >
-            <span data-testid="product-name" className="block text-lg font-bold mb-2 group-hover:text-amber-700 transition-colors dark:group-hover:text-amber-400">
+            <span data-testid="product-name" className="font-serif text-xl sm:text-2xl font-normal tracking-tight group-hover:text-accent transition-colors duration-300">
               {product.name}
             </span>
-            <span data-testid="product-price" className="text-amber-700 font-semibold dark:text-amber-400">
+            <span className="flex-1 border-b border-dotted border-border mx-4 min-w-[40px] self-center translate-y-[-3px]" />
+            <span data-testid="product-price" className="font-sans text-sm font-light tracking-wider text-muted">
               {formatPrice(product.price)}
             </span>
           </Link>

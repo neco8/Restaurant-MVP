@@ -11,28 +11,31 @@ export function CheckoutView({
   children?: React.ReactNode;
 } = {}) {
   return (
-    <div className="max-w-2xl mx-auto px-6 py-12">
-      <h1 className="text-4xl font-extrabold tracking-tight mb-10">Checkout</h1>
-      <section className="rounded-2xl border border-stone-200 bg-white p-6 mb-10 shadow-sm dark:border-stone-700 dark:bg-stone-900">
-        <h2 className="text-xl font-bold mb-5">Order Summary</h2>
+    <div className="max-w-2xl mx-auto px-6 py-16 sm:py-24">
+      <p className="font-sans text-[0.65rem] font-light tracking-widest-3 uppercase text-muted mb-4">
+        Complete Your Order
+      </p>
+      <h1 className="font-serif text-5xl sm:text-6xl font-light tracking-tight leading-[0.9] mb-16">Checkout</h1>
+      <section className="border border-border p-8 mb-12">
+        <h2 className="font-sans text-xs font-medium tracking-widest-2 uppercase text-accent mb-6 pb-3 border-b border-border">Order Summary</h2>
         {cartItems.length === 0 ? (
-          <p className="text-stone-400 dark:text-stone-500">Your cart is empty</p>
+          <p className="font-serif text-base font-light italic text-muted">Your cart is empty</p>
         ) : (
           <>
-            <ul className="divide-y divide-stone-100 dark:divide-stone-800 list-none p-0 m-0">
+            <ul className="divide-y divide-border list-none p-0 m-0">
               {cartItems.map((item) => (
-                <li key={item.id} className="flex items-center justify-between py-3">
-                  <span className="font-semibold">{item.name}</span>
+                <li key={item.id} className="flex items-center justify-between py-4">
+                  <span className="font-serif text-lg font-normal">{item.name}</span>
                   {item.quantity > 1 && (
-                    <span className="text-sm text-stone-400 mx-2 tabular-nums">×{item.quantity}</span>
+                    <span className="font-sans text-xs text-muted mx-3 tabular-nums">×{item.quantity}</span>
                   )}
-                  <span className="font-bold tabular-nums">{formatPrice(lineTotal(item))}</span>
+                  <span className="font-sans text-sm font-light tracking-wider text-muted tabular-nums">{formatPrice(lineTotal(item))}</span>
                 </li>
               ))}
             </ul>
             <p
               data-testid="checkout-total"
-              className="text-lg font-extrabold mt-4 pt-4 border-t border-stone-200 dark:border-stone-700"
+              className="font-serif text-xl font-normal mt-6 pt-6 border-t border-foreground"
             >
               Total: {formatPrice(orderTotal(cartItems))}
             </p>
@@ -40,11 +43,11 @@ export function CheckoutView({
         )}
       </section>
       {children ?? (loading ? (
-        <p role="status" className="text-stone-400 text-center animate-pulse dark:text-stone-500">Preparing payment…</p>
+        <p role="status" className="font-serif text-base italic text-muted text-center animate-pulse">Preparing payment…</p>
       ) : (
         <button
           disabled={cartItems.length === 0}
-          className="w-full rounded-full bg-amber-600 text-white px-6 py-3.5 font-semibold shadow-lg shadow-amber-600/20 hover:bg-amber-700 hover:shadow-amber-700/25 active:scale-[0.98] transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none dark:bg-amber-500 dark:text-stone-950 dark:hover:bg-amber-400 dark:shadow-amber-500/20"
+          className="w-full font-sans text-xs font-medium tracking-widest-2 uppercase bg-foreground text-background px-6 py-4 hover:bg-accent transition-colors duration-300 active:scale-[0.98] disabled:opacity-30 disabled:cursor-not-allowed"
         >
           Place Order
         </button>

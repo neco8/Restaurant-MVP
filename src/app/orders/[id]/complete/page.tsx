@@ -38,14 +38,15 @@ export default async function OrderCompletePage({ params }: Props) {
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-20 text-center">
-      <h1 className="text-4xl font-extrabold tracking-tight mb-8">Thank you for your order</h1>
-      <p className="text-stone-400 mb-3 dark:text-stone-500">
-        Order ID: <span data-testid="order-id" className="font-mono text-stone-600 dark:text-stone-300">{params.id}</span>
+    <div className="max-w-2xl mx-auto px-6 py-24 text-center">
+      <div className="w-px h-16 bg-accent mx-auto mb-10" />
+      <h1 className="font-serif text-4xl sm:text-5xl font-light tracking-tight leading-[0.95] mb-10">Thank you for your order</h1>
+      <p className="font-sans text-xs tracking-widest uppercase text-muted mb-4">
+        Order ID: <span data-testid="order-id" className="font-mono text-foreground">{params.id}</span>
       </p>
-      <p data-testid="payment-status" className="text-xl font-bold text-amber-700 dark:text-amber-400">{status}</p>
+      <p data-testid="payment-status" className="font-serif text-2xl font-light italic text-accent">{status}</p>
       {explanation && (
-        <p data-testid="payment-explanation" className="text-stone-500 mt-4 dark:text-stone-400">{explanation}</p>
+        <p data-testid="payment-explanation" className="font-serif text-base font-light text-muted mt-6 max-w-md mx-auto leading-relaxed">{explanation}</p>
       )}
     </div>
   );

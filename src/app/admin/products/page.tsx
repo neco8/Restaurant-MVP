@@ -23,12 +23,17 @@ export default function AdminProductsPage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-6 py-12">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-4xl font-extrabold tracking-tight">Products</h1>
+    <div className="max-w-5xl mx-auto px-6 py-16 sm:py-24">
+      <div className="flex items-center justify-between mb-12">
+        <div>
+          <p className="font-sans text-[0.65rem] font-light tracking-widest-3 uppercase text-muted mb-4">
+            Administration
+          </p>
+          <h1 className="font-serif text-5xl sm:text-6xl font-light tracking-tight leading-[0.9]">Products</h1>
+        </div>
         <Link
           href={ROUTES.ADMIN_PRODUCTS_NEW}
-          className="rounded-lg bg-amber-600 px-4 py-2 text-white font-semibold hover:bg-amber-700 transition-colors"
+          className="font-sans text-xs font-medium tracking-widest-2 uppercase bg-foreground text-background px-8 py-3 hover:bg-accent transition-colors duration-300"
         >
           Add Product
         </Link>
