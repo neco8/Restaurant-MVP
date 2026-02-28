@@ -27,11 +27,14 @@ function PaymentForm({ paymentIntentId }: { paymentIntentId: string }) {
     });
 
     if (result.error) {
-      setError(result.error.message ?? "Payment failed");
+      setError(result.error.message || "Payment failed");
       setLoading(false);
     } else if (result.paymentIntent?.status === "succeeded" || result.paymentIntent?.status === "processing") {
       clearCart();
       router.push(ROUTES.ORDER_COMPLETE(paymentIntentId));
+    } else {
+      setError("Payment failed");
+      setLoading(false);
     }
   }
 
