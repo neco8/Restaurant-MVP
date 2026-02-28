@@ -60,10 +60,10 @@ export default function Home() {
               </div>
               <div className="flex flex-col justify-center">
                 <p className="font-serif text-2xl sm:text-3xl font-light tracking-wide text-foreground mb-1">
-                  {dish.japanese}
-                </p>
-                <p className="font-sans text-[0.65rem] font-medium tracking-widest-2 uppercase text-accent mb-4">
                   {dish.english}
+                </p>
+                <p className="font-sans text-[0.65rem] font-light tracking-widest-2 text-muted mb-4">
+                  {dish.japanese}
                 </p>
                 <p className="font-serif text-sm font-light leading-relaxed text-muted mb-4">
                   {dish.description}
