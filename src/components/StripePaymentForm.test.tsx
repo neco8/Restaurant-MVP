@@ -204,6 +204,49 @@ describe("StripePaymentForm structure", () => {
   });
 });
 
+describe("when confirmPayment returns error with empty message", () => {
+  it("shows fallback error message instead of blank alert", async () => {
+    mockConfirmPayment.mockResolvedValue({
+      error: { message: "" },
+    });
+
+    render(
+      <StripePaymentForm
+        clientSecret="pi_test_secret"
+        paymentIntentId="pi_test_123"
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Place Order" }));
+
+    await waitFor(() => {
+      expect(screen.getByRole("alert")).toHaveTextContent("Payment failed");
+    });
+  });
+});
+
+describe("when confirmPayment returns unexpected status", () => {
+  it("shows error and resets loading for unhandled payment status", async () => {
+    mockConfirmPayment.mockResolvedValue({
+      paymentIntent: { id: "pi_123", status: "requires_action" },
+    });
+
+    render(
+      <StripePaymentForm
+        clientSecret="pi_test_secret"
+        paymentIntentId="pi_test_123"
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Place Order" }));
+
+    await waitFor(() => {
+      expect(screen.getByRole("alert")).toHaveTextContent("Payment failed");
+    });
+    expect(screen.getByRole("button", { name: "Place Order" })).toBeEnabled();
+  });
+});
+
 describe("when Stripe.js fails to load", () => {
   it("shows error message instead of payment form", async () => {
     const { loadStripe } = await import("@stripe/stripe-js");
