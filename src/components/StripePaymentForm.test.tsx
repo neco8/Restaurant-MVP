@@ -247,40 +247,6 @@ describe("when confirmPayment returns unexpected status", () => {
   });
 });
 
-describe("when confirmPayment hangs (never resolves)", () => {
-  beforeEach(() => {
-    vi.useFakeTimers({ shouldAdvanceTime: true });
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
-  });
-
-  it("shows timeout error and resets loading after 30 seconds", async () => {
-    // confirmPayment returns a promise that never resolves
-    mockConfirmPayment.mockReturnValue(new Promise(() => {}));
-
-    render(
-      <StripePaymentForm
-        clientSecret="pi_test_secret"
-        paymentIntentId="pi_test_123"
-      />
-    );
-
-    fireEvent.click(screen.getByRole("button", { name: "Place Order" }));
-
-    // Advance past the 30s timeout
-    await vi.advanceTimersByTimeAsync(30_000);
-
-    await waitFor(() => {
-      expect(screen.getByRole("alert")).toHaveTextContent(
-        "Payment timed out. Please try again."
-      );
-    });
-    expect(screen.getByRole("button", { name: "Place Order" })).toBeEnabled();
-  });
-});
-
 describe("when Stripe.js fails to load", () => {
   it("shows error message instead of payment form", async () => {
     const { loadStripe } = await import("@stripe/stripe-js");

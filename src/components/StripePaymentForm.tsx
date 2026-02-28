@@ -6,8 +6,6 @@ import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-
 import { useRouter } from "next/navigation";
 import { ROUTES, clearCart } from "@/lib";
 
-const PAYMENT_TIMEOUT_MS = 30_000;
-
 function PaymentForm({ paymentIntentId }: { paymentIntentId: string }) {
   const stripe = useStripe();
   const elements = useElements();
@@ -22,35 +20,20 @@ function PaymentForm({ paymentIntentId }: { paymentIntentId: string }) {
     setLoading(true);
     setError(null);
 
-    try {
-      const timeoutPromise = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error("PAYMENT_TIMEOUT")), PAYMENT_TIMEOUT_MS)
-      );
-      const result = await Promise.race([
-        stripe.confirmPayment({
-          elements,
-          confirmParams: {},
-          redirect: "if_required",
-        }),
-        timeoutPromise,
-      ]);
+    const result = await stripe.confirmPayment({
+      elements,
+      confirmParams: {},
+      redirect: "if_required",
+    });
 
-      if (result.error) {
-        setError(result.error.message || "Payment failed");
-        setLoading(false);
-      } else if (result.paymentIntent?.status === "succeeded" || result.paymentIntent?.status === "processing") {
-        clearCart();
-        router.push(ROUTES.ORDER_COMPLETE(paymentIntentId));
-      } else {
-        setError("Payment failed");
-        setLoading(false);
-      }
-    } catch (err) {
-      if (err instanceof Error && err.message === "PAYMENT_TIMEOUT") {
-        setError("Payment timed out. Please try again.");
-      } else {
-        setError("Payment failed");
-      }
+    if (result.error) {
+      setError(result.error.message || "Payment failed");
+      setLoading(false);
+    } else if (result.paymentIntent?.status === "succeeded" || result.paymentIntent?.status === "processing") {
+      clearCart();
+      router.push(ROUTES.ORDER_COMPLETE(paymentIntentId));
+    } else {
+      setError("Payment failed");
       setLoading(false);
     }
   }
