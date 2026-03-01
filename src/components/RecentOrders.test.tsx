@@ -86,3 +86,48 @@ test("calls onStatusUpdate callback when status dropdown changes", async () => {
 
   expect(mockOnStatusUpdate).toHaveBeenCalledWith("ORDER-001", "preparing");
 });
+
+test("does not show view all link when totalCount is 5 or less", () => {
+  const testOrders: Order[] = [
+    {
+      id: "ORDER-001",
+      status: "done",
+      total: 2500,
+      createdAt: "2026-03-01T10:30:00Z",
+    },
+    {
+      id: "ORDER-002",
+      status: "preparing",
+      total: 3500,
+      createdAt: "2026-03-01T10:15:00Z",
+    },
+  ];
+
+  render(<RecentOrders orders={testOrders} totalCount={2} />);
+
+  const viewAllLink = screen.queryByRole("link", { name: "すべての注文を見る" });
+  expect(viewAllLink).not.toBeInTheDocument();
+});
+
+test("shows view all link to /admin/orders when totalCount exceeds 5", () => {
+  const testOrders: Order[] = [
+    {
+      id: "ORDER-001",
+      status: "done",
+      total: 2500,
+      createdAt: "2026-03-01T10:30:00Z",
+    },
+    {
+      id: "ORDER-002",
+      status: "preparing",
+      total: 3500,
+      createdAt: "2026-03-01T10:15:00Z",
+    },
+  ];
+
+  render(<RecentOrders orders={testOrders} totalCount={7} />);
+
+  const viewAllLink = screen.getByRole("link", { name: "すべての注文を見る" });
+  expect(viewAllLink).toBeInTheDocument();
+  expect(viewAllLink).toHaveAttribute("href", "/admin/orders");
+});
