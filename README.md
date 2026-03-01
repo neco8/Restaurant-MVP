@@ -31,6 +31,7 @@ Each test suite seeds its own fixed-ID records with `beforeAll` and cleans them 
 - **Prisma** + **PostgreSQL** (Neon)
 - **Stripe** (payments)
 - **Vercel Blob** (image storage)
+- **Tailwind CSS**
 - **Vitest** + **Playwright**
 - **neverthrow** (type-safe error handling)
 
