@@ -21,3 +21,11 @@ test("does not redirect requests to /admin/login", () => {
 
   expect(response.status).not.toBe(307);
 });
+
+test("does not redirect requests to / (public page)", () => {
+  const request = new NextRequest(new URL("http://localhost:3000/"));
+
+  const response = middleware(request);
+
+  expect(response.status).not.toBe(307);
+});
