@@ -15,7 +15,6 @@ Several non-obvious failure modes were handled explicitly:
 - **Stale cart items**: the cart is stored in localStorage. If a product is deleted after being added to cart, sending those IDs to the payment intent API returns an error and the payment form never appears. The fix: fetch products first, filter the cart through them, then create the payment intent only with validated items.
 - **Double-charge prevention**: `processing` status (ACH and other async payment methods) is treated the same as `succeeded` — clear cart and redirect immediately. Without this, customers on a frozen UI retry and get charged twice.
 - **Server-side payment verification**: the order confirmation page re-verifies payment status directly with Stripe rather than trusting the client-side redirect. A manipulated URL cannot fake a successful payment.
-- **Timeout as symptom suppression**: a 30-second `Promise.race` timeout was added to fix a flaky E2E test, then removed. The timeout introduced a race condition — if `confirmPayment` takes longer than 30s (e.g. 3D Secure), the timeout fires but the charge still goes through, with no order record. The actual root cause was a `??` vs `||` bug in the error message path.
 
 ### Schema design
 
