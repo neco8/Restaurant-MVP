@@ -3,6 +3,9 @@ import AdminDashboardPage from "./page";
 
 beforeEach(() => {
   vi.clearAllMocks();
+  global.fetch = vi.fn().mockResolvedValue({
+    json: () => Promise.resolve({ orders: [], totalCount: 0 }),
+  });
 });
 
 test("renders dashboard heading and navigation links", () => {
