@@ -35,3 +35,17 @@ test("displays formatted date in order row", () => {
 
   expect(screen.getByText(/2026/)).toBeInTheDocument();
 });
+
+test("order row contains link to admin order detail page", () => {
+  const testOrder: Order = {
+    id: "ORDER-001",
+    status: "completed",
+    total: 2500,
+    createdAt: "2026-03-01T10:30:00Z",
+  };
+
+  render(<RecentOrders orders={[testOrder]} />);
+
+  const link = screen.getByRole("link", { name: /ORDER-001/ });
+  expect(link).toHaveAttribute("href", "/admin/orders/ORDER-001");
+});
