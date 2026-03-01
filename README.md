@@ -1,22 +1,37 @@
-# Restaurant MVP
+# 蓮華 (Renge) — Restaurant Ordering System
 
-A Japanese restaurant ordering system built with Next.js. Customers can browse the menu, add items to cart, and pay with Stripe. Staff can manage products and orders from an admin dashboard.
+A full-stack restaurant ordering MVP. Customers browse the menu, add to cart, and pay with Stripe. Staff manage products and orders through an admin dashboard.
 
-## Features
+## Technical highlights
 
-- Menu browsing and product detail pages
-- Shopping cart
-- Checkout with Stripe payment
-- Admin dashboard: product management (create, edit, list)
-- Admin dashboard: order list with status updates
+### Stripe E2E testing against real test credentials
 
-## Tech Stack
+Rather than mocking Stripe in E2E tests, this project runs against Stripe's actual test environment. Stripe's PaymentElement renders inside dynamically-loaded iframes with no stable selectors, so a frame-traversal helper polls all frames until the target input appears. CI environments with restricted outbound networks required an additional proxy-aware Stripe client configuration.
 
-- **Next.js 14** (App Router)
-- **Prisma** + **PostgreSQL** (via Neon)
+### Payment correctness under edge cases
+
+Several non-obvious failure modes were handled explicitly:
+
+- **Stale cart items**: the cart is stored in localStorage. If a product is deleted after being added to cart, sending those IDs to the payment intent API returns an error and the payment form never appears. The fix: fetch products first, filter the cart through them, then create the payment intent only with validated items.
+- **Double-charge prevention**: `processing` status (ACH and other async payment methods) is treated the same as `succeeded` — clear cart and redirect immediately. Without this, customers on a frozen UI retry and get charged twice.
+- **Server-side payment verification**: the order confirmation page re-verifies payment status directly with Stripe rather than trusting the client-side redirect. A manipulated URL cannot fake a successful payment.
+- **Timeout as symptom suppression**: a 30-second `Promise.race` timeout was added to fix a flaky E2E test, then removed. The timeout introduced a race condition — if `confirmPayment` takes longer than 30s (e.g. 3D Secure), the timeout fires but the charge still goes through, with no order record. The actual root cause was a `??` vs `||` bug in the error message path.
+
+### Schema design
+
+Prices are stored as `Int` (cents) throughout — in the database, API, and cart state. No floating-point arithmetic in the payment path. `OrderItem` captures price at the time of order, not a reference to the current product price, so order history remains accurate after price changes.
+
+### Test data isolation in E2E
+
+Each test suite seeds its own fixed-ID records with `beforeAll` and cleans them up with `afterAll`. Tests never depend on production data and never pollute each other, which makes parallel test runs safe against a shared database.
+
+## Tech stack
+
+- **Next.js 14** (App Router) + TypeScript
+- **Prisma** + **PostgreSQL** (Neon)
 - **Stripe** (payments)
 - **Vercel Blob** (image storage)
-- **Tailwind CSS**
+- **Vitest** + **Playwright**
 - **neverthrow** (type-safe error handling)
 
 ## Setup
@@ -28,8 +43,6 @@ npm install
 ```
 
 ### 2. Configure environment variables
-
-Copy `.env.local.example` to `.env.local` and fill in the values:
 
 ```bash
 cp .env.local.example .env.local
@@ -58,9 +71,9 @@ Open [http://localhost:3000](http://localhost:3000).
 ## Testing
 
 ```bash
-# Unit tests (Vitest)
+# Unit tests
 npm run test:run
 
-# E2E tests (Playwright) — requires a running dev server and database
+# E2E tests (requires running dev server and database)
 npx playwright test
 ```
