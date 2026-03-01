@@ -1,3 +1,4 @@
+import bcrypt from "bcryptjs";
 import pg from "pg";
 
 function createPool() {
@@ -17,8 +18,13 @@ export async function seedTestAdmin({
 }): Promise<void> {
   const pool = createPool();
   try {
-    // TODO: implement admin seeding once the admin auth schema exists
-    throw new Error("seedTestAdmin not yet implemented");
+    const passwordHash = await bcrypt.hash(password, 10);
+    await pool.query(
+      `INSERT INTO "Admin" (id, email, "passwordHash", "createdAt")
+       VALUES (gen_random_uuid(), $1, $2, NOW())
+       ON CONFLICT (email) DO UPDATE SET "passwordHash" = $2`,
+      [email, passwordHash]
+    );
   } finally {
     await pool.end();
   }
@@ -27,8 +33,7 @@ export async function seedTestAdmin({
 export async function cleanupTestAdmin(email: string): Promise<void> {
   const pool = createPool();
   try {
-    // TODO: implement admin cleanup once the admin auth schema exists
-    throw new Error("cleanupTestAdmin not yet implemented");
+    await pool.query(`DELETE FROM "Admin" WHERE email = $1`, [email]);
   } finally {
     await pool.end();
   }

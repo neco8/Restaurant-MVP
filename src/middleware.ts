@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 
+export const config = {
+  matcher: ["/admin/:path*"],
+};
+
 export const middleware = async (request: NextRequest): Promise<NextResponse> => {
   if (
     request.nextUrl.pathname.startsWith("/admin") &&
