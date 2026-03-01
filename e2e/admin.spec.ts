@@ -5,6 +5,7 @@ import {
   cleanupProductsByName,
   type TestProduct,
 } from "./helpers/test-data";
+import { ensureAdminSeeded, loginAsAdmin } from "./helpers/admin-login";
 
 // ── Isolated test data per group ──────────────────────────────────
 
@@ -51,15 +52,18 @@ test.describe("Admin Product Display", () => {
   const productIds = DISPLAY_PRODUCTS.map((p) => p.id);
 
   test.beforeAll(async () => {
+    await ensureAdminSeeded();
     await cleanupProducts(productIds);
     await seedTestProducts(DISPLAY_PRODUCTS);
   });
 
   test.afterAll(async () => {
     await cleanupProducts(productIds);
+
   });
 
   test("displays products in the admin product list", async ({ page }) => {
+    await loginAsAdmin(page);
     await page.goto("/admin/products");
 
     for (const product of DISPLAY_PRODUCTS) {
@@ -74,14 +78,17 @@ test.describe("Admin Product Display", () => {
 
 test.describe("Admin Product Add", () => {
   test.beforeAll(async () => {
+    await ensureAdminSeeded();
     await cleanupProductsByName([ADD_PRODUCT_NAME]);
   });
 
   test.afterAll(async () => {
     await cleanupProductsByName([ADD_PRODUCT_NAME]);
+
   });
 
   test("adds a new product via the admin form", async ({ page }) => {
+    await loginAsAdmin(page);
     await page.goto("/admin/products/new");
 
     await page.getByLabel("Name").fill(ADD_PRODUCT_NAME);
@@ -100,6 +107,7 @@ test.describe("Admin Product Add", () => {
 
 test.describe("Admin Product Edit", () => {
   test.beforeAll(async () => {
+    await ensureAdminSeeded();
     await cleanupProducts([EDIT_PRODUCT.id]);
     await cleanupProductsByName([EDITED_NAME]);
     await seedTestProducts([EDIT_PRODUCT]);
@@ -108,9 +116,11 @@ test.describe("Admin Product Edit", () => {
   test.afterAll(async () => {
     await cleanupProducts([EDIT_PRODUCT.id]);
     await cleanupProductsByName([EDITED_NAME]);
+
   });
 
   test("edits an existing product via the admin form", async ({ page }) => {
+    await loginAsAdmin(page);
     await page.goto("/admin/products");
 
     await page
@@ -134,15 +144,18 @@ test.describe("Admin Product Edit", () => {
 
 test.describe("Admin Product Delete", () => {
   test.beforeAll(async () => {
+    await ensureAdminSeeded();
     await cleanupProducts([DELETE_PRODUCT.id]);
     await seedTestProducts([DELETE_PRODUCT]);
   });
 
   test.afterAll(async () => {
     await cleanupProducts([DELETE_PRODUCT.id]);
+
   });
 
   test("deletes a product from the admin list", async ({ page }) => {
+    await loginAsAdmin(page);
     await page.goto("/admin/products");
 
     await expect(
