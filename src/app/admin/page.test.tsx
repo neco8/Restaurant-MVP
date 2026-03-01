@@ -8,3 +8,9 @@ test("renders dashboard heading and navigation links", () => {
   expect(screen.getByRole("link", { name: "Products" })).toBeInTheDocument();
   expect(screen.getByRole("link", { name: "Orders" })).toBeInTheDocument();
 });
+
+test("renders recent orders section on dashboard", () => {
+  render(<AdminDashboardPage />);
+
+  expect(screen.getByText("最近の注文")).toBeInTheDocument();
+});
