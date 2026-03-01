@@ -15,7 +15,7 @@ export default function RecentOrders({ orders }: { orders: Order[] }) {
       <tbody>
         {orders.map((order) => (
           <tr key={order.id}>
-            <td>{order.id}</td>
+            <td><a href={`/admin/orders/${order.id}`}>{order.id}</a></td>
             <td>{new Date(order.createdAt).toLocaleDateString("ja-JP")}</td>
             <td>¥{order.total.toLocaleString("ja-JP")}</td>
             <td>{order.status}</td>
