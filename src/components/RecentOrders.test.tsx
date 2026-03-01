@@ -22,3 +22,16 @@ test("displays table with order information when orders exist", () => {
   expect(screen.getByText("¥2,500")).toBeInTheDocument();
   expect(screen.getByText("completed")).toBeInTheDocument();
 });
+
+test("displays formatted date in order row", () => {
+  const testOrder: Order = {
+    id: "ORDER-001",
+    status: "completed",
+    total: 2500,
+    createdAt: "2026-03-01T10:30:00Z",
+  };
+
+  render(<RecentOrders orders={[testOrder]} />);
+
+  expect(screen.getByText(/2026/)).toBeInTheDocument();
+});
