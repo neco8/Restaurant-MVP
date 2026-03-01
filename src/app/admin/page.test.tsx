@@ -14,3 +14,9 @@ test("renders recent orders section on dashboard", () => {
 
   expect(screen.getByText("最近の注文")).toBeInTheDocument();
 });
+
+test("displays empty orders message when no orders exist", () => {
+  render(<AdminDashboardPage />);
+
+  expect(screen.getByText("まだ注文はありません")).toBeInTheDocument();
+});
