@@ -1,3 +1,4 @@
+import bcrypt from "bcryptjs";
 import { verifyAdminCredentials } from "./auth";
 import { findAdminByEmail } from "@/lib/admin-repository";
 
@@ -17,4 +18,22 @@ test("returns false when no admin exists with that email", async () => {
 
   expect(result).toBe(false);
   expect(mockFindAdminByEmail).toHaveBeenCalledWith("nonexistent@example.com");
+});
+
+test("returns true when admin exists and password matches hash", async () => {
+  const passwordHash = bcrypt.hashSync("correct-password", 10);
+
+  mockFindAdminByEmail.mockResolvedValue({
+    id: "1",
+    email: "admin@test.com",
+    passwordHash,
+  });
+
+  const result = await verifyAdminCredentials(
+    "admin@test.com",
+    "correct-password"
+  );
+
+  expect(result).toBe(true);
+  expect(mockFindAdminByEmail).toHaveBeenCalledWith("admin@test.com");
 });
