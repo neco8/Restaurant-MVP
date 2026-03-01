@@ -16,6 +16,7 @@ export default function RecentOrders({ orders }: { orders: Order[] }) {
         {orders.map((order) => (
           <tr key={order.id}>
             <td>{order.id}</td>
+            <td>{new Date(order.createdAt).toLocaleDateString("ja-JP")}</td>
             <td>¥{order.total.toLocaleString("ja-JP")}</td>
             <td>{order.status}</td>
           </tr>
