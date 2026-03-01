@@ -1,5 +1,12 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { login } from "./actions";
+
+vi.mock("@/lib/auth", () => ({
+  verifyAdminCredentials: vi.fn(
+    async (email: string, password: string): Promise<boolean> =>
+      email === "admin@restaurant.com" && password === "correct-password"
+  ),
+}));
 
 describe("login", () => {
   it("should return error when credentials are invalid", async () => {
@@ -12,5 +19,14 @@ describe("login", () => {
       success: false,
       error: "Invalid email or password",
     });
+  });
+
+  it("should return success when credentials are valid", async () => {
+    const result = await login({
+      email: "admin@restaurant.com",
+      password: "correct-password",
+    });
+
+    expect(result).toEqual({ success: true });
   });
 });
