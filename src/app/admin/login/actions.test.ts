@@ -8,7 +8,9 @@ vi.mock("@/lib/auth", () => ({
   ),
 }));
 
-const mockCreateSession = vi.fn();
+const { mockCreateSession } = vi.hoisted(() => ({
+  mockCreateSession: vi.fn(),
+}));
 vi.mock("@/lib/session", () => ({
   createSession: mockCreateSession,
 }));
