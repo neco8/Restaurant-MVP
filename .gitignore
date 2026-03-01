@@ -46,3 +46,6 @@ dev.db
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# local images (host on CDN in production)
+/public/images/
