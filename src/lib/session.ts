@@ -21,3 +21,8 @@ export function getSession(
   const email = match.slice("session=".length);
   return { email };
 }
+
+export async function destroySession(): Promise<void> {
+  const cookieStore = await cookies();
+  cookieStore.delete("session");
+}
