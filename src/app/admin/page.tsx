@@ -1,4 +1,7 @@
+"use client";
+
 import AdminNav from "@/components/AdminNav";
+import { logout } from "@/app/admin/actions";
 
 export default function AdminDashboardPage() {
   return (
@@ -10,6 +13,7 @@ export default function AdminDashboardPage() {
         </p>
         <h1 className="font-serif text-5xl sm:text-6xl font-light tracking-tight leading-[0.9]">Dashboard</h1>
       </div>
+      <button onClick={() => logout()}>Log out</button>
     </div>
   );
 }
