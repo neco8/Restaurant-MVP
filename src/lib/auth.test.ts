@@ -8,16 +8,22 @@ vi.mock("@/lib/admin-repository", () => ({
 
 const mockFindAdminByEmail = findAdminByEmail as ReturnType<typeof vi.fn>;
 
+const fakePrisma = {} as Parameters<typeof verifyAdminCredentials>[0];
+
 test("returns false when no admin exists with that email", async () => {
   mockFindAdminByEmail.mockResolvedValue(null);
 
   const result = await verifyAdminCredentials(
+    fakePrisma,
     "nonexistent@example.com",
     "any-password"
   );
 
   expect(result).toBe(false);
-  expect(mockFindAdminByEmail).toHaveBeenCalledWith("nonexistent@example.com");
+  expect(mockFindAdminByEmail).toHaveBeenCalledWith(
+    fakePrisma,
+    "nonexistent@example.com"
+  );
 });
 
 test("returns true when admin exists and password matches hash", async () => {
@@ -30,10 +36,14 @@ test("returns true when admin exists and password matches hash", async () => {
   });
 
   const result = await verifyAdminCredentials(
+    fakePrisma,
     "admin@test.com",
     "correct-password"
   );
 
   expect(result).toBe(true);
-  expect(mockFindAdminByEmail).toHaveBeenCalledWith("admin@test.com");
+  expect(mockFindAdminByEmail).toHaveBeenCalledWith(
+    fakePrisma,
+    "admin@test.com"
+  );
 });
