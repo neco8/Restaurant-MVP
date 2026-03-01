@@ -6,10 +6,6 @@ test.describe("Admin Navigation", () => {
     await ensureAdminSeeded();
   });
 
-  test.afterAll(async () => {
-
-  });
-
   test("navigates from products to orders via nav link", async ({ page }) => {
     await loginAsAdmin(page);
     await page.goto("/admin/products");

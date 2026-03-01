@@ -6,10 +6,6 @@ test.describe("Admin Dashboard", () => {
     await ensureAdminSeeded();
   });
 
-  test.afterAll(async () => {
-
-  });
-
   test("displays dashboard with links to Products and Orders", async ({ page }) => {
     await loginAsAdmin(page);
 

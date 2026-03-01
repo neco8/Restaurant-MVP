@@ -304,10 +304,6 @@ test.describe("Admin Dashboard Recent Orders — status update", () => {
     await cleanupProducts(productIds);
   });
 
-  test.afterAll(async () => {
-
-  });
-
   test("can change order status via dropdown and it persists after reload", async ({
     page,
   }) => {

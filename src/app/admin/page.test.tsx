@@ -7,6 +7,10 @@ vi.mock("@/app/admin/actions", () => ({
   logout: vi.fn(),
 }));
 
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: vi.fn() }),
+}));
+
 beforeEach(() => {
   vi.clearAllMocks();
   global.fetch = vi.fn().mockResolvedValue({

@@ -3,6 +3,11 @@ import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
 import RecentOrders from "./RecentOrders";
 
+const mockPush = vi.fn();
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: mockPush }),
+}));
+
 type Order = { id: string; status: string; total: number; createdAt: string };
 
 test("displays empty state message when orders array is empty", () => {
