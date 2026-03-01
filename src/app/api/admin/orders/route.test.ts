@@ -4,6 +4,7 @@ vi.mock("@/server/prismaClient", () => ({
   prisma: {
     order: {
       findMany: vi.fn(),
+      count: vi.fn(),
     },
   },
 }));
@@ -11,6 +12,7 @@ vi.mock("@/server/prismaClient", () => ({
 import { prisma } from "@/server/prismaClient";
 
 const mockFindMany = vi.mocked(prisma.order.findMany);
+const mockCount = vi.mocked(prisma.order.count);
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -197,6 +199,7 @@ describe("GET /api/admin/orders", () => {
     ] as never;
 
     mockFindMany.mockResolvedValue(sevenOrders.slice(0, 5));
+    mockCount.mockResolvedValue(7);
 
     const request = new Request("http://localhost:3000/api/admin/orders?limit=5");
     const res = await GET(request);
