@@ -57,8 +57,6 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Testing
 
-Tests are the single source of truth for what this system does. Read them to understand behavior.
-
 ```bash
 # Unit tests (Vitest)
 npm run test:run
@@ -66,7 +64,3 @@ npm run test:run
 # E2E tests (Playwright) — requires a running dev server and database
 npx playwright test
 ```
-
-## Development
-
-This project follows strict TDD with a Walking Skeleton approach. See [CLAUDE.md](./CLAUDE.md) for the full development philosophy and commit conventions.
