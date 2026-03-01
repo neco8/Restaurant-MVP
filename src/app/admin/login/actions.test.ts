@@ -8,6 +8,11 @@ vi.mock("@/lib/auth", () => ({
   ),
 }));
 
+const mockCreateSession = vi.fn();
+vi.mock("@/lib/session", () => ({
+  createSession: mockCreateSession,
+}));
+
 describe("login", () => {
   it("should return error when credentials are invalid", async () => {
     const result = await login({
@@ -28,5 +33,14 @@ describe("login", () => {
     });
 
     expect(result).toEqual({ success: true });
+  });
+
+  it("should create a session when credentials are valid", async () => {
+    await login({
+      email: "admin@restaurant.com",
+      password: "correct-password",
+    });
+
+    expect(mockCreateSession).toHaveBeenCalled();
   });
 });
