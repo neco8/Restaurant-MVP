@@ -3,9 +3,14 @@ import userEvent from "@testing-library/user-event";
 import AdminLoginPage from "./page";
 
 const mockLogin = vi.fn();
+const mockPush = vi.fn();
 
 vi.mock("@/app/admin/login/actions", () => ({
   login: (...args: unknown[]) => mockLogin(...args),
+}));
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: mockPush }),
 }));
 
 test("renders email input, password input, and log in button", () => {
@@ -44,4 +49,17 @@ test("displays error message when login returns failure", async () => {
   await user.click(screen.getByRole("button", { name: "Log in" }));
 
   expect(await screen.findByText("Invalid email or password")).toBeInTheDocument();
+});
+
+test("redirects to /admin when login returns success", async () => {
+  mockLogin.mockResolvedValueOnce({ success: true });
+
+  const user = userEvent.setup();
+  render(<AdminLoginPage />);
+
+  await user.type(screen.getByLabelText("Email"), "admin@example.com");
+  await user.type(screen.getByLabelText("Password"), "secret123");
+  await user.click(screen.getByRole("button", { name: "Log in" }));
+
+  expect(mockPush).toHaveBeenCalledWith("/admin");
 });
