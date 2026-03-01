@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 
 type RouteParams = { params: Promise<{ id: string }> };
 
-const VALID_STATUSES = ["pending", "completed"];
+const VALID_STATUSES = ["pending", "preparing", "done"];
 
 export async function PUT(request: Request, context: RouteParams) {
   const { id } = await context.params;

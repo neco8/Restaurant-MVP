@@ -32,20 +32,20 @@ describe("PUT /api/admin/orders/[id]", () => {
   test("updates order status and returns updated order", async () => {
     mockUpdate.mockResolvedValue({
       id: "o1",
-      status: "completed",
+      status: "pending",
       total: 2700,
       createdAt: new Date("2026-01-15T10:00:00.000Z"),
       updatedAt: new Date(),
     } as never);
 
-    const res = await PUT(createRequest({ status: "completed" }), createContext("o1"));
+    const res = await PUT(createRequest({ status: "pending" }), createContext("o1"));
     const data = await res.json();
 
     expect(res.status).toBe(200);
-    expect(data).toEqual({ id: "o1", status: "completed" });
+    expect(data).toEqual({ id: "o1", status: "pending" });
     expect(mockUpdate).toHaveBeenCalledWith({
       where: { id: "o1" },
-      data: { status: "completed" },
+      data: { status: "pending" },
     });
   });
 
