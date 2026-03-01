@@ -8,7 +8,7 @@ test.describe("Homepage — Renge Japanese-Chinese Restaurant", () => {
       page.getByRole("heading", { level: 1, name: /renge/i })
     ).toBeVisible();
 
-    await expect(page.getByText("蓮華")).toBeVisible();
+    await expect(page.getByText("蓮華").first()).toBeVisible();
 
     await expect(
       page.getByText(/classical japanese-chinese cuisine/i)

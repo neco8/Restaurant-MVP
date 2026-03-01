@@ -95,8 +95,11 @@ test("checkout: browse menu → add to cart → pay → order confirmed → cart
   await fillStripePayment(page);
   await page.getByRole("button", { name: "Place Order" }).click();
 
+  // Wait for redirect to order confirmation
+  await page.waitForURL(/\/orders\/.+\/complete/, { timeout: 60_000 });
+
   // Order confirmed
-  await expect(page).toHaveURL(/\/orders\/.+\/complete/, { timeout: 30_000 });
+  await expect(page).toHaveURL(/\/orders\/.+\/complete/);
   await expect(page.getByRole("heading", { name: "Thank you for your order" })).toBeVisible();
   await expect(page.getByTestId("payment-status")).toHaveText("Payment Complete");
 
