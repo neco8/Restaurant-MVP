@@ -1,3 +1,7 @@
 "use server";
 
-export async function logout() {}
+import { destroySession } from "@/lib/session";
+
+export async function logout() {
+  await destroySession();
+}
