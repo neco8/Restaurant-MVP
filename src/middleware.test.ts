@@ -1,11 +1,11 @@
 import { vi } from "vitest";
 import { NextRequest } from "next/server";
 
-vi.mock("@/lib/session", () => ({
+vi.mock("@/server/session", () => ({
   getSession: vi.fn(),
 }));
 
-import { getSession } from "@/lib/session";
+import { getSession } from "@/server/session";
 import { middleware } from "@/middleware";
 
 const mockedGetSession = vi.mocked(getSession);
