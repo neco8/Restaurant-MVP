@@ -1,9 +1,13 @@
+import bcrypt from "bcryptjs";
 import { findAdminByEmail } from "@/lib/admin-repository";
 
 export async function verifyAdminCredentials(
   email: string,
-  _password: string
+  password: string
 ): Promise<boolean> {
-  await findAdminByEmail(email);
-  return false;
+  const admin = await findAdminByEmail(email);
+  if (!admin) {
+    return false;
+  }
+  return bcrypt.compare(password, admin.passwordHash);
 }
