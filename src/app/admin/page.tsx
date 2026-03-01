@@ -24,6 +24,19 @@ export default function AdminDashboardPage() {
       });
   }, []);
 
+  const handleStatusUpdate = (orderId: string, newStatus: string) => {
+    fetch(`/api/admin/orders/${orderId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: newStatus }),
+    });
+    setOrders((prev) =>
+      prev.map((order) =>
+        order.id === orderId ? { ...order, status: newStatus } : order
+      )
+    );
+  };
+
   return (
     <div className="max-w-5xl mx-auto px-6 py-16 sm:py-24">
       <AdminNav />
@@ -34,7 +47,7 @@ export default function AdminDashboardPage() {
         <h1 className="font-serif text-5xl sm:text-6xl font-light tracking-tight leading-[0.9]">Dashboard</h1>
       </div>
       <h2>最近の注文</h2>
-      <RecentOrders orders={orders} totalCount={totalCount} />
+      <RecentOrders orders={orders} totalCount={totalCount} onStatusUpdate={handleStatusUpdate} />
     </div>
   );
 }
