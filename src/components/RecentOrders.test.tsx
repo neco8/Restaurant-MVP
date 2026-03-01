@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import RecentOrders from "./RecentOrders";
 
 type Order = { id: string; status: string; total: number; createdAt: string };
@@ -48,4 +48,21 @@ test("order row contains link to admin order detail page", () => {
 
   const link = screen.getByRole("link", { name: /ORDER-001/ });
   expect(link).toHaveAttribute("href", "/admin/orders/ORDER-001");
+});
+
+test("status in order row is rendered as a dropdown combobox", () => {
+  const testOrder: Order = {
+    id: "ORDER-001",
+    status: "pending",
+    total: 2500,
+    createdAt: "2026-03-01T10:30:00Z",
+  };
+
+  render(<RecentOrders orders={[testOrder]} />);
+
+  const combobox = screen.getByRole("combobox");
+  expect(combobox).toHaveValue("pending");
+
+  const options = within(combobox).getAllByRole("option");
+  expect(options).toHaveLength(3);
 });
