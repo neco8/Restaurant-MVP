@@ -101,9 +101,23 @@ describe("PUT /api/admin/orders/[id]", () => {
     });
   });
 
-  test("rejects completed as an invalid status", async () => {
-    const res = await PUT(createRequest({ status: "completed" }), createContext("o1"));
+  test("accepts completed as a valid status", async () => {
+    mockUpdate.mockResolvedValue({
+      id: "o1",
+      status: "completed",
+      total: 2700,
+      createdAt: new Date("2026-01-15T10:00:00.000Z"),
+      updatedAt: new Date(),
+    } as never);
 
-    expect(res.status).toBe(400);
+    const res = await PUT(createRequest({ status: "completed" }), createContext("o1"));
+    const data = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(data).toEqual({ id: "o1", status: "completed" });
+    expect(mockUpdate).toHaveBeenCalledWith({
+      where: { id: "o1" },
+      data: { status: "completed" },
+    });
   });
 });
