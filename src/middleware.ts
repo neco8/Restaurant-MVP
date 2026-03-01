@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getSession } from "@/lib/session";
 
-export const middleware = (request: NextRequest): NextResponse => {
+export const middleware = async (request: NextRequest): Promise<NextResponse> => {
   if (
     request.nextUrl.pathname.startsWith("/admin") &&
     request.nextUrl.pathname !== "/admin/login"
   ) {
-    return NextResponse.redirect(new URL("/admin/login", request.url));
+    const session = await getSession(request);
+    if (!session) {
+      return NextResponse.redirect(new URL("/admin/login", request.url));
+    }
   }
   return NextResponse.next();
 };
