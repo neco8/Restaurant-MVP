@@ -4,8 +4,17 @@ type Admin = {
   readonly passwordHash: string;
 };
 
+type PrismaClient = {
+  readonly admin: {
+    readonly findUnique: (args: {
+      readonly where: { readonly email: string };
+    }) => Promise<Admin | null>;
+  };
+};
+
 export async function findAdminByEmail(
-  _email: string
+  prisma: PrismaClient,
+  email: string
 ): Promise<Admin | null> {
-  return null;
+  return prisma.admin.findUnique({ where: { email } });
 }
