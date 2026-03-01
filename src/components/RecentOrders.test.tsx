@@ -1,4 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { vi } from "vitest";
 import RecentOrders from "./RecentOrders";
 
 type Order = { id: string; status: string; total: number; createdAt: string };
@@ -65,4 +67,22 @@ test("status in order row is rendered as a dropdown combobox", () => {
 
   const options = within(combobox).getAllByRole("option");
   expect(options).toHaveLength(3);
+});
+
+test("calls onStatusUpdate callback when status dropdown changes", async () => {
+  const mockOnStatusUpdate = vi.fn();
+  const testOrder: Order = {
+    id: "ORDER-001",
+    status: "pending",
+    total: 2500,
+    createdAt: "2026-03-01T10:30:00Z",
+  };
+
+  render(<RecentOrders orders={[testOrder]} onStatusUpdate={mockOnStatusUpdate} />);
+
+  const combobox = screen.getByRole("combobox");
+  const user = userEvent.setup();
+  await user.selectOptions(combobox, "preparing");
+
+  expect(mockOnStatusUpdate).toHaveBeenCalledWith("ORDER-001", "preparing");
 });
