@@ -1,4 +1,4 @@
-import { createSession } from "./session";
+import { createSession, getSession } from "./session";
 import { cookies } from "next/headers";
 
 vi.mock("next/headers", () => ({
@@ -18,4 +18,14 @@ test("createSession sets a session cookie", async () => {
     expect.any(String),
     expect.anything()
   );
+});
+
+test("getSession returns email from session cookie", () => {
+  const request = new Request("http://localhost", {
+    headers: { Cookie: "session=admin@test.com" },
+  });
+
+  const session = getSession(request);
+
+  expect(session).toEqual({ email: "admin@test.com" });
 });
