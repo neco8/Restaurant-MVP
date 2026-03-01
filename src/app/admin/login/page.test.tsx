@@ -22,6 +22,7 @@ test("renders email input, password input, and log in button", () => {
 });
 
 test("calls login action with email and password when form is submitted", async () => {
+  mockLogin.mockResolvedValueOnce({ success: false, error: "Invalid email or password" });
   const user = userEvent.setup();
   render(<AdminLoginPage />);
 
