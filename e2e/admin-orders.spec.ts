@@ -7,6 +7,7 @@ import {
   type TestProduct,
   type TestOrder,
 } from "./helpers/test-data";
+import { ensureAdminSeeded, loginAsAdmin } from "./helpers/admin-login";
 
 const ORDER_PRODUCTS: TestProduct[] = [
   {
@@ -65,6 +66,7 @@ test.describe("Admin Order List", () => {
   const orderIds = TEST_ORDERS.map((o) => o.id);
 
   test.beforeAll(async () => {
+    await ensureAdminSeeded();
     await cleanupOrders(orderIds);
     await cleanupProducts(productIds);
     await seedTestProducts(ORDER_PRODUCTS);
@@ -74,11 +76,13 @@ test.describe("Admin Order List", () => {
   test.afterAll(async () => {
     await cleanupOrders(orderIds);
     await cleanupProducts(productIds);
+
   });
 
   test("displays orders with status, total, and item details", async ({
     page,
   }) => {
+    await loginAsAdmin(page);
     await page.goto("/admin/orders");
 
     await expect(
@@ -127,6 +131,7 @@ test.describe("Admin Order Status Update", () => {
   const orderIds = STATUS_UPDATE_ORDERS.map((o) => o.id);
 
   test.beforeAll(async () => {
+    await ensureAdminSeeded();
     await cleanupOrders(orderIds);
     await cleanupProducts(productIds);
     await seedTestProducts(STATUS_UPDATE_PRODUCTS);
@@ -136,9 +141,11 @@ test.describe("Admin Order Status Update", () => {
   test.afterAll(async () => {
     await cleanupOrders(orderIds);
     await cleanupProducts(productIds);
+
   });
 
   test("updates order status from pending to completed", async ({ page }) => {
+    await loginAsAdmin(page);
     await page.goto("/admin/orders");
 
     const row = page.getByRole("row").filter({ hasText: "Status Update Ramen" });

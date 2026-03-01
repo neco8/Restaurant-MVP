@@ -7,6 +7,10 @@ vi.mock("@/app/admin/actions", () => ({
   logout: vi.fn(),
 }));
 
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: vi.fn() }),
+}));
+
 beforeEach(() => {
   vi.clearAllMocks();
   global.fetch = vi.fn().mockResolvedValue({
@@ -60,7 +64,7 @@ test("fetches and displays orders from API", async () => {
     expect(screen.getByText("ORD-1")).toBeInTheDocument();
   });
 
-  expect(screen.getByText("¥1,500")).toBeInTheDocument();
+  expect(screen.getByText("$1500.00")).toBeInTheDocument();
   expect(global.fetch).toHaveBeenCalledWith("/api/admin/orders?limit=5");
 });
 

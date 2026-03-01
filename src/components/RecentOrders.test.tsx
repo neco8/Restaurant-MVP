@@ -3,6 +3,11 @@ import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
 import RecentOrders from "./RecentOrders";
 
+const mockPush = vi.fn();
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: mockPush }),
+}));
+
 type Order = { id: string; status: string; total: number; createdAt: string };
 
 test("displays empty state message when orders array is empty", () => {
@@ -21,7 +26,7 @@ test("displays table with order information when orders exist", () => {
   render(<RecentOrders orders={[testOrder]} />);
 
   expect(screen.getByText("ORDER-001")).toBeInTheDocument();
-  expect(screen.getByText("¥2,500")).toBeInTheDocument();
+  expect(screen.getByText("$2500.00")).toBeInTheDocument();
   expect(screen.getByRole("combobox")).toHaveValue("done");
 });
 

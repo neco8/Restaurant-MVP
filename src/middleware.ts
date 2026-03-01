@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSession } from "@/lib/session";
+import { getSession } from "@/server/session";
 
 export const config = {
   matcher: ["/admin/:path*"],

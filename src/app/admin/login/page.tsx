@@ -12,10 +12,9 @@ export default function AdminLoginPage() {
 
   const handleSubmit = async () => {
     const result = await login({ email, password });
-    if (result && result.success) {
+    if (result.success) {
       router.push("/admin");
-    }
-    if (result && result.error) {
+    } else {
       setError(result.error);
     }
   };

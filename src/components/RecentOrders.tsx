@@ -1,3 +1,7 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+
 type Order = {
   id: string;
   status: string;
@@ -12,6 +16,7 @@ type Props = {
 };
 
 export default function RecentOrders({ orders, totalCount = 0, onStatusUpdate }: Props) {
+  const router = useRouter();
   if (orders.length === 0) {
     return <div>まだ注文はありません</div>;
   }
@@ -21,10 +26,13 @@ export default function RecentOrders({ orders, totalCount = 0, onStatusUpdate }:
       <table>
         <tbody>
           {orders.map((order) => (
-            <tr key={order.id}>
+            <tr key={order.id} onClick={(e) => {
+              if ((e.target as HTMLElement).closest("select")) return;
+              router.push(`/admin/orders/${order.id}`);
+            }} style={{ cursor: "pointer" }}>
               <td><a href={`/admin/orders/${order.id}`}>{order.id}</a></td>
               <td>{new Date(order.createdAt).toLocaleDateString("ja-JP")}</td>
-              <td>¥{order.total.toLocaleString("ja-JP")}</td>
+              <td>${order.total.toFixed(2)}</td>
               <td>
                 <select
                   defaultValue={order.status}

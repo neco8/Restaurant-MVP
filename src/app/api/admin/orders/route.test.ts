@@ -48,7 +48,7 @@ describe("GET /api/admin/orders", () => {
       },
     ] as never);
 
-    const res = await GET();
+    const res = await GET(new Request("http://localhost:3000/api/admin/orders"));
     const data = await res.json();
 
     expect(res.status).toBe(200);
@@ -69,7 +69,7 @@ describe("GET /api/admin/orders", () => {
   test("returns empty array when no orders", async () => {
     mockFindMany.mockResolvedValue([]);
 
-    const res = await GET();
+    const res = await GET(new Request("http://localhost:3000/api/admin/orders"));
     const data = await res.json();
 
     expect(data).toEqual([]);
@@ -196,7 +196,7 @@ describe("GET /api/admin/orders", () => {
           },
         ],
       },
-    ] as never;
+    ] as never[];
 
     mockFindMany.mockResolvedValue(sevenOrders.slice(0, 5));
     mockCount.mockResolvedValue(7);

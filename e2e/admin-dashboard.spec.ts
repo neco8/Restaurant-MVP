@@ -1,8 +1,13 @@
 import { test, expect } from "@playwright/test";
+import { ensureAdminSeeded, loginAsAdmin } from "./helpers/admin-login";
 
 test.describe("Admin Dashboard", () => {
+  test.beforeAll(async () => {
+    await ensureAdminSeeded();
+  });
+
   test("displays dashboard with links to Products and Orders", async ({ page }) => {
-    await page.goto("/admin");
+    await loginAsAdmin(page);
 
     await expect(page.getByRole("heading", { name: "Dashboard" })).toBeVisible();
 
@@ -11,7 +16,7 @@ test.describe("Admin Dashboard", () => {
   });
 
   test("navigates to products page from dashboard", async ({ page }) => {
-    await page.goto("/admin");
+    await loginAsAdmin(page);
 
     await page.getByRole("link", { name: "Products" }).click();
 
@@ -19,7 +24,7 @@ test.describe("Admin Dashboard", () => {
   });
 
   test("navigates to orders page from dashboard", async ({ page }) => {
-    await page.goto("/admin");
+    await loginAsAdmin(page);
 
     await page.getByRole("link", { name: "Orders" }).click();
 

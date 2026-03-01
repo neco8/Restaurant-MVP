@@ -269,12 +269,6 @@ describe("when Stripe.js fails to load", () => {
 
 describe("when payment status is processing", () => {
   it("clears cart and redirects to order complete when payment is processing", async () => {
-    // BUG: For async payment methods (ACH, SEPA, etc.), confirmPayment
-    // returns paymentIntent.status === "processing".
-    // The current code only handles "succeeded" and "error".
-    // Result: loading stays true forever, cart is NOT cleared, no redirect.
-    // The customer's payment IS being processed (money debited), but they
-    // get no confirmation. They may attempt to pay again → double charge.
     mockConfirmPayment.mockResolvedValue({
       paymentIntent: { id: "pi_processing_123", status: "processing" },
     });

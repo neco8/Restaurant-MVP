@@ -7,6 +7,7 @@ import {
   type TestProduct,
   type TestOrder,
 } from "./helpers/test-data";
+import { ensureAdminSeeded, loginAsAdmin } from "./helpers/admin-login";
 
 function createPool() {
   const connectionString = process.env.DATABASE_URL;
@@ -58,16 +59,18 @@ const productIds = DASHBOARD_PRODUCTS.map((p) => p.id);
 
 test.describe("Admin Dashboard Recent Orders — empty state", () => {
   test.beforeAll(async () => {
+    await ensureAdminSeeded();
     await cleanupProducts(productIds);
     await seedTestProducts(DASHBOARD_PRODUCTS);
   });
 
   test.afterAll(async () => {
     await cleanupProducts(productIds);
+
   });
 
   test("shows empty message when there are no orders", async ({ page }) => {
-    await page.goto("/admin");
+    await loginAsAdmin(page);
 
     await expect(page.getByText("まだ注文はありません")).toBeVisible();
   });
@@ -150,6 +153,7 @@ test.describe("Admin Dashboard Recent Orders — with orders", () => {
   const orderIds = orders.map((o) => o.id);
 
   test.beforeAll(async () => {
+    await ensureAdminSeeded();
     await cleanupOrders(orderIds);
     await cleanupProducts(productIds);
     await seedTestProducts(DASHBOARD_PRODUCTS);
@@ -159,10 +163,11 @@ test.describe("Admin Dashboard Recent Orders — with orders", () => {
   test.afterAll(async () => {
     await cleanupOrders(orderIds);
     await cleanupProducts(productIds);
+
   });
 
   test("shows latest 5 orders sorted by date descending", async ({ page }) => {
-    await page.goto("/admin");
+    await loginAsAdmin(page);
 
     const rows = page.locator("table tbody tr");
     await expect(rows).toHaveCount(5);
@@ -175,7 +180,7 @@ test.describe("Admin Dashboard Recent Orders — with orders", () => {
   test("each row shows order number, date, total, and status", async ({
     page,
   }) => {
-    await page.goto("/admin");
+    await loginAsAdmin(page);
 
     const rows = page.locator("table tbody tr");
     const firstRow = rows.nth(0);
@@ -193,7 +198,7 @@ test.describe("Admin Dashboard Recent Orders — with orders", () => {
   test("does not show 'view all' link when 5 or fewer orders", async ({
     page,
   }) => {
-    await page.goto("/admin");
+    await loginAsAdmin(page);
 
     await expect(
       page.getByRole("link", { name: "すべての注文を見る" })
@@ -201,7 +206,7 @@ test.describe("Admin Dashboard Recent Orders — with orders", () => {
   });
 
   test("clicking a row navigates to order detail page", async ({ page }) => {
-    await page.goto("/admin");
+    await loginAsAdmin(page);
 
     const rows = page.locator("table tbody tr");
     await rows.nth(0).click();
@@ -229,6 +234,7 @@ test.describe("Admin Dashboard Recent Orders — more than 5 orders", () => {
   const orderIds = orders.map((o) => o.id);
 
   test.beforeAll(async () => {
+    await ensureAdminSeeded();
     await cleanupOrders(orderIds);
     await cleanupProducts(productIds);
     await seedTestProducts(DASHBOARD_PRODUCTS);
@@ -238,10 +244,11 @@ test.describe("Admin Dashboard Recent Orders — more than 5 orders", () => {
   test.afterAll(async () => {
     await cleanupOrders(orderIds);
     await cleanupProducts(productIds);
+
   });
 
   test("shows only 5 rows when more than 5 orders exist", async ({ page }) => {
-    await page.goto("/admin");
+    await loginAsAdmin(page);
 
     const rows = page.locator("table tbody tr");
     await expect(rows).toHaveCount(5);
@@ -250,7 +257,7 @@ test.describe("Admin Dashboard Recent Orders — more than 5 orders", () => {
   test("shows 'view all' link that navigates to orders page", async ({
     page,
   }) => {
-    await page.goto("/admin");
+    await loginAsAdmin(page);
 
     const viewAllLink = page.getByRole("link", { name: "すべての注文を見る" });
     await expect(viewAllLink).toBeVisible();
@@ -281,6 +288,10 @@ test.describe("Admin Dashboard Recent Orders — status update", () => {
 
   const orderIds = orders.map((o) => o.id);
 
+  test.beforeAll(async () => {
+    await ensureAdminSeeded();
+  });
+
   test.beforeEach(async () => {
     await cleanupOrders(orderIds);
     await cleanupProducts(productIds);
@@ -296,7 +307,7 @@ test.describe("Admin Dashboard Recent Orders — status update", () => {
   test("can change order status via dropdown and it persists after reload", async ({
     page,
   }) => {
-    await page.goto("/admin");
+    await loginAsAdmin(page);
 
     const row = page.locator("table tbody tr").filter({ hasText: "dash-status-order" });
     await expect(row).toContainText("pending");

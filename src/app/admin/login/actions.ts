@@ -1,7 +1,7 @@
 "use server";
 
 import { verifyAdminCredentials } from "@/lib/auth";
-import { createSession } from "@/lib/session";
+import { createSession } from "@/server/session";
 import { prisma } from "@/server/prismaClient";
 
 type LoginResult =
