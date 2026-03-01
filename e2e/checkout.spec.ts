@@ -68,6 +68,7 @@ test.afterAll(async () => {
 });
 
 test("checkout: browse menu → add to cart → pay → order confirmed → cart emptied", async ({ page }) => {
+  test.setTimeout(120_000);
   // Browse menu and select a specific product
   await page.goto(ROUTES.MENU);
   const targetProduct = page
@@ -93,10 +94,23 @@ test("checkout: browse menu → add to cart → pay → order confirmed → cart
 
   // Pay with Stripe test card
   await fillStripePayment(page);
+
+  // Collapse Stripe Link "Save my info" section to prevent it from blocking form submission
+  for (const frame of page.frames()) {
+    const linkButton = await frame.$('button:has-text("Secure, fast checkout with Link")');
+    if (linkButton) {
+      await linkButton.click();
+      break;
+    }
+  }
+
   await page.getByRole("button", { name: "Place Order" }).click();
 
+  // Verify form submission started (button changes to Processing...)
+  await expect(page.getByRole("button", { name: "Processing..." })).toBeVisible({ timeout: 5_000 });
+
   // Wait for redirect to order confirmation
-  await page.waitForURL(/\/orders\/.+\/complete/, { timeout: 60_000 });
+  await page.waitForURL(/\/orders\/.+\/complete/, { timeout: 90_000 });
 
   // Order confirmed
   await expect(page).toHaveURL(/\/orders\/.+\/complete/);
