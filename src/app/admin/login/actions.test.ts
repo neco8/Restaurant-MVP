@@ -47,6 +47,6 @@ describe("login", () => {
       password: "correct-password",
     });
 
-    expect(mockCreateSession).toHaveBeenCalled();
+    expect(mockCreateSession).toHaveBeenCalledWith("admin@restaurant.com");
   });
 });
