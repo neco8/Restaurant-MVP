@@ -1,11 +1,23 @@
+"use client";
+
+import { useState } from "react";
+import { login } from "@/app/admin/login/actions";
+
 export default function AdminLoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = () => {
+    login({ email, password });
+  };
+
   return (
     <div>
       <label htmlFor="email">Email</label>
-      <input id="email" />
+      <input id="email" value={email} onChange={(e) => setEmail(e.target.value)} />
       <label htmlFor="password">Password</label>
-      <input id="password" />
-      <button>Log in</button>
+      <input id="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+      <button onClick={handleSubmit}>Log in</button>
     </div>
   );
 }
