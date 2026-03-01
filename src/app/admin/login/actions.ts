@@ -1,5 +1,6 @@
 import { verifyAdminCredentials } from "@/lib/auth";
 import { createSession } from "@/lib/session";
+import { prisma } from "@/server/prismaClient";
 
 type LoginResult =
   | { readonly success: true }
@@ -9,7 +10,7 @@ export async function login(credentials: {
   email: string;
   password: string;
 }): Promise<LoginResult> {
-  if (await verifyAdminCredentials(credentials.email, credentials.password)) {
+  if (await verifyAdminCredentials(prisma, credentials.email, credentials.password)) {
     await createSession();
     return { success: true };
   }

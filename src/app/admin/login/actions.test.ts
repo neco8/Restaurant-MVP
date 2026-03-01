@@ -1,9 +1,13 @@
 import { describe, it, expect, vi } from "vitest";
 import { login } from "./actions";
 
+vi.mock("@/server/prismaClient", () => ({
+  prisma: {},
+}));
+
 vi.mock("@/lib/auth", () => ({
   verifyAdminCredentials: vi.fn(
-    async (email: string, password: string): Promise<boolean> =>
+    async (_prisma: unknown, email: string, password: string): Promise<boolean> =>
       email === "admin@restaurant.com" && password === "correct-password"
   ),
 }));
