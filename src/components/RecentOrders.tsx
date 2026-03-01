@@ -5,7 +5,12 @@ type Order = {
   createdAt: string;
 };
 
-export default function RecentOrders({ orders }: { orders: Order[] }) {
+type Props = {
+  orders: Order[];
+  onStatusUpdate?: (orderId: string, newStatus: string) => void;
+};
+
+export default function RecentOrders({ orders, onStatusUpdate }: Props) {
   if (orders.length === 0) {
     return <div>まだ注文はありません</div>;
   }
@@ -19,7 +24,10 @@ export default function RecentOrders({ orders }: { orders: Order[] }) {
             <td>{new Date(order.createdAt).toLocaleDateString("ja-JP")}</td>
             <td>¥{order.total.toLocaleString("ja-JP")}</td>
             <td>
-              <select defaultValue={order.status}>
+              <select
+                defaultValue={order.status}
+                onChange={(e) => onStatusUpdate?.(order.id, e.target.value)}
+              >
                 <option value="pending">pending</option>
                 <option value="preparing">preparing</option>
                 <option value="done">done</option>
