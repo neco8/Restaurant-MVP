@@ -11,7 +11,7 @@ test("displays empty state message when orders array is empty", () => {
 test("displays table with order information when orders exist", () => {
   const testOrder: Order = {
     id: "ORDER-001",
-    status: "completed",
+    status: "done",
     total: 2500,
     createdAt: "2026-03-01T10:30:00Z",
   };
@@ -20,13 +20,13 @@ test("displays table with order information when orders exist", () => {
 
   expect(screen.getByText("ORDER-001")).toBeInTheDocument();
   expect(screen.getByText("¥2,500")).toBeInTheDocument();
-  expect(screen.getByText("completed")).toBeInTheDocument();
+  expect(screen.getByRole("combobox")).toHaveValue("done");
 });
 
 test("displays formatted date in order row", () => {
   const testOrder: Order = {
     id: "ORDER-001",
-    status: "completed",
+    status: "done",
     total: 2500,
     createdAt: "2026-03-01T10:30:00Z",
   };
@@ -39,7 +39,7 @@ test("displays formatted date in order row", () => {
 test("order row contains link to admin order detail page", () => {
   const testOrder: Order = {
     id: "ORDER-001",
-    status: "completed",
+    status: "done",
     total: 2500,
     createdAt: "2026-03-01T10:30:00Z",
   };

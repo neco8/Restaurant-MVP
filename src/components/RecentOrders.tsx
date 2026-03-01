@@ -18,7 +18,13 @@ export default function RecentOrders({ orders }: { orders: Order[] }) {
             <td><a href={`/admin/orders/${order.id}`}>{order.id}</a></td>
             <td>{new Date(order.createdAt).toLocaleDateString("ja-JP")}</td>
             <td>¥{order.total.toLocaleString("ja-JP")}</td>
-            <td>{order.status}</td>
+            <td>
+              <select defaultValue={order.status}>
+                <option value="pending">pending</option>
+                <option value="preparing">preparing</option>
+                <option value="done">done</option>
+              </select>
+            </td>
           </tr>
         ))}
       </tbody>
