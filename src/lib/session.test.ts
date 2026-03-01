@@ -1,4 +1,4 @@
-import { createSession, getSession } from "./session";
+import { createSession, getSession, destroySession } from "./session";
 import { cookies } from "next/headers";
 
 vi.mock("next/headers", () => ({
@@ -28,4 +28,13 @@ test("getSession returns email from session cookie", () => {
   const session = getSession(request);
 
   expect(session).toEqual({ email: "admin@test.com" });
+});
+
+test("destroySession deletes the session cookie", async () => {
+  const mockDelete = vi.fn();
+  mockCookies.mockReturnValue({ delete: mockDelete });
+
+  await destroySession();
+
+  expect(mockDelete).toHaveBeenCalledWith("session");
 });
