@@ -2,8 +2,6 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/server/prismaClient";
 import { fromCents } from "@/lib/cents";
 
-export const dynamic = "force-dynamic";
-
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const limitParam = url.searchParams.get("limit");

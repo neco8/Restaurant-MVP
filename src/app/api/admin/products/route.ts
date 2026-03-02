@@ -3,8 +3,6 @@ import { prisma } from "@/server/prismaClient";
 import { fromCents, toCents } from "@/lib/cents";
 import { validateProduct } from "@/lib/validateProduct";
 
-export const dynamic = "force-dynamic";
-
 export async function GET() {
   const rows = await prisma.product.findMany();
   const products = rows.map((row) => ({
