@@ -93,7 +93,7 @@ describe("AdminOrderList", () => {
 
     await user.click(screen.getByRole("button", { name: "Mark as completed" }));
 
-    expect(onStatusUpdate).toHaveBeenCalledWith("o1", "completed");
+    expect(onStatusUpdate).toHaveBeenCalledWith("o1", "done");
   });
 
   test("calls onStatusUpdate with done status when mark as completed button is clicked", async () => {
