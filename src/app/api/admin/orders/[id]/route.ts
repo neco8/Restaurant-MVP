@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/server/prismaClient";
 
-export const dynamic = "force-dynamic";
-
 type RouteParams = { params: Promise<{ id: string }> };
 
 const VALID_STATUSES = ["pending", "preparing", "done", "completed"];

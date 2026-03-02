@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/server/prismaClient";
+import { fromCents, toCents } from "@/lib/cents";
+import { validateProduct } from "@/lib/validateProduct";
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -15,31 +17,29 @@ export async function GET(_request: Request, context: RouteParams) {
     id: row.id,
     name: row.name,
     description: row.description,
-    price: row.price / 100,
+    price: fromCents(row.price),
   });
 }
 
 export async function PUT(request: Request, context: RouteParams) {
   const { id } = await context.params;
   const body = await request.json();
-  const { name, description, price } = body;
+  const result = validateProduct(body);
 
-  if (!name || typeof name !== "string") {
-    return NextResponse.json({ error: "Name is required" }, { status: 400 });
-  }
-  if (typeof price !== "number" || !Number.isFinite(price) || price < 0) {
-    return NextResponse.json({ error: "Invalid price" }, { status: 400 });
+  if (!result.valid) {
+    return NextResponse.json({ error: result.error }, { status: 400 });
   }
 
-  const priceInCents = Math.round(price * 100);
+  const { name, description, price } = result.data;
+  const priceInCents = toCents(price);
 
   const product = await prisma.product.update({
     where: { id },
     data: {
       name,
-      description: description || "",
+      description,
       price: priceInCents,
-      image: "",
+      image: body.image ?? "",
     },
   });
 

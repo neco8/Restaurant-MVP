@@ -40,13 +40,13 @@ test("calls logout action when Log out button is clicked", async () => {
 test("renders recent orders section on dashboard", () => {
   render(<AdminDashboardPage />);
 
-  expect(screen.getByText("最近の注文")).toBeInTheDocument();
+  expect(screen.getByText("Recent Orders")).toBeInTheDocument();
 });
 
 test("displays empty orders message when no orders exist", () => {
   render(<AdminDashboardPage />);
 
-  expect(screen.getByText("まだ注文はありません")).toBeInTheDocument();
+  expect(screen.getByText("No orders yet")).toBeInTheDocument();
 });
 
 test("fetches and displays orders from API", async () => {
@@ -66,6 +66,16 @@ test("fetches and displays orders from API", async () => {
 
   expect(screen.getByText("$1500.00")).toBeInTheDocument();
   expect(global.fetch).toHaveBeenCalledWith("/api/admin/orders?limit=5");
+});
+
+test("shows error message when fetching orders fails", async () => {
+  global.fetch = vi.fn().mockRejectedValue(new Error("Network error"));
+
+  render(<AdminDashboardPage />);
+
+  await waitFor(() => {
+    expect(screen.getByRole("alert")).toHaveTextContent("Something went wrong. Please try again.");
+  });
 });
 
 test("updates order status via API when dropdown changes", async () => {

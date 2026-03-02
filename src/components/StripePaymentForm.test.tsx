@@ -1,4 +1,4 @@
-import { vi, describe, it, expect, beforeEach } from "vitest";
+import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as lib from "@/lib";
@@ -291,5 +291,34 @@ describe("when payment status is processing", () => {
     expect(mockPush).toHaveBeenCalledWith("/orders/pi_test_123/complete");
 
     clearCartSpy.mockRestore();
+  });
+});
+
+describe("when NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is not set", () => {
+  const originalKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+
+  beforeEach(() => {
+    delete process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+  });
+
+  afterEach(() => {
+    if (originalKey === undefined) {
+      delete process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+    } else {
+      process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY = originalKey;
+    }
+  });
+
+  it("shows a descriptive error instead of the payment form", () => {
+    render(
+      <StripePaymentForm
+        clientSecret="pi_test_secret"
+        paymentIntentId="pi_test_123"
+      />
+    );
+
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY environment variable is not set"
+    );
   });
 });

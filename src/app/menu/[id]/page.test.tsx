@@ -10,8 +10,18 @@ vi.mock("@/server/productRepository", () => ({
   }),
 }));
 
+vi.mock("next/navigation", () => ({
+  notFound: vi.fn(),
+}));
+
 test("shows product name as heading", async () => {
   const page = await ProductDetailPage({ params: { id: "1" } });
   render(page);
   expect(screen.getByRole("heading", { name: "Ramen" })).toBeInTheDocument();
+});
+
+test("should call notFound when product does not exist", async () => {
+  const { notFound } = await import("next/navigation");
+  await ProductDetailPage({ params: { id: "non-existent-id" } });
+  expect(notFound).toHaveBeenCalled();
 });

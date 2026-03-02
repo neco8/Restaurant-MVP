@@ -15,6 +15,7 @@ type Order = {
 export default function AdminDashboardPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [totalCount, setTotalCount] = useState(0);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/admin/orders?limit=5")
@@ -22,6 +23,9 @@ export default function AdminDashboardPage() {
       .then((data: { orders: Order[]; totalCount: number }) => {
         setOrders(data.orders);
         setTotalCount(data.totalCount);
+      })
+      .catch(() => {
+        setError("Something went wrong. Please try again.");
       });
   }, []);
 
@@ -30,6 +34,8 @@ export default function AdminDashboardPage() {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status: newStatus }),
+    }).catch(() => {
+      setError("Something went wrong. Please try again.");
     });
     setOrders((prev) =>
       prev.map((order) =>
@@ -48,7 +54,8 @@ export default function AdminDashboardPage() {
         <h1 className="font-serif text-5xl sm:text-6xl font-light tracking-tight leading-[0.9]">Dashboard</h1>
       </div>
       <button onClick={() => logout()}>Log out</button>
-      <h2>最近の注文</h2>
+      {error && <p role="alert">{error}</p>}
+      <h2>Recent Orders</h2>
       <RecentOrders orders={orders} totalCount={totalCount} onStatusUpdate={handleStatusUpdate} />
     </div>
   );

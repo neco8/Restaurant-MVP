@@ -97,6 +97,41 @@ describe("PUT /api/admin/products/[id]", () => {
     });
   });
 
+  test("preserves image field when provided in body", async () => {
+    mockUpdate.mockResolvedValue({
+      id: "1",
+      name: "Updated Ramen",
+      description: "Even better",
+      price: 1500,
+      image: "https://example.com/ramen.jpg",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    } as never);
+
+    const req = new Request("http://localhost/api/admin/products/1", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: "Updated Ramen",
+        description: "Even better",
+        price: 15.0,
+        image: "https://example.com/ramen.jpg",
+      }),
+    });
+
+    const res = await PUT(req, makeParams("1"));
+    expect(res.status).toBe(200);
+    expect(mockUpdate).toHaveBeenCalledWith({
+      where: { id: "1" },
+      data: {
+        name: "Updated Ramen",
+        description: "Even better",
+        price: 1500,
+        image: "https://example.com/ramen.jpg",
+      },
+    });
+  });
+
   test("returns 400 for missing name", async () => {
     const req = new Request("http://localhost/api/admin/products/1", {
       method: "PUT",

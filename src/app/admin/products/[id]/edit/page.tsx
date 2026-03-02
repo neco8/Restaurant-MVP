@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ROUTES } from "@/lib";
 
 export default function AdminEditProductPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
+  const routerRef = useRef(router);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [priceValue, setPriceValue] = useState("");
@@ -23,9 +24,8 @@ export default function AdminEditProductPage() {
         setPriceValue(String(data.price));
       })
       .catch(() => {
-        router.push(ROUTES.ADMIN_PRODUCTS);
+        routerRef.current.push(ROUTES.ADMIN_PRODUCTS);
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   async function handleSubmit(e: React.FormEvent) {

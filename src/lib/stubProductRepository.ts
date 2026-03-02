@@ -8,6 +8,6 @@ const DEFAULT_PRODUCTS = [
   { id: "3", name: "Takoyaki", price: price(8.00), description: "Octopus balls with bonito flakes" },
 ];
 
-export function defaultProductRepository(): ProductRepository {
+export function stubProductRepository(): ProductRepository {
   return createInMemoryProductRepository(DEFAULT_PRODUCTS);
 }

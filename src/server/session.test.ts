@@ -38,3 +38,21 @@ test("destroySession deletes the session cookie", async () => {
 
   expect(mockDelete).toHaveBeenCalledWith("session");
 });
+
+test("createSession sets the cookie with security options", async () => {
+  const mockSet = vi.fn();
+  mockCookies.mockReturnValue({ set: mockSet });
+
+  await createSession("admin@test.com");
+
+  expect(mockSet).toHaveBeenCalledWith(
+    "session",
+    expect.any(String),
+    expect.objectContaining({
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      maxAge: expect.any(Number),
+    })
+  );
+});
