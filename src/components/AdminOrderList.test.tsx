@@ -95,4 +95,23 @@ describe("AdminOrderList", () => {
 
     expect(onStatusUpdate).toHaveBeenCalledWith("o1", "completed");
   });
+
+  test("calls onStatusUpdate with done status when mark as completed button is clicked", async () => {
+    const user = userEvent.setup();
+    const orders: AdminOrder[] = [
+      {
+        id: "o1",
+        status: "pending",
+        total: 12,
+        createdAt: "2026-01-15T10:00:00.000Z",
+        items: [{ id: "i1", productName: "Ramen", quantity: 1, price: 12 }],
+      },
+    ];
+    const onStatusUpdate = vi.fn();
+    render(<AdminOrderList orders={orders} onStatusUpdate={onStatusUpdate} />);
+
+    await user.click(screen.getByRole("button", { name: "Mark as completed" }));
+
+    expect(onStatusUpdate).toHaveBeenCalledWith("o1", "done");
+  });
 });
