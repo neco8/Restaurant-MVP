@@ -59,7 +59,7 @@ export default function AdminOrderList({ orders, onStatusUpdate }: Props) {
                   onClick={() => onStatusUpdate(order.id, "done")}
                   className="font-sans text-xs tracking-wider uppercase text-accent hover:text-foreground transition-colors duration-200"
                 >
-                  Mark as completed
+                  Mark as done
                 </button>
               )}
             </td>
