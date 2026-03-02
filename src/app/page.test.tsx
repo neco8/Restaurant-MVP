@@ -1,10 +1,12 @@
 import { render, screen } from "@testing-library/react";
 import Home from "./page";
 
-const MockImage = vi.fn(({ src, alt, ...rest }: { src: string; alt: string; [key: string]: unknown }) => (
-  // eslint-disable-next-line @next/next/no-img-element
-  <img src={src} alt={alt} {...rest} />
-));
+const MockImage = vi.hoisted(() =>
+  vi.fn(({ src, alt, ...rest }: { src: string; alt: string; [key: string]: unknown }) => (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={src} alt={alt} {...rest} />
+  ))
+);
 
 vi.mock("next/image", () => ({
   default: MockImage,
