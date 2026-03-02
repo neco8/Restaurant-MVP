@@ -89,6 +89,40 @@ describe("POST /api/admin/products", () => {
     });
   });
 
+  test("preserves image field when provided in body", async () => {
+    mockCreate.mockResolvedValue({
+      id: "new-2",
+      name: "Sushi",
+      description: "Fresh",
+      price: 2000,
+      image: "https://example.com/sushi.jpg",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    } as never);
+
+    const req = new Request("http://localhost/api/admin/products", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: "Sushi",
+        description: "Fresh",
+        price: 20,
+        image: "https://example.com/sushi.jpg",
+      }),
+    });
+
+    const res = await POST(req);
+    expect(res.status).toBe(201);
+    expect(mockCreate).toHaveBeenCalledWith({
+      data: {
+        name: "Sushi",
+        description: "Fresh",
+        price: 2000,
+        image: "https://example.com/sushi.jpg",
+      },
+    });
+  });
+
   test("returns 400 for missing name", async () => {
     const req = new Request("http://localhost/api/admin/products", {
       method: "POST",
