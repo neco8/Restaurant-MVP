@@ -30,6 +30,20 @@ test("displays table with order information when orders exist", () => {
   expect(screen.getByRole("combobox")).toHaveValue("done");
 });
 
+test("displays order total formatted as USD currency using formatPrice", () => {
+  const testOrder: Order = {
+    id: "ORDER-001",
+    status: "done",
+    total: 15.5,
+    createdAt: "2026-03-01T10:30:00Z",
+  };
+
+  render(<RecentOrders orders={[testOrder]} />);
+
+  expect(screen.getByText("$15.50")).toBeInTheDocument();
+  expect(screen.queryByText(/¥/)).not.toBeInTheDocument();
+});
+
 test("displays formatted date in order row", () => {
   const testOrder: Order = {
     id: "ORDER-001",
