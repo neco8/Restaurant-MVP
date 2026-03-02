@@ -20,7 +20,7 @@ test("fetches orders and renders AdminOrderList", async () => {
   ];
 
   global.fetch = vi.fn().mockResolvedValue({
-    json: () => Promise.resolve(mockOrders),
+    json: () => Promise.resolve({ orders: mockOrders, totalCount: mockOrders.length }),
   });
 
   render(<AdminOrdersPage />);
@@ -49,7 +49,7 @@ test("updates order status when mark as completed is clicked", async () => {
   ];
 
   global.fetch = vi.fn()
-    .mockResolvedValueOnce({ json: () => Promise.resolve(mockOrders) })
+    .mockResolvedValueOnce({ json: () => Promise.resolve({ orders: mockOrders, totalCount: mockOrders.length }) })
     .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({ id: "o1", status: "completed" }) });
 
   render(<AdminOrdersPage />);
