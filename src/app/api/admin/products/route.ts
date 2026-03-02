@@ -32,7 +32,7 @@ export async function POST(request: Request) {
       name,
       description,
       price: priceInCents,
-      image: "",
+      image: body.image ?? "",
     },
   });
 

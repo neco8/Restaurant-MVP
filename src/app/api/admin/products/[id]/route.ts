@@ -39,7 +39,7 @@ export async function PUT(request: Request, context: RouteParams) {
       name,
       description,
       price: priceInCents,
-      image: "",
+      image: body.image ?? "",
     },
   });
 
