@@ -1,6 +1,19 @@
 import { render, screen } from "@testing-library/react";
 import Home from "./page";
 
+const MockImage = vi.fn(({ src, alt, ...rest }: { src: string; alt: string; [key: string]: unknown }) => (
+  // eslint-disable-next-line @next/next/no-img-element
+  <img src={src} alt={alt} {...rest} />
+));
+
+vi.mock("next/image", () => ({
+  default: MockImage,
+}));
+
+beforeEach(() => {
+  MockImage.mockClear();
+});
+
 describe("Home page — Renge Japanese-Chinese Restaurant", () => {
   test("shows restaurant name RENGE as heading", () => {
     render(<Home />);
@@ -74,5 +87,10 @@ describe("Home page — Renge Japanese-Chinese Restaurant", () => {
     expect(images[2]).toHaveAttribute("alt", "White Sesame Tantanmen");
     expect(images[3]).toHaveAttribute("alt", "Heritage Mapo Tofu");
     expect(images[4]).toHaveAttribute("alt", "Peking Duck");
+  });
+
+  test("uses Next.js Image component for dish images", () => {
+    render(<Home />);
+    expect(MockImage).toHaveBeenCalledTimes(5);
   });
 });
