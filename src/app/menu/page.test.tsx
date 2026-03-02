@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import MenuPage from "./page";
 import { getProducts } from "@/lib";
-import { defaultProductRepository as inMemoryRepo } from "@/lib/defaultProductRepository";
+import { stubProductRepository as inMemoryRepo } from "@/lib/stubProductRepository";
 import { price } from "@/lib/price";
 
 vi.mock("@/server/productRepository", () => ({
