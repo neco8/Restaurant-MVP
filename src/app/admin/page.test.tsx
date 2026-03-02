@@ -68,6 +68,16 @@ test("fetches and displays orders from API", async () => {
   expect(global.fetch).toHaveBeenCalledWith("/api/admin/orders?limit=5");
 });
 
+test("shows error message when fetching orders fails", async () => {
+  global.fetch = vi.fn().mockRejectedValue(new Error("Network error"));
+
+  render(<AdminDashboardPage />);
+
+  await waitFor(() => {
+    expect(screen.getByRole("alert")).toHaveTextContent("Something went wrong. Please try again.");
+  });
+});
+
 test("updates order status via API when dropdown changes", async () => {
   const user = userEvent.setup();
 
