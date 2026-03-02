@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import MenuPage from "./page";
-import { defaultProductRepository as inMemoryRepo } from "@/lib/defaultProductRepository";
+import { stubProductRepository as inMemoryRepo } from "@/lib/stubProductRepository";
 import { price } from "@/lib/price";
 import type { Product } from "@/lib/types";
 
