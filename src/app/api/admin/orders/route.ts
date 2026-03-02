@@ -28,10 +28,6 @@ export async function GET(request: Request) {
     })),
   }));
 
-  if (limit !== null) {
-    const totalCount = await prisma.order.count();
-    return NextResponse.json({ orders, totalCount });
-  }
-
-  return NextResponse.json(orders);
+  const totalCount = await prisma.order.count();
+  return NextResponse.json({ orders, totalCount });
 }
