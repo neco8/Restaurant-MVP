@@ -1,8 +1,7 @@
 import MenuList from "@/components/MenuList";
-import { getProducts } from "@/lib";
 import { defaultProductRepository } from "@/server/productRepository";
 
 export default async function MenuPage() {
-  const products = await getProducts(defaultProductRepository());
+  const products = await defaultProductRepository().findAll();
   return <MenuList products={products} />;
 }

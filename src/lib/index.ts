@@ -7,7 +7,6 @@ export * from "./cart";
 export * from "./cents";
 export * from "./defaultProductRepository";
 export * from "./formatPrice";
-export * from "./getProducts";
 export * from "./inMemoryProductRepository";
 export * from "./price";
 export * from "./prismaProductRepository";
