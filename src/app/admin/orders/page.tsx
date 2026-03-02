@@ -12,7 +12,7 @@ export default function AdminOrdersPage() {
   useEffect(() => {
     fetch("/api/admin/orders")
       .then((res) => res.json())
-      .then(setOrders)
+      .then((data: { orders: AdminOrder[] }) => setOrders(data.orders))
       .catch(() => {
         setError("Something went wrong. Please try again.");
       });

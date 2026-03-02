@@ -19,7 +19,7 @@ beforeEach(() => {
 });
 
 describe("GET /api/admin/orders", () => {
-  test("returns all orders with items and prices in dollars", async () => {
+  test("returns orders in normalized shape with totalCount without limit", async () => {
     mockFindMany.mockResolvedValue([
       {
         id: "o1",
@@ -47,32 +47,37 @@ describe("GET /api/admin/orders", () => {
         ],
       },
     ] as never);
+    mockCount.mockResolvedValue(1);
 
     const res = await GET(new Request("http://localhost:3000/api/admin/orders"));
     const data = await res.json();
 
     expect(res.status).toBe(200);
-    expect(data).toEqual([
-      {
-        id: "o1",
-        status: "pending",
-        total: 27,
-        createdAt: "2026-01-15T10:00:00.000Z",
-        items: [
-          { id: "i1", productName: "Ramen", quantity: 1, price: 12 },
-          { id: "i2", productName: "Gyoza", quantity: 2, price: 7.5 },
-        ],
-      },
-    ]);
+    expect(data).toEqual({
+      orders: [
+        {
+          id: "o1",
+          status: "pending",
+          total: 27,
+          createdAt: "2026-01-15T10:00:00.000Z",
+          items: [
+            { id: "i1", productName: "Ramen", quantity: 1, price: 12 },
+            { id: "i2", productName: "Gyoza", quantity: 2, price: 7.5 },
+          ],
+        },
+      ],
+      totalCount: 1,
+    });
   });
 
-  test("returns empty array when no orders", async () => {
+  test("returns empty orders array with zero totalCount when no orders", async () => {
     mockFindMany.mockResolvedValue([]);
+    mockCount.mockResolvedValue(0);
 
     const res = await GET(new Request("http://localhost:3000/api/admin/orders"));
     const data = await res.json();
 
-    expect(data).toEqual([]);
+    expect(data).toEqual({ orders: [], totalCount: 0 });
   });
 
   test("respects limit query parameter and includes totalCount", async () => {
