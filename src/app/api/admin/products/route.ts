@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/server/prismaClient";
 import { fromCents, toCents } from "@/lib/cents";
+import { validateProduct } from "@/lib/validateProduct";
 
 export const dynamic = "force-dynamic";
 
@@ -17,21 +18,19 @@ export async function GET() {
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const { name, description, price } = body;
+  const result = validateProduct(body);
 
-  if (!name || typeof name !== "string") {
-    return NextResponse.json({ error: "Name is required" }, { status: 400 });
-  }
-  if (typeof price !== "number" || !Number.isFinite(price) || price < 0) {
-    return NextResponse.json({ error: "Invalid price" }, { status: 400 });
+  if (!result.valid) {
+    return NextResponse.json({ error: result.error }, { status: 400 });
   }
 
+  const { name, description, price } = result.data;
   const priceInCents = toCents(price);
 
   const product = await prisma.product.create({
     data: {
       name,
-      description: description || "",
+      description,
       price: priceInCents,
       image: "",
     },
