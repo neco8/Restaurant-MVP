@@ -60,17 +60,22 @@ export function StripePaymentForm({
   clientSecret: string;
   paymentIntentId: string;
 }) {
-  const [stripeError, setStripeError] = useState<string | null>(null);
+  const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+  const [stripeError, setStripeError] = useState<string | null>(
+    publishableKey ? null : "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY environment variable is not set"
+  );
   const stripePromiseRef = useRef<ReturnType<typeof loadStripe> | null>(null);
 
-  if (!stripePromiseRef.current) {
-    stripePromiseRef.current = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+  if (!stripePromiseRef.current && publishableKey) {
+    stripePromiseRef.current = loadStripe(publishableKey);
   }
 
   useEffect(() => {
-    stripePromiseRef.current!.catch(() => {
-      setStripeError("Payment system could not be loaded. Please check your connection and try again.");
-    });
+    if (stripePromiseRef.current) {
+      stripePromiseRef.current.catch(() => {
+        setStripeError("Payment system could not be loaded. Please check your connection and try again.");
+      });
+    }
   }, []);
 
   if (stripeError) {
