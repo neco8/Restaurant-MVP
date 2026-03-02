@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/server/prismaClient";
+import { fromCents, toCents } from "@/lib/cents";
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -15,7 +16,7 @@ export async function GET(_request: Request, context: RouteParams) {
     id: row.id,
     name: row.name,
     description: row.description,
-    price: row.price / 100,
+    price: fromCents(row.price),
   });
 }
 
@@ -31,7 +32,7 @@ export async function PUT(request: Request, context: RouteParams) {
     return NextResponse.json({ error: "Invalid price" }, { status: 400 });
   }
 
-  const priceInCents = Math.round(price * 100);
+  const priceInCents = toCents(price);
 
   const product = await prisma.product.update({
     where: { id },

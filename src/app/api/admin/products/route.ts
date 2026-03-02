@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/server/prismaClient";
+import { fromCents, toCents } from "@/lib/cents";
 
 export const dynamic = "force-dynamic";
 
@@ -9,7 +10,7 @@ export async function GET() {
     id: row.id,
     name: row.name,
     description: row.description,
-    price: row.price / 100,
+    price: fromCents(row.price),
   }));
   return NextResponse.json(products);
 }
@@ -25,7 +26,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid price" }, { status: 400 });
   }
 
-  const priceInCents = Math.round(price * 100);
+  const priceInCents = toCents(price);
 
   const product = await prisma.product.create({
     data: {
