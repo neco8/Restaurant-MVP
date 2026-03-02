@@ -48,7 +48,7 @@ export default function AdminDashboardPage() {
         <h1 className="font-serif text-5xl sm:text-6xl font-light tracking-tight leading-[0.9]">Dashboard</h1>
       </div>
       <button onClick={() => logout()}>Log out</button>
-      <h2>最近の注文</h2>
+      <h2>Recent Orders</h2>
       <RecentOrders orders={orders} totalCount={totalCount} onStatusUpdate={handleStatusUpdate} />
     </div>
   );

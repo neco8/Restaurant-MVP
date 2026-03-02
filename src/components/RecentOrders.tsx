@@ -20,7 +20,7 @@ type Props = {
 export default function RecentOrders({ orders, totalCount = 0, onStatusUpdate }: Props) {
   const router = useRouter();
   if (orders.length === 0) {
-    return <div>まだ注文はありません</div>;
+    return <div>No orders yet</div>;
   }
 
   return (
@@ -50,7 +50,7 @@ export default function RecentOrders({ orders, totalCount = 0, onStatusUpdate }:
         </tbody>
       </table>
       {totalCount > 5 && (
-        <a href="/admin/orders">すべての注文を見る</a>
+        <a href="/admin/orders">View all orders</a>
       )}
     </div>
   );
