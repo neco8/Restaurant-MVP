@@ -12,7 +12,7 @@ type Order = { id: string; status: string; total: number; createdAt: string };
 
 test("displays empty state message when orders array is empty", () => {
   render(<RecentOrders orders={[]} />);
-  expect(screen.getByText("まだ注文はありません")).toBeInTheDocument();
+  expect(screen.getByText("No orders yet")).toBeInTheDocument();
 });
 
 test("displays table with order information when orders exist", () => {
@@ -124,7 +124,7 @@ test("does not show view all link when totalCount is 5 or less", () => {
 
   render(<RecentOrders orders={testOrders} totalCount={2} />);
 
-  const viewAllLink = screen.queryByRole("link", { name: "すべての注文を見る" });
+  const viewAllLink = screen.queryByRole("link", { name: "View all orders" });
   expect(viewAllLink).not.toBeInTheDocument();
 });
 
@@ -146,7 +146,7 @@ test("shows view all link to /admin/orders when totalCount exceeds 5", () => {
 
   render(<RecentOrders orders={testOrders} totalCount={7} />);
 
-  const viewAllLink = screen.getByRole("link", { name: "すべての注文を見る" });
+  const viewAllLink = screen.getByRole("link", { name: "View all orders" });
   expect(viewAllLink).toBeInTheDocument();
   expect(viewAllLink).toHaveAttribute("href", "/admin/orders");
 });

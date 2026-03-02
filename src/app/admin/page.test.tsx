@@ -40,13 +40,13 @@ test("calls logout action when Log out button is clicked", async () => {
 test("renders recent orders section on dashboard", () => {
   render(<AdminDashboardPage />);
 
-  expect(screen.getByText("最近の注文")).toBeInTheDocument();
+  expect(screen.getByText("Recent Orders")).toBeInTheDocument();
 });
 
 test("displays empty orders message when no orders exist", () => {
   render(<AdminDashboardPage />);
 
-  expect(screen.getByText("まだ注文はありません")).toBeInTheDocument();
+  expect(screen.getByText("No orders yet")).toBeInTheDocument();
 });
 
 test("fetches and displays orders from API", async () => {
