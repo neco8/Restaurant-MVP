@@ -7,11 +7,15 @@ import type { AdminOrder } from "@/components/AdminOrderList";
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<AdminOrder[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/admin/orders")
       .then((res) => res.json())
-      .then(setOrders);
+      .then(setOrders)
+      .catch(() => {
+        setError("Something went wrong. Please try again.");
+      });
   }, []);
 
   async function handleStatusUpdate(orderId: string, newStatus: string) {
@@ -36,6 +40,7 @@ export default function AdminOrdersPage() {
         </p>
         <h1 className="font-serif text-5xl sm:text-6xl font-light tracking-tight leading-[0.9]">Orders</h1>
       </div>
+      {error && <p role="alert">{error}</p>}
       <AdminOrderList orders={orders} onStatusUpdate={handleStatusUpdate} />
     </div>
   );

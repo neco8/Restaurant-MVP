@@ -7,6 +7,7 @@ import { CartView } from "./CartView";
 
 export default function CartRoute() {
   const [cartState, setCartState] = useState<CartState>({ status: "loading", storedItems: [] });
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const storedItems = getStoredCartItems();
@@ -19,6 +20,9 @@ export default function CartRoute() {
       .then((res) => res.json())
       .then((products: Product[]) => {
         setCartState({ status: "loaded", items: hydrateCart(storedItems, products) });
+      })
+      .catch(() => {
+        setError("Something went wrong. Please try again.");
       });
   }, []);
 
@@ -37,5 +41,10 @@ export default function CartRoute() {
     });
   }
 
-  return <CartView cartState={cartState} onDecreaseItem={handleDecreaseItem} />;
+  return (
+    <>
+      {error && <p role="alert">{error}</p>}
+      <CartView cartState={cartState} onDecreaseItem={handleDecreaseItem} />
+    </>
+  );
 }

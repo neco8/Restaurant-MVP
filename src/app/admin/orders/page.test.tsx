@@ -6,6 +6,16 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
+test("shows error message when fetching orders fails", async () => {
+  global.fetch = vi.fn().mockRejectedValue(new Error("Network error"));
+
+  render(<AdminOrdersPage />);
+
+  await waitFor(() => {
+    expect(screen.getByRole("alert")).toHaveTextContent("Something went wrong. Please try again.");
+  });
+});
+
 test("fetches orders and renders AdminOrderList", async () => {
   const mockOrders = [
     {

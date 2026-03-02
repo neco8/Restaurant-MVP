@@ -9,11 +9,15 @@ import AdminNav from "@/components/AdminNav";
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/admin/products")
       .then((res) => res.json())
-      .then(setProducts);
+      .then(setProducts)
+      .catch(() => {
+        setError("Something went wrong. Please try again.");
+      });
   }, []);
 
   async function handleDelete(id: string) {
@@ -40,6 +44,7 @@ export default function AdminProductsPage() {
           Add Product
         </Link>
       </div>
+      {error && <p role="alert">{error}</p>}
       <AdminProductList products={products} onDelete={handleDelete} />
     </div>
   );
