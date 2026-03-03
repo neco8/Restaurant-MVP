@@ -22,20 +22,27 @@ export default function AdminDashboardPage() {
       .then((data: { orders: Order[]; totalCount: number }) => {
         setOrders(data.orders);
         setTotalCount(data.totalCount);
+      })
+      .catch(() => {
+        setOrders([]);
+        setTotalCount(0);
       });
   }, []);
 
   const handleStatusUpdate = (orderId: string, newStatus: string) => {
-    fetch(`/api/admin/orders/${orderId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: newStatus }),
-    });
+    const previousOrders = orders;
     setOrders((prev) =>
       prev.map((order) =>
         order.id === orderId ? { ...order, status: newStatus } : order
       )
     );
+    fetch(`/api/admin/orders/${orderId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: newStatus }),
+    }).catch(() => {
+      setOrders(previousOrders);
+    });
   };
 
   return (
@@ -48,7 +55,7 @@ export default function AdminDashboardPage() {
         <h1 className="font-serif text-5xl sm:text-6xl font-light tracking-tight leading-[0.9]">Dashboard</h1>
       </div>
       <button onClick={() => logout()}>Log out</button>
-      <h2>最近の注文</h2>
+      <h2>Recent Orders</h2>
       <RecentOrders orders={orders} totalCount={totalCount} onStatusUpdate={handleStatusUpdate} />
     </div>
   );

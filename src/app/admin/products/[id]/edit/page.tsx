@@ -25,8 +25,7 @@ export default function AdminEditProductPage() {
       .catch(() => {
         router.push(ROUTES.ADMIN_PRODUCTS);
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  }, [id, router]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

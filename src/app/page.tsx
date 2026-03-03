@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { ROUTES } from "@/lib";
 import { SIGNATURE_DISHES } from "@/lib/signatureDishes";
 
@@ -50,12 +51,13 @@ export default function Home() {
               key={dish.japanese}
               className="group grid grid-cols-1 sm:grid-cols-[1fr_2fr] gap-6 sm:gap-10 items-start"
             >
-              <div className="aspect-[4/3] bg-surface-hover overflow-hidden">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+              <div className="aspect-[4/3] bg-surface-hover overflow-hidden relative">
+                <Image
                   src={dish.image}
                   alt={dish.english}
-                  className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+                  fill
+                  sizes="(max-width: 640px) 100vw, 33vw"
+                  className="object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
                 />
               </div>
               <div className="flex flex-col justify-center">

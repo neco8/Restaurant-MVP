@@ -11,7 +11,8 @@ export default function AdminOrdersPage() {
   useEffect(() => {
     fetch("/api/admin/orders")
       .then((res) => res.json())
-      .then(setOrders);
+      .then((data: { orders: AdminOrder[] }) => setOrders(data.orders))
+      .catch(() => setOrders([]));
   }, []);
 
   async function handleStatusUpdate(orderId: string, newStatus: string) {

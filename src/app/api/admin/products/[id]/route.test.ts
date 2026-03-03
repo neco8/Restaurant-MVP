@@ -92,7 +92,6 @@ describe("PUT /api/admin/products/[id]", () => {
         name: "Updated Ramen",
         description: "Even better",
         price: 1500,
-        image: "",
       },
     });
   });

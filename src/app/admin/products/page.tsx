@@ -13,7 +13,8 @@ export default function AdminProductsPage() {
   useEffect(() => {
     fetch("/api/admin/products")
       .then((res) => res.json())
-      .then(setProducts);
+      .then(setProducts)
+      .catch(() => setProducts([]));
   }, []);
 
   async function handleDelete(id: string) {

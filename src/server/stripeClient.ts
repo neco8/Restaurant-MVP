@@ -7,7 +7,12 @@ export function createStripeClient(): Stripe {
     process.env.https_proxy ||
     process.env.HTTPS_PROXY;
 
-  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  const secretKey = process.env.STRIPE_SECRET_KEY;
+  if (!secretKey) {
+    throw new Error("STRIPE_SECRET_KEY environment variable is not set");
+  }
+
+  return new Stripe(secretKey, {
     ...(proxyUrl ? { httpAgent: new HttpsProxyAgent(proxyUrl) } : {}),
   });
 }

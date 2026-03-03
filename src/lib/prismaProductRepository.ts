@@ -1,3 +1,4 @@
+import { centsToDollars } from "./currency";
 import { price } from "./price";
 import type { Product, ProductRepository } from "./types";
 
@@ -26,7 +27,7 @@ export function createPrismaProductRepository(
         id: row.id,
         name: row.name,
         description: row.description,
-        price: price(row.price / 100),
+        price: price(centsToDollars(row.price)),
       }));
     },
   };

@@ -15,8 +15,12 @@ test("createSession sets a session cookie", async () => {
 
   expect(mockSet).toHaveBeenCalledWith(
     "session",
-    expect.any(String),
-    expect.anything()
+    "admin@test.com",
+    expect.objectContaining({
+      httpOnly: true,
+      sameSite: "lax",
+      path: "/",
+    })
   );
 });
 

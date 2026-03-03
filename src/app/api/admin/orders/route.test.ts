@@ -47,12 +47,13 @@ describe("GET /api/admin/orders", () => {
         ],
       },
     ] as never);
+    mockCount.mockResolvedValue(1);
 
     const res = await GET(new Request("http://localhost:3000/api/admin/orders"));
     const data = await res.json();
 
     expect(res.status).toBe(200);
-    expect(data).toEqual([
+    expect(data.orders).toEqual([
       {
         id: "o1",
         status: "pending",
@@ -68,11 +69,12 @@ describe("GET /api/admin/orders", () => {
 
   test("returns empty array when no orders", async () => {
     mockFindMany.mockResolvedValue([]);
+    mockCount.mockResolvedValue(0);
 
     const res = await GET(new Request("http://localhost:3000/api/admin/orders"));
     const data = await res.json();
 
-    expect(data).toEqual([]);
+    expect(data.orders).toEqual([]);
   });
 
   test("respects limit query parameter and includes totalCount", async () => {
