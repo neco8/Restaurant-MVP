@@ -9,13 +9,31 @@ vi.mock("@/server/prismaClient", () => ({
   },
 }));
 
+vi.mock("@/server/session", () => ({
+  getSession: vi.fn(),
+}));
+
 import { prisma } from "@/server/prismaClient";
+import { getSession } from "@/server/session";
 
 const mockFindMany = vi.mocked(prisma.order.findMany);
 const mockCount = vi.mocked(prisma.order.count);
+const mockGetSession = vi.mocked(getSession);
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockGetSession.mockReturnValue({ email: "admin@test.com" });
+});
+
+describe("GET /api/admin/orders without session", () => {
+  test("returns 401 when no session is present", async () => {
+    mockGetSession.mockReturnValue(null);
+
+    const res = await GET(new Request("http://localhost:3000/api/admin/orders"));
+
+    expect(res.status).toBe(401);
+    expect(mockFindMany).not.toHaveBeenCalled();
+  });
 });
 
 describe("GET /api/admin/orders", () => {
