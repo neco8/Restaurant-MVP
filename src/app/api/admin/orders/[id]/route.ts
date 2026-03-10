@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/server/prismaClient";
 import { requireSession } from "@/server/session";
+import {
+  validateStatusTransition,
+  type OrderStatus,
+} from "@/lib/orderStatus";
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +22,24 @@ export async function PUT(request: Request, context: RouteParams) {
 
   if (!status || !VALID_STATUSES.includes(status)) {
     return NextResponse.json({ error: "Invalid status" }, { status: 400 });
+  }
+
+  const currentOrder = await prisma.order.findUnique({ where: { id } });
+
+  if (!currentOrder) {
+    return NextResponse.json({ error: "Order not found" }, { status: 404 });
+  }
+
+  const transitionResult = validateStatusTransition(
+    currentOrder.status as OrderStatus,
+    status as OrderStatus,
+  );
+
+  if (transitionResult.isErr()) {
+    return NextResponse.json(
+      { error: transitionResult.error },
+      { status: 400 },
+    );
   }
 
   const order = await prisma.order.update({
