@@ -86,6 +86,10 @@ describe("GET /api/auth/google/callback", () => {
     mockFetchUserInfo.mockResolvedValueOnce({
       email: "owner@restaurant.com",
     });
+    mockFindUnique.mockResolvedValueOnce({
+      id: "1",
+      email: "owner@restaurant.com",
+    } as never);
     mockCreateSession.mockResolvedValue(undefined);
 
     const request = new Request(
