@@ -1,6 +1,37 @@
 import { NextResponse } from "next/server";
+import { createOrder } from "@/lib/createOrder";
+import type { OrderItem } from "@/lib/createOrder";
+import { createPrismaOrderRepository } from "@/lib/prismaOrderRepository";
+import { prisma } from "@/server/prismaClient";
+import { centsToDollars, dollarsToCents } from "@/lib/currency";
+import { price } from "@/lib/price";
+import { quantity } from "@/lib/quantity";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function POST(request: Request) {
-  return NextResponse.json({ error: "not implemented" }, { status: 500 });
+  const body = await request.json();
+
+  const items: OrderItem[] = body.items.map(
+    (item: { productId: string; quantity: number; price: number }) => ({
+      productId: item.productId,
+      quantity: quantity(item.quantity)._unsafeUnwrap(),
+      price: price(centsToDollars(item.price)),
+    })
+  );
+
+  const repository = createPrismaOrderRepository(prisma);
+  const order = await createOrder(items, repository);
+
+  return NextResponse.json(
+    {
+      id: order.id,
+      status: order.status,
+      total: dollarsToCents(order.total),
+      items: order.items.map((item) => ({
+        productId: item.productId,
+        quantity: item.quantity,
+        price: dollarsToCents(item.price),
+      })),
+    },
+    { status: 201 }
+  );
 }
