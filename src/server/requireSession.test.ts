@@ -1,14 +1,10 @@
-import { requireSession, getSession } from "@/server/session";
+import { requireSession } from "@/server/requireSession";
+import { getSession } from "@/server/session";
 import { prisma } from "@/server/prismaClient";
 
-vi.mock("@/server/session", async (importOriginal) => {
-  const actual =
-    await importOriginal<typeof import("@/server/session")>();
-  return {
-    ...actual,
-    getSession: vi.fn(),
-  };
-});
+vi.mock("@/server/session", () => ({
+  getSession: vi.fn(),
+}));
 
 vi.mock("@/server/prismaClient", () => ({
   prisma: {
@@ -18,8 +14,8 @@ vi.mock("@/server/prismaClient", () => ({
   },
 }));
 
-const mockGetSession = getSession as ReturnType<typeof vi.fn>;
-const mockFindUnique = prisma.admin.findUnique as ReturnType<typeof vi.fn>;
+const mockGetSession = vi.mocked(getSession);
+const mockFindUnique = vi.mocked(prisma.admin.findUnique);
 
 function buildRequest(): Request {
   return new Request("http://localhost/api/admin/test");
@@ -49,7 +45,12 @@ test("returns 403 when email is not a registered admin", async () => {
 
 test("returns session with admin info when email is a registered admin", async () => {
   mockGetSession.mockReturnValue({ email: "admin@test.com" });
-  mockFindUnique.mockResolvedValue({ id: "admin-1", email: "admin@test.com" });
+  mockFindUnique.mockResolvedValue({
+    id: "admin-1",
+    email: "admin@test.com",
+    passwordHash: "",
+    createdAt: new Date(),
+  });
 
   const result = await requireSession(buildRequest());
 

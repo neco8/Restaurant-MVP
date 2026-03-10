@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/server/prismaClient";
 import { centsToDollars } from "@/lib/currency";
-import { requireSession } from "@/server/session";
+import { requireSession } from "@/server/requireSession";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
-  const session = requireSession(request);
+  const session = await requireSession(request);
   if (session instanceof Response) return session;
 
   const url = new URL(request.url);

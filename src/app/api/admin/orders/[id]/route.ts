@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/server/prismaClient";
-import { requireSession } from "@/server/session";
+import { requireSession } from "@/server/requireSession";
 import {
   validateStatusTransition,
   type OrderStatus,
@@ -13,7 +13,7 @@ type RouteParams = { params: Promise<{ id: string }> };
 const VALID_STATUSES = ["pending", "preparing", "done"];
 
 export async function PUT(request: Request, context: RouteParams) {
-  const session = requireSession(request);
+  const session = await requireSession(request);
   if (session instanceof Response) return session;
 
   const { id } = await context.params;

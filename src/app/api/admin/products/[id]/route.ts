@@ -2,12 +2,12 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/server/prismaClient";
 import { centsToDollars, dollarsToCents } from "@/lib/currency";
 import { validateProductInput } from "@/lib/validateProduct";
-import { requireSession } from "@/server/session";
+import { requireSession } from "@/server/requireSession";
 
 type RouteParams = { params: Promise<{ id: string }> };
 
 export async function GET(request: Request, context: RouteParams) {
-  const session = requireSession(request);
+  const session = await requireSession(request);
   if (session instanceof Response) return session;
 
   const { id } = await context.params;
@@ -26,7 +26,7 @@ export async function GET(request: Request, context: RouteParams) {
 }
 
 export async function PUT(request: Request, context: RouteParams) {
-  const session = requireSession(request);
+  const session = await requireSession(request);
   if (session instanceof Response) return session;
 
   const { id } = await context.params;
@@ -53,7 +53,7 @@ export async function PUT(request: Request, context: RouteParams) {
 }
 
 export async function DELETE(request: Request, context: RouteParams) {
-  const session = requireSession(request);
+  const session = await requireSession(request);
   if (session instanceof Response) return session;
 
   const { id } = await context.params;

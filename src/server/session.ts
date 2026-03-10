@@ -1,5 +1,4 @@
 import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
 
 export async function createSession(email: string): Promise<void> {
   const cookieStore = await cookies();
@@ -27,16 +26,6 @@ export function getSession(
 
   const email = match.slice("session=".length);
   return { email };
-}
-
-export function requireSession(
-  request: Request
-): { email: string } | Response {
-  const session = getSession(request);
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  return session;
 }
 
 export async function destroySession(): Promise<void> {

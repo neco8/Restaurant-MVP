@@ -9,14 +9,13 @@ vi.mock("@/server/prismaClient", () => ({
   },
 }));
 
-vi.mock("@/server/session", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@/server/session")>();
-  return { ...actual, requireSession: vi.fn() };
-});
+vi.mock("@/server/requireSession", () => ({
+  requireSession: vi.fn(),
+}));
 
 import { NextResponse } from "next/server";
 import { prisma } from "@/server/prismaClient";
-import { requireSession } from "@/server/session";
+import { requireSession } from "@/server/requireSession";
 
 const mockUpdate = vi.mocked(prisma.order.update);
 const mockFindUnique = vi.mocked(prisma.order.findUnique);
@@ -24,7 +23,7 @@ const mockRequireSession = vi.mocked(requireSession);
 
 beforeEach(() => {
   vi.clearAllMocks();
-  mockRequireSession.mockReturnValue({ email: "admin@test.com" });
+  mockRequireSession.mockResolvedValue({ email: "admin@test.com", adminId: "admin-1" });
 });
 
 function createRequest(body: object) {
@@ -42,7 +41,7 @@ function createContext(id: string) {
 describe("PUT /api/admin/orders/[id] without session", () => {
   test("returns 401 when no session is present", async () => {
     const unauthorizedResponse = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    mockRequireSession.mockReturnValue(unauthorizedResponse);
+    mockRequireSession.mockResolvedValue(unauthorizedResponse);
 
     const res = await PUT(createRequest({ status: "pending" }), createContext("o1"));
 
