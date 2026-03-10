@@ -29,6 +29,19 @@ export type CartState =
   | { status: "loading"; storedItems: StoredCartItem[] }
   | { status: "loaded"; items: CartItem[] };
 
+export type OrderItem = OrderLine & { productId: string };
+
+export type Order = {
+  id: string;
+  status: string;
+  total: Price;
+  items: OrderItem[];
+};
+
+export type OrderRepository = {
+  save: (items: OrderItem[]) => Promise<Order>;
+};
+
 export type ProductRepository = {
   findAll: () => Promise<Product[]>;
 };
