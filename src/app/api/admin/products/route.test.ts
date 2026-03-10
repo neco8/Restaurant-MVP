@@ -78,6 +78,24 @@ describe("GET /api/admin/products", () => {
   });
 });
 
+describe("POST /api/admin/products without session", () => {
+  test("returns 401 when no session is present", async () => {
+    mockGetSession.mockReturnValue(null);
+
+    const req = new Request("http://localhost/api/admin/products", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: "Tempura", description: "Crispy", price: 14.5 }),
+    });
+
+    const res = await POST(req);
+    const data = await res.json();
+
+    expect(res.status).toBe(401);
+    expect(data).toEqual({ error: "Unauthorized" });
+  });
+});
+
 describe("POST /api/admin/products", () => {
   test("creates a product with price converted to cents", async () => {
     mockCreate.mockResolvedValue({
