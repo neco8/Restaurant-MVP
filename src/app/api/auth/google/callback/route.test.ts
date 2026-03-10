@@ -60,7 +60,12 @@ describe("GET /api/auth/google/callback", () => {
     mockCreateSession.mockResolvedValue(undefined);
 
     const request = new Request(
-      "http://localhost:3000/api/auth/google/callback?code=fake-auth-code"
+      "http://localhost:3000/api/auth/google/callback?code=fake-auth-code&state=matching-state",
+      {
+        headers: {
+          Cookie: "oauth_state=matching-state",
+        },
+      }
     );
 
     const res = await GET(request);
