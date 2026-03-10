@@ -7,6 +7,7 @@ export * from "./currency";
 export * from "./formatPrice";
 export * from "./google-oauth";
 export * from "./inMemoryProductRepository";
+export * from "./orderStatus";
 export * from "./price";
 export * from "./prismaOrderRepository";
 export * from "./prismaProductRepository";
