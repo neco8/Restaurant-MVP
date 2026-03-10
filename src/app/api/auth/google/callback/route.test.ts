@@ -41,6 +41,31 @@ describe("GET /api/auth/google/callback", () => {
     expect(res.headers.get("Location")).toContain("/admin/login");
   });
 
+  test("redirects to /admin/login when Google token exchange fails", async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 400,
+      json: async () => ({
+        error: "invalid_grant",
+        error_description: "Code has already been used.",
+      }),
+    });
+
+    const request = new Request(
+      "http://localhost:3000/api/auth/google/callback?code=fake-auth-code&state=matching-state",
+      {
+        headers: {
+          Cookie: "oauth_state=matching-state",
+        },
+      }
+    );
+
+    const res = await GET(request);
+
+    expect(res.status).toBe(302);
+    expect(res.headers.get("Location")).toContain("/admin/login");
+  });
+
   test("redirects to /admin after receiving a valid authorization code", async () => {
     mockFetch
       .mockResolvedValueOnce({
