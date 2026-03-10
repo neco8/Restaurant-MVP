@@ -1,23 +1,22 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("Admin OAuth Authentication", () => {
-  test("shows a Google OAuth sign-in button on the login page", async ({
+  test("shows a Google OAuth sign-in link on the login page", async ({
     page,
   }) => {
     await page.goto("/admin/login");
 
     await expect(
-      page.getByRole("button", { name: /sign in with google/i })
+      page.getByRole("link", { name: /sign in with google/i })
     ).toBeVisible();
   });
 
-  test("redirects to Google OAuth when clicking sign-in button", async ({
+  test("sign-in link points to the Google OAuth endpoint", async ({
     page,
   }) => {
     await page.goto("/admin/login");
 
-    await page.getByRole("button", { name: /sign in with google/i }).click();
-
-    await expect(page).toHaveURL(/accounts\.google\.com/);
+    const signInLink = page.getByRole("link", { name: /sign in with google/i });
+    await expect(signInLink).toHaveAttribute("href", /\/api\/auth\/google/);
   });
 });

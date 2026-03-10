@@ -1,4 +1,3 @@
-import bcrypt from "bcryptjs";
 import pg from "pg";
 
 function createPool() {
@@ -11,19 +10,16 @@ function createPool() {
 
 export async function seedTestAdmin({
   email,
-  password,
 }: {
   email: string;
-  password: string;
 }): Promise<void> {
   const pool = createPool();
   try {
-    const passwordHash = await bcrypt.hash(password, 10);
     await pool.query(
       `INSERT INTO "Admin" (id, email, "passwordHash", "createdAt")
        VALUES (gen_random_uuid(), $1, $2, NOW())
-       ON CONFLICT (email) DO UPDATE SET "passwordHash" = $2`,
-      [email, passwordHash]
+       ON CONFLICT (email) DO NOTHING`,
+      [email, "oauth-no-password"]
     );
   } finally {
     await pool.end();
