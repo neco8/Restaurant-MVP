@@ -1,5 +1,14 @@
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  return NextResponse.json({ message: "not implemented" });
+  const params = new URLSearchParams({
+    client_id: process.env.GOOGLE_CLIENT_ID || "placeholder",
+    redirect_uri: "http://localhost:3000/api/auth/google/callback",
+    response_type: "code",
+    scope: "openid email profile",
+  });
+
+  const url = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+
+  return NextResponse.redirect(url, 302);
 }
