@@ -1,6 +1,26 @@
+import { vi, afterEach } from "vitest";
 import { GET } from "./route";
 
 describe("GET /api/auth/google", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  test("uses environment variables for client_id and redirect_uri", async () => {
+    vi.stubEnv("GOOGLE_CLIENT_ID", "test-client-id-from-env");
+    vi.stubEnv("GOOGLE_REDIRECT_URI", "https://myapp.example.com/api/auth/google/callback");
+
+    const res = await GET();
+
+    const location = res.headers.get("Location");
+    const redirectUrl = new URL(location!);
+
+    expect(redirectUrl.searchParams.get("client_id")).toBe("test-client-id-from-env");
+    expect(redirectUrl.searchParams.get("redirect_uri")).toBe(
+      "https://myapp.example.com/api/auth/google/callback"
+    );
+  });
+
   test("includes a state parameter in the redirect URL and sets an oauth_state cookie", async () => {
     const res = await GET();
 
