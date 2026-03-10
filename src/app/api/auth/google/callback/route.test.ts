@@ -14,6 +14,22 @@ afterEach(() => {
 });
 
 describe("GET /api/auth/google/callback", () => {
+  test("redirects to /admin/login when state param does not match cookie", async () => {
+    const request = new Request(
+      "http://localhost:3000/api/auth/google/callback?code=fake-auth-code&state=request-state",
+      {
+        headers: {
+          Cookie: "oauth_state=different-state",
+        },
+      }
+    );
+
+    const res = await GET(request);
+
+    expect(res.status).toBe(302);
+    expect(res.headers.get("Location")).toContain("/admin/login");
+  });
+
   test("redirects to /admin/login when code query parameter is missing", async () => {
     const request = new Request(
       "http://localhost:3000/api/auth/google/callback"
