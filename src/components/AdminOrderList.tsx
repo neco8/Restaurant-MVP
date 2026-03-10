@@ -56,10 +56,10 @@ export default function AdminOrderList({ orders, onStatusUpdate }: Props) {
             <td className="py-4 px-4">
               {order.status === "pending" && onStatusUpdate && (
                 <button
-                  onClick={() => onStatusUpdate(order.id, "completed")}
+                  onClick={() => onStatusUpdate(order.id, "done")}
                   className="font-sans text-xs tracking-wider uppercase text-accent hover:text-foreground transition-colors duration-200"
                 >
-                  Mark as completed
+                  Mark as done
                 </button>
               )}
             </td>

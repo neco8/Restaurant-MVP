@@ -64,7 +64,11 @@ export function StripePaymentForm({
   const stripePromiseRef = useRef<ReturnType<typeof loadStripe> | null>(null);
 
   if (!stripePromiseRef.current) {
-    stripePromiseRef.current = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+    const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+    if (!publishableKey) {
+      throw new Error("NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY environment variable is not set");
+    }
+    stripePromiseRef.current = loadStripe(publishableKey);
   }
 
   useEffect(() => {

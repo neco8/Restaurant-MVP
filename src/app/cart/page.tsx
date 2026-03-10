@@ -19,6 +19,9 @@ export default function CartRoute() {
       .then((res) => res.json())
       .then((products: Product[]) => {
         setCartState({ status: "loaded", items: hydrateCart(storedItems, products) });
+      })
+      .catch(() => {
+        setCartState({ status: "loaded", items: [] });
       });
   }, []);
 

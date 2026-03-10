@@ -20,7 +20,7 @@ test("fetches orders and renders AdminOrderList", async () => {
   ];
 
   global.fetch = vi.fn().mockResolvedValue({
-    json: () => Promise.resolve(mockOrders),
+    json: () => Promise.resolve({ orders: mockOrders, totalCount: mockOrders.length }),
   });
 
   render(<AdminOrdersPage />);
@@ -34,7 +34,7 @@ test("fetches orders and renders AdminOrderList", async () => {
   expect(screen.getByRole("heading", { name: "Orders" })).toBeInTheDocument();
 });
 
-test("updates order status when mark as completed is clicked", async () => {
+test("updates order status when mark as done is clicked", async () => {
   const user = userEvent.setup();
   const mockOrders = [
     {
@@ -49,8 +49,8 @@ test("updates order status when mark as completed is clicked", async () => {
   ];
 
   global.fetch = vi.fn()
-    .mockResolvedValueOnce({ json: () => Promise.resolve(mockOrders) })
-    .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({ id: "o1", status: "completed" }) });
+    .mockResolvedValueOnce({ json: () => Promise.resolve({ orders: mockOrders, totalCount: mockOrders.length }) })
+    .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({ id: "o1", status: "done" }) });
 
   render(<AdminOrdersPage />);
 
@@ -58,17 +58,17 @@ test("updates order status when mark as completed is clicked", async () => {
     expect(screen.getByText("pending")).toBeInTheDocument();
   });
 
-  await user.click(screen.getByRole("button", { name: "Mark as completed" }));
+  await user.click(screen.getByRole("button", { name: "Mark as done" }));
 
   await waitFor(() => {
-    expect(screen.getByText("completed")).toBeInTheDocument();
+    expect(screen.getByText("done")).toBeInTheDocument();
   });
 
   expect(global.fetch).toHaveBeenCalledWith(
     "/api/admin/orders/o1",
     expect.objectContaining({
       method: "PUT",
-      body: JSON.stringify({ status: "completed" }),
+      body: JSON.stringify({ status: "done" }),
     }),
   );
 });

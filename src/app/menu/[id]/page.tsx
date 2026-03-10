@@ -1,5 +1,5 @@
+import { notFound } from "next/navigation";
 import ProductDetail from "@/components/ProductDetail";
-import { price } from "@/lib/price";
 import { defaultProductRepository } from "@/server/productRepository";
 
 export default async function ProductDetailPage({
@@ -8,11 +8,9 @@ export default async function ProductDetailPage({
   params: { id: string };
 }) {
   const products = await defaultProductRepository().findAll();
-  const product = products.find((p) => p.id === params.id) ?? {
-    id: params.id,
-    name: "",
-    price: price(0),
-    description: "",
-  };
+  const product = products.find((p) => p.id === params.id);
+  if (!product) {
+    notFound();
+  }
   return <ProductDetail product={product} />;
 }

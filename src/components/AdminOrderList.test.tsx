@@ -53,7 +53,7 @@ describe("AdminOrderList", () => {
     expect(screen.getByText("Gyoza")).toBeInTheDocument();
   });
 
-  test("renders mark as completed button for pending orders", () => {
+  test("renders mark as done button for pending orders", () => {
     const orders: AdminOrder[] = [
       {
         id: "o1",
@@ -73,7 +73,7 @@ describe("AdminOrderList", () => {
     const onStatusUpdate = vi.fn();
     render(<AdminOrderList orders={orders} onStatusUpdate={onStatusUpdate} />);
 
-    const buttons = screen.getAllByRole("button", { name: "Mark as completed" });
+    const buttons = screen.getAllByRole("button", { name: "Mark as done" });
     expect(buttons).toHaveLength(1);
   });
 
@@ -91,8 +91,8 @@ describe("AdminOrderList", () => {
     const onStatusUpdate = vi.fn();
     render(<AdminOrderList orders={orders} onStatusUpdate={onStatusUpdate} />);
 
-    await user.click(screen.getByRole("button", { name: "Mark as completed" }));
+    await user.click(screen.getByRole("button", { name: "Mark as done" }));
 
-    expect(onStatusUpdate).toHaveBeenCalledWith("o1", "completed");
+    expect(onStatusUpdate).toHaveBeenCalledWith("o1", "done");
   });
 });

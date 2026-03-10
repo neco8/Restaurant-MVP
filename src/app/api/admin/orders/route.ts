@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/server/prismaClient";
+import { centsToDollars } from "@/lib/currency";
 
 export const dynamic = "force-dynamic";
 
@@ -17,20 +18,16 @@ export async function GET(request: Request) {
   const orders = rows.map((row) => ({
     id: row.id,
     status: row.status,
-    total: row.total / 100,
+    total: centsToDollars(row.total),
     createdAt: row.createdAt.toISOString(),
     items: row.items.map((item) => ({
       id: item.id,
       productName: item.product.name,
       quantity: item.quantity,
-      price: item.price / 100,
+      price: centsToDollars(item.price),
     })),
   }));
 
-  if (limit !== null) {
-    const totalCount = await prisma.order.count();
-    return NextResponse.json({ orders, totalCount });
-  }
-
-  return NextResponse.json(orders);
+  const totalCount = await prisma.order.count();
+  return NextResponse.json({ orders, totalCount });
 }

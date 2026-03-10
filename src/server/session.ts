@@ -2,7 +2,13 @@ import { cookies } from "next/headers";
 
 export async function createSession(email: string): Promise<void> {
   const cookieStore = await cookies();
-  cookieStore.set("session", email, {});
+  cookieStore.set("session", email, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24,
+    path: "/",
+  });
 }
 
 export function getSession(
