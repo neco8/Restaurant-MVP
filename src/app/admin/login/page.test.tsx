@@ -60,6 +60,13 @@ test("renders a Sign in with Google button", () => {
   ).toBeInTheDocument();
 });
 
+test("Sign in with Google button links to /api/auth/google", () => {
+  render(<AdminLoginPage />);
+
+  const googleLink = screen.getByRole("link", { name: "Sign in with Google" });
+  expect(googleLink).toHaveAttribute("href", "/api/auth/google");
+});
+
 test("redirects to /admin when login returns success", async () => {
   mockLogin.mockResolvedValueOnce({ success: true });
 
