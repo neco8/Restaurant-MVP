@@ -26,6 +26,7 @@ export default function AdminLoginPage() {
       <label htmlFor="password">Password</label>
       <input id="password" value={password} onChange={(e) => setPassword(e.target.value)} />
       <button onClick={handleSubmit}>Log in</button>
+      <button>Sign in with Google</button>
       {error && <p>{error}</p>}
     </div>
   );
