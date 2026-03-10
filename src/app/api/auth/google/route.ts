@@ -5,7 +5,7 @@ export async function GET() {
 
   const params = new URLSearchParams({
     client_id: process.env.GOOGLE_CLIENT_ID || "placeholder",
-    redirect_uri: "http://localhost:3000/api/auth/google/callback",
+    redirect_uri: process.env.GOOGLE_REDIRECT_URI || "placeholder",
     response_type: "code",
     scope: "openid email profile",
     state,
