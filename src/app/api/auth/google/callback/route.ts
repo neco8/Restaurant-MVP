@@ -33,6 +33,10 @@ export async function GET(request: Request) {
     }),
   });
 
+  if (!tokenResponse.ok) {
+    return NextResponse.redirect(new URL("/admin/login", request.url), 302);
+  }
+
   const tokenData = await tokenResponse.json();
 
   const userinfoResponse = await fetch(
