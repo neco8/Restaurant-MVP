@@ -1,17 +1,10 @@
 import { NextResponse } from "next/server";
+import { buildGoogleAuthUrl } from "@/lib/google-oauth";
 
 export async function GET() {
   const state = crypto.randomUUID();
 
-  const params = new URLSearchParams({
-    client_id: process.env.GOOGLE_CLIENT_ID || "placeholder",
-    redirect_uri: process.env.GOOGLE_REDIRECT_URI || "placeholder",
-    response_type: "code",
-    scope: "openid email profile",
-    state,
-  });
-
-  const url = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+  const url = buildGoogleAuthUrl(state);
 
   const response = NextResponse.redirect(url, 302);
   response.cookies.set("oauth_state", state);

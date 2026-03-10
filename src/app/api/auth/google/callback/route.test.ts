@@ -1,13 +1,20 @@
-import { GET } from "./route";
+import { vi, afterEach } from "vitest";
 
 const mockCreateSession = vi.fn();
+const mockExchangeCodeForToken = vi.fn();
+const mockFetchUserInfo = vi.fn();
 
 vi.mock("@/server/session", () => ({
   createSession: (...args: unknown[]) => mockCreateSession(...args),
 }));
 
-const mockFetch = vi.fn();
-vi.stubGlobal("fetch", mockFetch);
+vi.mock("@/lib/google-oauth", () => ({
+  exchangeCodeForToken: (...args: unknown[]) =>
+    mockExchangeCodeForToken(...args),
+  fetchUserInfo: (...args: unknown[]) => mockFetchUserInfo(...args),
+}));
+
+import { GET } from "./route";
 
 afterEach(() => {
   vi.clearAllMocks();
@@ -41,15 +48,10 @@ describe("GET /api/auth/google/callback", () => {
     expect(res.headers.get("Location")).toContain("/admin/login");
   });
 
-  test("redirects to /admin/login when Google token exchange fails", async () => {
-    mockFetch.mockResolvedValueOnce({
-      ok: false,
-      status: 400,
-      json: async () => ({
-        error: "invalid_grant",
-        error_description: "Code has already been used.",
-      }),
-    });
+  test("redirects to /admin/login when token exchange fails", async () => {
+    mockExchangeCodeForToken.mockRejectedValueOnce(
+      new Error("Token exchange failed")
+    );
 
     const request = new Request(
       "http://localhost:3000/api/auth/google/callback?code=fake-auth-code&state=matching-state",
@@ -67,21 +69,12 @@ describe("GET /api/auth/google/callback", () => {
   });
 
   test("redirects to /admin after receiving a valid authorization code", async () => {
-    mockFetch
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          access_token: "fake-access-token",
-          id_token: "fake-id-token",
-        }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          email: "owner@restaurant.com",
-        }),
-      });
-
+    mockExchangeCodeForToken.mockResolvedValueOnce({
+      access_token: "fake-access-token",
+    });
+    mockFetchUserInfo.mockResolvedValueOnce({
+      email: "owner@restaurant.com",
+    });
     mockCreateSession.mockResolvedValue(undefined);
 
     const request = new Request(
@@ -97,5 +90,8 @@ describe("GET /api/auth/google/callback", () => {
 
     expect(res.status).toBe(302);
     expect(res.headers.get("Location")).toContain("/admin");
+    expect(mockExchangeCodeForToken).toHaveBeenCalledWith("fake-auth-code");
+    expect(mockFetchUserInfo).toHaveBeenCalledWith("fake-access-token");
+    expect(mockCreateSession).toHaveBeenCalledWith("owner@restaurant.com");
   });
 });

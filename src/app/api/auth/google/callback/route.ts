@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createSession } from "@/server/session";
+import { exchangeCodeForToken, fetchUserInfo } from "@/lib/google-oauth";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -21,34 +22,14 @@ export async function GET(request: Request) {
     return NextResponse.redirect(new URL("/admin/login", request.url), 302);
   }
 
-  const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      code,
-      client_id: process.env.GOOGLE_CLIENT_ID,
-      client_secret: process.env.GOOGLE_CLIENT_SECRET,
-      redirect_uri: process.env.GOOGLE_REDIRECT_URI,
-      grant_type: "authorization_code",
-    }),
-  });
+  try {
+    const tokenData = await exchangeCodeForToken(code);
+    const userinfo = await fetchUserInfo(tokenData.access_token);
 
-  if (!tokenResponse.ok) {
+    await createSession(userinfo.email);
+
+    return NextResponse.redirect(new URL("/admin", request.url), 302);
+  } catch {
     return NextResponse.redirect(new URL("/admin/login", request.url), 302);
   }
-
-  const tokenData = await tokenResponse.json();
-
-  const userinfoResponse = await fetch(
-    "https://www.googleapis.com/oauth2/v2/userinfo",
-    {
-      headers: { Authorization: `Bearer ${tokenData.access_token}` },
-    }
-  );
-
-  const userinfo = await userinfoResponse.json();
-
-  await createSession(userinfo.email);
-
-  return NextResponse.redirect(new URL("/admin", request.url), 302);
 }
