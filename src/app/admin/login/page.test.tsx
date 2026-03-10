@@ -52,11 +52,11 @@ test("displays error message when login returns failure", async () => {
   expect(await screen.findByText("Invalid email or password")).toBeInTheDocument();
 });
 
-test("renders a Sign in with Google button", () => {
+test("renders a Sign in with Google link", () => {
   render(<AdminLoginPage />);
 
   expect(
-    screen.getByRole("button", { name: "Sign in with Google" })
+    screen.getByRole("link", { name: "Sign in with Google" })
   ).toBeInTheDocument();
 });
 
