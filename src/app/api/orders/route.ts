@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createOrder } from "@/lib/createOrder";
-import type { OrderItem } from "@/lib/createOrder";
+import type { OrderItem } from "@/lib/types";
 import { createPrismaOrderRepository } from "@/lib/prismaOrderRepository";
 import { prisma } from "@/server/prismaClient";
 import { centsToDollars, dollarsToCents } from "@/lib/currency";

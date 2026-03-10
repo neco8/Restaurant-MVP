@@ -1,7 +1,7 @@
 import { createPrismaOrderRepository } from "./prismaOrderRepository";
 import { price } from "./price";
 import { quantity } from "./quantity";
-import type { OrderItem } from "./createOrder";
+import type { OrderItem } from "./types";
 
 vi.mock("@/server/prismaClient", () => ({
   prisma: {

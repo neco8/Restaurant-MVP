@@ -1,5 +1,6 @@
 import { describe, test, expect, vi } from "vitest";
-import { createOrder, type OrderRepository } from "./createOrder";
+import { createOrder } from "./createOrder";
+import type { OrderRepository } from "./types";
 import { price } from "./price";
 import { quantity } from "./quantity";
 

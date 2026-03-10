@@ -1,4 +1,4 @@
-import type { OrderItem, Order, OrderRepository } from "./createOrder";
+import type { OrderItem, Order, OrderRepository } from "./types";
 import { dollarsToCents, centsToDollars } from "./currency";
 import { orderTotal } from "./totals";
 import { price } from "./price";
