@@ -8,12 +8,19 @@ vi.mock("@/server/prismaClient", () => ({
   },
 }));
 
+vi.mock("@/server/session", () => ({
+  getSession: vi.fn(),
+}));
+
 import { prisma } from "@/server/prismaClient";
+import { getSession } from "@/server/session";
 
 const mockUpdate = vi.mocked(prisma.order.update);
+const mockGetSession = vi.mocked(getSession);
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockGetSession.mockReturnValue({ email: "admin@test.com" });
 });
 
 function createRequest(body: object) {
@@ -27,6 +34,17 @@ function createRequest(body: object) {
 function createContext(id: string) {
   return { params: Promise.resolve({ id }) };
 }
+
+describe("PUT /api/admin/orders/[id] without session", () => {
+  test("returns 401 when no session is present", async () => {
+    mockGetSession.mockReturnValue(null);
+
+    const res = await PUT(createRequest({ status: "pending" }), createContext("o1"));
+
+    expect(res.status).toBe(401);
+    expect(mockUpdate).not.toHaveBeenCalled();
+  });
+});
 
 describe("PUT /api/admin/orders/[id]", () => {
   test("updates order status and returns updated order", async () => {
