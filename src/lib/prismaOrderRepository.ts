@@ -2,19 +2,44 @@ import type { OrderItem, Order, OrderRepository } from "./types";
 import { dollarsToCents, centsToDollars } from "./currency";
 import { orderTotal } from "./totals";
 import { price } from "./price";
-import type { Quantity } from "./quantity";
+import { quantity } from "./quantity";
 
-type PrismaOrderDelegate = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  create: (args: any) => Promise<any>;
+export type PrismaOrderItemRow = {
+  id: string;
+  productId: string;
+  quantity: number;
+  price: number;
+  orderId: string;
 };
 
-type PrismaLike = {
+export type PrismaOrderRow = {
+  id: string;
+  status: string;
+  total: number;
+  createdAt: Date;
+  updatedAt: Date;
+  items: PrismaOrderItemRow[];
+};
+
+export type PrismaOrderDelegate = {
+  create: (args: {
+    data: {
+      status: string;
+      total: number;
+      items: {
+        create: { productId: string; quantity: number; price: number }[];
+      };
+    };
+    include: { items: true };
+  }) => Promise<PrismaOrderRow>;
+};
+
+export type PrismaOrderLike = {
   order: PrismaOrderDelegate;
 };
 
 export function createPrismaOrderRepository(
-  prisma: PrismaLike
+  prisma: PrismaOrderLike
 ): OrderRepository {
   return {
     save: async (items: OrderItem[]): Promise<Order> => {
@@ -39,9 +64,9 @@ export function createPrismaOrderRepository(
         id: result.id,
         status: result.status,
         total: price(centsToDollars(result.total)),
-        items: result.items.map((item: { productId: string; quantity: number; price: number }) => ({
+        items: result.items.map((item) => ({
           productId: item.productId,
-          quantity: item.quantity as Quantity,
+          quantity: quantity(item.quantity)._unsafeUnwrap(),
           price: price(centsToDollars(item.price)),
         })),
       };
