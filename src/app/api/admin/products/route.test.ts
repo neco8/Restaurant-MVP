@@ -9,25 +9,28 @@ vi.mock("@/server/prismaClient", () => ({
   },
 }));
 
-vi.mock("@/server/session", () => ({
-  getSession: vi.fn(),
-}));
+vi.mock("@/server/session", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/server/session")>();
+  return { ...actual, requireSession: vi.fn() };
+});
 
+import { NextResponse } from "next/server";
 import { prisma } from "@/server/prismaClient";
-import { getSession } from "@/server/session";
+import { requireSession } from "@/server/session";
 
 const mockFindMany = vi.mocked(prisma.product.findMany);
 const mockCreate = vi.mocked(prisma.product.create);
-const mockGetSession = vi.mocked(getSession);
+const mockRequireSession = vi.mocked(requireSession);
 
 beforeEach(() => {
   vi.clearAllMocks();
-  mockGetSession.mockReturnValue({ email: "admin@test.com" });
+  mockRequireSession.mockReturnValue({ email: "admin@test.com" });
 });
 
 describe("GET /api/admin/products without session", () => {
   test("returns 401 when no session is present", async () => {
-    mockGetSession.mockReturnValue(null);
+    const unauthorizedResponse = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    mockRequireSession.mockReturnValue(unauthorizedResponse);
 
     const req = new Request("http://localhost/api/admin/products");
     const res = await GET(req);
@@ -80,7 +83,8 @@ describe("GET /api/admin/products", () => {
 
 describe("POST /api/admin/products without session", () => {
   test("returns 401 when no session is present", async () => {
-    mockGetSession.mockReturnValue(null);
+    const unauthorizedResponse = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    mockRequireSession.mockReturnValue(unauthorizedResponse);
 
     const req = new Request("http://localhost/api/admin/products", {
       method: "POST",

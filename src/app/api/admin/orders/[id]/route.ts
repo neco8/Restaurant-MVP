@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/server/prismaClient";
-import { getSession } from "@/server/session";
+import { requireSession } from "@/server/session";
 
 export const dynamic = "force-dynamic";
 
@@ -9,10 +9,8 @@ type RouteParams = { params: Promise<{ id: string }> };
 const VALID_STATUSES = ["pending", "preparing", "done"];
 
 export async function PUT(request: Request, context: RouteParams) {
-  const session = getSession(request);
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const session = requireSession(request);
+  if (session instanceof Response) return session;
 
   const { id } = await context.params;
   const body = await request.json();

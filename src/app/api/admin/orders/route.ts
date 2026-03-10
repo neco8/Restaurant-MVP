@@ -1,15 +1,14 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/server/prismaClient";
 import { centsToDollars } from "@/lib/currency";
-import { getSession } from "@/server/session";
+import { requireSession } from "@/server/session";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
-  const session = getSession(request);
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const session = requireSession(request);
+  if (session instanceof Response) return session;
+
   const url = new URL(request.url);
   const limitParam = url.searchParams.get("limit");
   const limit = limitParam ? parseInt(limitParam, 10) : null;

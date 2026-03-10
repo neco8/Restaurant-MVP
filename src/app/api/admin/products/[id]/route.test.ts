@@ -10,17 +10,19 @@ vi.mock("@/server/prismaClient", () => ({
   },
 }));
 
-vi.mock("@/server/session", () => ({
-  getSession: vi.fn(),
-}));
+vi.mock("@/server/session", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/server/session")>();
+  return { ...actual, requireSession: vi.fn() };
+});
 
+import { NextResponse } from "next/server";
 import { prisma } from "@/server/prismaClient";
-import { getSession } from "@/server/session";
+import { requireSession } from "@/server/session";
 
 const mockFindUnique = vi.mocked(prisma.product.findUnique);
 const mockUpdate = vi.mocked(prisma.product.update);
 const mockDelete = vi.mocked(prisma.product.delete);
-const mockGetSession = vi.mocked(getSession);
+const mockRequireSession = vi.mocked(requireSession);
 
 function makeParams(id: string) {
   return { params: Promise.resolve({ id }) };
@@ -28,7 +30,7 @@ function makeParams(id: string) {
 
 beforeEach(() => {
   vi.clearAllMocks();
-  mockGetSession.mockReturnValue({ email: "admin@test.com" });
+  mockRequireSession.mockReturnValue({ email: "admin@test.com" });
 });
 
 describe("GET /api/admin/products/[id]", () => {
@@ -131,7 +133,8 @@ describe("DELETE /api/admin/products/[id]", () => {
 
 describe("GET /api/admin/products/[id] without session", () => {
   test("returns 401 when no session is present", async () => {
-    mockGetSession.mockReturnValue(null);
+    const unauthorizedResponse = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    mockRequireSession.mockReturnValue(unauthorizedResponse);
 
     const req = new Request("http://localhost/api/admin/products/1");
     const res = await GET(req, makeParams("1"));
@@ -142,7 +145,8 @@ describe("GET /api/admin/products/[id] without session", () => {
 
 describe("PUT /api/admin/products/[id] without session", () => {
   test("returns 401 when no session is present", async () => {
-    mockGetSession.mockReturnValue(null);
+    const unauthorizedResponse = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    mockRequireSession.mockReturnValue(unauthorizedResponse);
 
     const req = new Request("http://localhost/api/admin/products/1", {
       method: "PUT",
@@ -157,7 +161,8 @@ describe("PUT /api/admin/products/[id] without session", () => {
 
 describe("DELETE /api/admin/products/[id] without session", () => {
   test("returns 401 when no session is present", async () => {
-    mockGetSession.mockReturnValue(null);
+    const unauthorizedResponse = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    mockRequireSession.mockReturnValue(unauthorizedResponse);
 
     const req = new Request("http://localhost/api/admin/products/1", {
       method: "DELETE",
