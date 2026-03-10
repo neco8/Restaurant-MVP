@@ -4,6 +4,7 @@
 export * from "./admin-repository";
 export * from "./auth";
 export * from "./cart";
+export * from "./createOrder";
 export * from "./currency";
 export * from "./formatPrice";
 export * from "./inMemoryProductRepository";
