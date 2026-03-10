@@ -30,7 +30,6 @@ describe("GET /api/admin/products without session", () => {
     mockGetSession.mockReturnValue(null);
 
     const req = new Request("http://localhost/api/admin/products");
-    // @ts-expect-error GET will accept Request once session check is added
     const res = await GET(req);
     const data = await res.json();
 
@@ -53,7 +52,8 @@ describe("GET /api/admin/products", () => {
       },
     ] as never);
 
-    const res = await GET();
+    const req = new Request("http://localhost/api/admin/products");
+    const res = await GET(req);
     const data = await res.json();
 
     expect(res.status).toBe(200);
@@ -70,7 +70,8 @@ describe("GET /api/admin/products", () => {
   test("returns empty array when no products", async () => {
     mockFindMany.mockResolvedValue([]);
 
-    const res = await GET();
+    const req = new Request("http://localhost/api/admin/products");
+    const res = await GET(req);
     const data = await res.json();
 
     expect(data).toEqual([]);
