@@ -1,11 +1,21 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { type Result } from "neverthrow";
+import { type Result, ok, err } from "neverthrow";
 
 export type OrderStatus = "pending" | "preparing" | "done";
 
+const allowedTransitions: Record<OrderStatus, OrderStatus | null> = {
+  pending: "preparing",
+  preparing: "done",
+  done: null,
+};
+
 export function validateStatusTransition(
-  _currentStatus: OrderStatus,
-  _newStatus: OrderStatus,
+  currentStatus: OrderStatus,
+  newStatus: OrderStatus,
 ): Result<OrderStatus, string> {
-  throw new Error("Not implemented");
+  if (allowedTransitions[currentStatus] === newStatus) {
+    return ok(newStatus);
+  }
+  return err(
+    `Invalid status transition from '${currentStatus}' to '${newStatus}'`,
+  );
 }
