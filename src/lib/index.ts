@@ -9,6 +9,7 @@ export * from "./currency";
 export * from "./formatPrice";
 export * from "./inMemoryProductRepository";
 export * from "./price";
+export * from "./prismaOrderRepository";
 export * from "./prismaProductRepository";
 export * from "./quantity";
 export * from "./routes";
