@@ -20,5 +20,5 @@ export interface OrderRepository {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function createOrder(items: OrderItem[], repository: OrderRepository): Promise<Order> {
-  return undefined as unknown as Order;
+  return repository.save(items);
 }
