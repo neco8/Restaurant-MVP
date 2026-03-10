@@ -52,6 +52,14 @@ test("displays error message when login returns failure", async () => {
   expect(await screen.findByText("Invalid email or password")).toBeInTheDocument();
 });
 
+test("renders a Sign in with Google button", () => {
+  render(<AdminLoginPage />);
+
+  expect(
+    screen.getByRole("button", { name: "Sign in with Google" })
+  ).toBeInTheDocument();
+});
+
 test("redirects to /admin when login returns success", async () => {
   mockLogin.mockResolvedValueOnce({ success: true });
 
