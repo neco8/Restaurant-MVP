@@ -4,6 +4,30 @@ import { orderTotal } from "@/lib/totals";
 import { parseQuantity } from "@/lib/quantity";
 import { createStripeClient } from "@/server/stripeClient";
 import { dollarsToCents } from "@/lib/currency";
+import type { OrderLine, Product } from "@/lib/types";
+
+type BuildOrderLinesResult =
+  | { ok: true; orderLines: OrderLine[] }
+  | { ok: false; error: string };
+
+function buildOrderLines(
+  storedItems: { id: string; quantity: unknown }[],
+  products: Product[]
+): BuildOrderLinesResult {
+  const orderLines = [];
+  for (const storedItem of storedItems) {
+    const product = products.find((candidate) => candidate.id === storedItem.id);
+    if (!product) {
+      return { ok: false, error: "Unknown product id" };
+    }
+    const qtyResult = parseQuantity(storedItem.quantity);
+    if (qtyResult.isErr()) {
+      return { ok: false, error: "Invalid quantity" };
+    }
+    orderLines.push({ price: product.price, quantity: qtyResult.value });
+  }
+  return { ok: true, orderLines };
+}
 
 export async function POST(request: Request) {
   let body;
@@ -22,18 +46,11 @@ export async function POST(request: Request) {
   const repo = defaultProductRepository();
   const products = await repo.findAll();
 
-  const orderLines = [];
-  for (const storedItem of storedItems) {
-    const product = products.find((candidate) => candidate.id === storedItem.id);
-    if (!product) {
-      return NextResponse.json({ error: "Unknown product id" }, { status: 400 });
-    }
-    const qtyResult = parseQuantity(storedItem.quantity);
-    if (qtyResult.isErr()) {
-      return NextResponse.json({ error: "Invalid quantity" }, { status: 400 });
-    }
-    orderLines.push({ price: product.price, quantity: qtyResult.value });
+  const result = buildOrderLines(storedItems, products);
+  if (!result.ok) {
+    return NextResponse.json({ error: result.error }, { status: 400 });
   }
+  const { orderLines } = result;
 
   const amountInCents = dollarsToCents(orderTotal(orderLines));
 
