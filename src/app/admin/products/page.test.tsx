@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import AdminProductsPage from "./page";
 
 beforeEach(() => {
@@ -28,5 +28,25 @@ it("displays product names fetched from the API", async () => {
 
   await waitFor(() => {
     expect(screen.getByText("Test Burger")).toBeInTheDocument();
+  });
+});
+
+it("removes product from list when delete succeeds", async () => {
+  global.fetch = vi.fn()
+    .mockResolvedValueOnce({
+      json: () => Promise.resolve([{ id: "1", name: "Test Burger", price: 12.00 }]),
+    })
+    .mockResolvedValueOnce({ ok: true });
+
+  render(<AdminProductsPage />);
+
+  await waitFor(() => {
+    expect(screen.getByText("Test Burger")).toBeInTheDocument();
+  });
+
+  fireEvent.click(screen.getByRole("button", { name: "Delete Test Burger" }));
+
+  await waitFor(() => {
+    expect(screen.queryByText("Test Burger")).not.toBeInTheDocument();
   });
 });
