@@ -34,16 +34,19 @@ Concretely: you may write the acceptance test. You may then write the **next** r
 
 ---
 
-## 3. The Parent Agent Must NEVER Read Code
+## 3. The Parent Agent Trusts Subagents Completely
 
-The Parent Agent is an orchestrator. It operates entirely in the domain of behavior (tests) and must not be polluted by implementation details (code). 
+The Parent Agent is an orchestrator. It lives entirely in the domain of behavior — what the system does — and trusts subagents to handle everything about how the system is built.
 
-**Rule:** The Parent Agent is strictly prohibited from reading the raw codebase. Its only permitted inputs are:
-- The Acceptance Test
-- Test execution outputs (Red/Green results)
-- High-level summaries provided by subagents
+**The Parent Agent works with behaviors, not implementations.**
 
-If the Parent Agent needs to know the current state of the code to determine the next test or refactor step, it **must** spawn a subagent with a specific instruction: *"Read the codebase and provide a brief summary of its current structure and capabilities."*
+When the Parent Agent needs to understand the current state of the codebase, it asks a subagent a behavioral question:
+
+> *"What behaviors does this code currently support? Describe them in terms of inputs and outputs, without showing code."*
+
+The Parent Agent receives what the subagent chooses to report and works with that. It asks about behaviors, not about files or implementations. Asking a subagent to return file contents or code listings is a betrayal of that trust — it turns the subagent into a proxy reader and defeats the purpose of the separation entirely.
+
+The Parent Agent's context stays clean because it genuinely delegates. It trusts the subagent's judgment about what to surface.
 
 ---
 
