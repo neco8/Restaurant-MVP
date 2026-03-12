@@ -3,6 +3,9 @@ import { dollarsToCents, centsToDollars } from "./currency";
 import { orderTotal } from "./totals";
 import { price } from "./price";
 import { quantity } from "./quantity";
+import type { OrderStatus } from "./orderStatus";
+
+const INITIAL_ORDER_STATUS: OrderStatus = "pending";
 
 export type PrismaOrderItemRow = {
   id: string;
@@ -47,7 +50,7 @@ export function createPrismaOrderRepository(
 
       const result = await prisma.order.create({
         data: {
-          status: "pending",
+          status: INITIAL_ORDER_STATUS,
           total: dollarsToCents(totalDollars),
           items: {
             create: items.map((item) => ({
