@@ -18,3 +18,15 @@ it("renders the Products heading and Add Product link", async () => {
 
   expect(screen.getByRole("link", { name: "Add Product" })).toBeInTheDocument();
 });
+
+it("displays product names fetched from the API", async () => {
+  global.fetch = vi.fn().mockResolvedValue({
+    json: () => Promise.resolve([{ id: "1", name: "Test Burger", price: 12.00 }]),
+  });
+
+  render(<AdminProductsPage />);
+
+  await waitFor(() => {
+    expect(screen.getByText("Test Burger")).toBeInTheDocument();
+  });
+});
