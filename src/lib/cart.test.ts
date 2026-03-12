@@ -1,4 +1,4 @@
-import { addToCart, getStoredCartItems, clearCart, hydrateCart, decreaseCartItem, isCartEmpty } from "./cart";
+import { addToCart, getStoredCartItems, clearCart, hydrateCart, decreaseCartItem, isCartEmpty, deriveCartViewState } from "./cart";
 import { quantity } from "./quantity";
 import { price } from "./price";
 import type { Product, CartState } from "./types";
@@ -92,4 +92,12 @@ test("isCartEmpty returns true when loaded with no items", () => {
 test("isCartEmpty returns false when loaded with items", () => {
   const state: CartState = { status: "loaded", items: [{ id: "1", name: "Ramen", price: price(12.00), quantity: quantity(1)._unsafeUnwrap() }] };
   expect(isCartEmpty(state)).toBe(false);
+});
+
+test("deriveCartViewState returns items=[], empty=true, loading=false when loading with no stored items", () => {
+  const state: CartState = { status: "loading", storedItems: [] };
+  const result = deriveCartViewState(state);
+  expect(result.items).toEqual([]);
+  expect(result.empty).toBe(true);
+  expect(result.loading).toBe(false);
 });

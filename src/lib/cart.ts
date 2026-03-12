@@ -69,3 +69,14 @@ export function isCartEmpty(state: CartState): boolean {
   }
   return state.items.length === 0;
 }
+
+export function deriveCartViewState(cartState: CartState): {
+  items: CartItem[];
+  empty: boolean;
+  loading: boolean;
+} {
+  const items = cartState.status === "loaded" ? cartState.items : [];
+  const empty = isCartEmpty(cartState);
+  const loading = cartState.status === "loading" && !empty;
+  return { items, empty, loading };
+}
