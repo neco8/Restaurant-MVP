@@ -6,14 +6,14 @@ import { createStripeClient } from "@/server/stripeClient";
 import { dollarsToCents } from "@/lib/currency";
 import type { OrderLine, Product } from "@/lib/types";
 
-type BuildOrderLinesResult =
+type ValidateAndBuildOrderLinesResult =
   | { ok: true; orderLines: OrderLine[] }
   | { ok: false; error: string };
 
-function buildOrderLines(
+function validateAndBuildOrderLines(
   storedItems: { id: string; quantity: unknown }[],
   products: Product[]
-): BuildOrderLinesResult {
+): ValidateAndBuildOrderLinesResult {
   const orderLines = [];
   for (const storedItem of storedItems) {
     const product = products.find((candidate) => candidate.id === storedItem.id);
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
   const repo = defaultProductRepository();
   const products = await repo.findAll();
 
-  const result = buildOrderLines(storedItems, products);
+  const result = validateAndBuildOrderLines(storedItems, products);
   if (!result.ok) {
     return NextResponse.json({ error: result.error }, { status: 400 });
   }
