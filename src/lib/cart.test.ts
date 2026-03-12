@@ -101,3 +101,28 @@ test("deriveCartViewState returns items=[], empty=true, loading=false when loadi
   expect(result.empty).toBe(true);
   expect(result.loading).toBe(false);
 });
+
+test("deriveCartViewState returns items=[], empty=false, loading=true when loading with stored items", () => {
+  const state: CartState = { status: "loading", storedItems: [{ id: "1", quantity: quantity(1)._unsafeUnwrap() }] };
+  const result = deriveCartViewState(state);
+  expect(result.items).toEqual([]);
+  expect(result.empty).toBe(false);
+  expect(result.loading).toBe(true);
+});
+
+test("deriveCartViewState returns items=[], empty=true, loading=false when loaded with no items", () => {
+  const state: CartState = { status: "loaded", items: [] };
+  const result = deriveCartViewState(state);
+  expect(result.items).toEqual([]);
+  expect(result.empty).toBe(true);
+  expect(result.loading).toBe(false);
+});
+
+test("deriveCartViewState returns items=[...], empty=false, loading=false when loaded with items", () => {
+  const cartItem = { id: "1", name: "Ramen", price: price(12.00), quantity: quantity(1)._unsafeUnwrap() };
+  const state: CartState = { status: "loaded", items: [cartItem] };
+  const result = deriveCartViewState(state);
+  expect(result.items).toEqual([cartItem]);
+  expect(result.empty).toBe(false);
+  expect(result.loading).toBe(false);
+});
