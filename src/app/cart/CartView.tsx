@@ -1,10 +1,8 @@
 import type { CartState } from "@/lib";
-import { ROUTES, formatPrice, isCartEmpty, lineTotal, orderTotal } from "@/lib";
+import { ROUTES, formatPrice, lineTotal, orderTotal, deriveCartViewState } from "@/lib";
 
 export function CartView({ cartState = { status: "loaded", items: [] }, onDecreaseItem }: { cartState?: CartState; onDecreaseItem?: (id: string) => void } = {}) {
-  const items = cartState.status === "loaded" ? cartState.items : [];
-  const empty = isCartEmpty(cartState);
-  const loading = cartState.status === "loading" && !empty;
+  const { items, empty, loading } = deriveCartViewState(cartState);
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-16 sm:py-24">

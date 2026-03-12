@@ -1,5 +1,5 @@
 import type { CartState } from "@/lib";
-import { formatPrice, isCartEmpty, lineTotal, orderTotal } from "@/lib";
+import { formatPrice, lineTotal, orderTotal, deriveCartViewState } from "@/lib";
 
 export function CheckoutView({
   cartState = { status: "loaded", items: [] },
@@ -10,9 +10,7 @@ export function CheckoutView({
   loading?: boolean;
   children?: React.ReactNode;
 } = {}) {
-  const items = cartState.status === "loaded" ? cartState.items : [];
-  const empty = isCartEmpty(cartState);
-  const cartLoading = cartState.status === "loading" && !empty;
+  const { items, empty, loading: cartLoading } = deriveCartViewState(cartState);
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-16 sm:py-24">
