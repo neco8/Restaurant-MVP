@@ -9,13 +9,35 @@ vi.mock("@/server/prismaClient", () => ({
   },
 }));
 
+vi.mock("@/server/requireSession", () => ({
+  requireSession: vi.fn(),
+}));
+
+import { NextResponse } from "next/server";
 import { prisma } from "@/server/prismaClient";
+import { requireSession } from "@/server/requireSession";
 
 const mockFindMany = vi.mocked(prisma.product.findMany);
 const mockCreate = vi.mocked(prisma.product.create);
+const mockRequireSession = vi.mocked(requireSession);
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockRequireSession.mockResolvedValue({ email: "admin@test.com", adminId: "admin-1" });
+});
+
+describe("GET /api/admin/products without session", () => {
+  test("returns 401 when no session is present", async () => {
+    const unauthorizedResponse = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    mockRequireSession.mockResolvedValue(unauthorizedResponse);
+
+    const req = new Request("http://localhost/api/admin/products");
+    const res = await GET(req);
+    const data = await res.json();
+
+    expect(res.status).toBe(401);
+    expect(data).toEqual({ error: "Unauthorized" });
+  });
 });
 
 describe("GET /api/admin/products", () => {
@@ -32,7 +54,8 @@ describe("GET /api/admin/products", () => {
       },
     ] as never);
 
-    const res = await GET();
+    const req = new Request("http://localhost/api/admin/products");
+    const res = await GET(req);
     const data = await res.json();
 
     expect(res.status).toBe(200);
@@ -49,10 +72,30 @@ describe("GET /api/admin/products", () => {
   test("returns empty array when no products", async () => {
     mockFindMany.mockResolvedValue([]);
 
-    const res = await GET();
+    const req = new Request("http://localhost/api/admin/products");
+    const res = await GET(req);
     const data = await res.json();
 
     expect(data).toEqual([]);
+  });
+});
+
+describe("POST /api/admin/products without session", () => {
+  test("returns 401 when no session is present", async () => {
+    const unauthorizedResponse = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    mockRequireSession.mockResolvedValue(unauthorizedResponse);
+
+    const req = new Request("http://localhost/api/admin/products", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: "Tempura", description: "Crispy", price: 14.5 }),
+    });
+
+    const res = await POST(req);
+    const data = await res.json();
+
+    expect(res.status).toBe(401);
+    expect(data).toEqual({ error: "Unauthorized" });
   });
 });
 

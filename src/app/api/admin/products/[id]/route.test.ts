@@ -10,11 +10,18 @@ vi.mock("@/server/prismaClient", () => ({
   },
 }));
 
+vi.mock("@/server/requireSession", () => ({
+  requireSession: vi.fn(),
+}));
+
+import { NextResponse } from "next/server";
 import { prisma } from "@/server/prismaClient";
+import { requireSession } from "@/server/requireSession";
 
 const mockFindUnique = vi.mocked(prisma.product.findUnique);
 const mockUpdate = vi.mocked(prisma.product.update);
 const mockDelete = vi.mocked(prisma.product.delete);
+const mockRequireSession = vi.mocked(requireSession);
 
 function makeParams(id: string) {
   return { params: Promise.resolve({ id }) };
@@ -22,6 +29,7 @@ function makeParams(id: string) {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockRequireSession.mockResolvedValue({ email: "admin@test.com", adminId: "admin-1" });
 });
 
 describe("GET /api/admin/products/[id]", () => {
@@ -119,5 +127,47 @@ describe("DELETE /api/admin/products/[id]", () => {
 
     expect(res.status).toBe(200);
     expect(mockDelete).toHaveBeenCalledWith({ where: { id: "1" } });
+  });
+});
+
+describe("GET /api/admin/products/[id] without session", () => {
+  test("returns 401 when no session is present", async () => {
+    const unauthorizedResponse = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    mockRequireSession.mockResolvedValue(unauthorizedResponse);
+
+    const req = new Request("http://localhost/api/admin/products/1");
+    const res = await GET(req, makeParams("1"));
+
+    expect(res.status).toBe(401);
+  });
+});
+
+describe("PUT /api/admin/products/[id] without session", () => {
+  test("returns 401 when no session is present", async () => {
+    const unauthorizedResponse = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    mockRequireSession.mockResolvedValue(unauthorizedResponse);
+
+    const req = new Request("http://localhost/api/admin/products/1", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: "Test", price: 10 }),
+    });
+    const res = await PUT(req, makeParams("1"));
+
+    expect(res.status).toBe(401);
+  });
+});
+
+describe("DELETE /api/admin/products/[id] without session", () => {
+  test("returns 401 when no session is present", async () => {
+    const unauthorizedResponse = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    mockRequireSession.mockResolvedValue(unauthorizedResponse);
+
+    const req = new Request("http://localhost/api/admin/products/1", {
+      method: "DELETE",
+    });
+    const res = await DELETE(req, makeParams("1"));
+
+    expect(res.status).toBe(401);
   });
 });

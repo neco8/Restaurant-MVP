@@ -2,10 +2,14 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/server/prismaClient";
 import { centsToDollars, dollarsToCents } from "@/lib/currency";
 import { validateProductInput } from "@/lib/validateProduct";
+import { requireSession } from "@/server/requireSession";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(request: Request) {
+  const session = await requireSession(request);
+  if (session instanceof Response) return session;
+
   const rows = await prisma.product.findMany();
   const products = rows.map((row) => ({
     id: row.id,
@@ -17,6 +21,9 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const session = await requireSession(request);
+  if (session instanceof Response) return session;
+
   const body = await request.json();
   const { name, description, price } = body;
 

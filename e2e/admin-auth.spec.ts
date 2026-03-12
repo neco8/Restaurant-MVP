@@ -3,7 +3,6 @@ import { seedTestAdmin, cleanupTestAdmin } from "./helpers/test-admin";
 
 const TEST_ADMIN = {
   email: "e2e-admin-auth@test.local",
-  password: "Test-Password-123!",
 };
 
 test.describe("Admin Authentication", () => {
@@ -31,35 +30,47 @@ test.describe("Admin Authentication", () => {
     await expect(page).toHaveURL(/\/admin\/login/);
   });
 
-  test("shows error for invalid credentials and stays on login page", async ({
-    page,
-  }) => {
+  test("login page shows Sign in with Google link", async ({ page }) => {
     await page.goto("/admin/login");
 
-    await page.getByLabel("Email").fill("wrong@test.local");
-    await page.getByLabel("Password").fill("wrong-password");
-    await page.getByRole("button", { name: /log in/i }).click();
-
-    await expect(page.getByText(/invalid/i)).toBeVisible();
-    await expect(page).toHaveURL(/\/admin\/login/);
+    await expect(
+      page.getByRole("link", { name: /sign in with google/i })
+    ).toBeVisible();
   });
 
-  test("redirects to /admin after successful login", async ({ page }) => {
-    await page.goto("/admin/login");
+  test("authenticated admin can access /admin", async ({ page }) => {
+    await page.context().addCookies([
+      {
+        name: "session",
+        value: TEST_ADMIN.email,
+        domain: "localhost",
+        path: "/",
+        httpOnly: true,
+        secure: false,
+        sameSite: "Lax",
+      },
+    ]);
 
-    await page.getByLabel("Email").fill(TEST_ADMIN.email);
-    await page.getByLabel("Password").fill(TEST_ADMIN.password);
-    await page.getByRole("button", { name: /log in/i }).click();
+    await page.goto("/admin");
 
     await expect(page).toHaveURL(/\/admin$/);
+    await expect(page).not.toHaveURL(/\/admin\/login/);
   });
 
   test("logs out admin and prevents access to /admin", async ({ page }) => {
-    // Log in first
-    await page.goto("/admin/login");
-    await page.getByLabel("Email").fill(TEST_ADMIN.email);
-    await page.getByLabel("Password").fill(TEST_ADMIN.password);
-    await page.getByRole("button", { name: /log in/i }).click();
+    await page.context().addCookies([
+      {
+        name: "session",
+        value: TEST_ADMIN.email,
+        domain: "localhost",
+        path: "/",
+        httpOnly: true,
+        secure: false,
+        sameSite: "Lax",
+      },
+    ]);
+
+    await page.goto("/admin");
     await expect(page).toHaveURL(/\/admin$/);
 
     // Log out
