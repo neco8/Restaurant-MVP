@@ -3,6 +3,7 @@ import { defaultProductRepository } from "@/server/productRepository";
 import { orderTotal } from "@/lib/totals";
 import { parseQuantity } from "@/lib/quantity";
 import { createStripeClient } from "@/server/stripeClient";
+import { dollarsToCents } from "@/lib/currency";
 
 export async function POST(request: Request) {
   let body;
@@ -34,7 +35,7 @@ export async function POST(request: Request) {
     orderLines.push({ price: product.price, quantity: qtyResult.value });
   }
 
-  const amountInCents = Math.round(orderTotal(orderLines) * 100);
+  const amountInCents = dollarsToCents(orderTotal(orderLines));
 
   const stripe = createStripeClient();
 
