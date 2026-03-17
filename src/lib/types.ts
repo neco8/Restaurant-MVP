@@ -40,6 +40,7 @@ export type Order = {
 
 export type OrderRepository = {
   save: (items: OrderItem[]) => Promise<Order>;
+  count: () => Promise<number>;
 };
 
 export type ProductRepository = {

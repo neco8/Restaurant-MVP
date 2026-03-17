@@ -32,6 +32,7 @@ export type PrismaOrderDelegate = {
     };
     include: { items: true };
   }) => Promise<PrismaOrderRow>;
+  count: () => Promise<number>;
 };
 
 export type PrismaOrderLike = {
@@ -71,5 +72,6 @@ export function createPrismaOrderRepository(
         })),
       };
     },
+    count: () => prisma.order.count(),
   };
 }
