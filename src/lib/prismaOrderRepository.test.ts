@@ -20,6 +20,69 @@ beforeEach(() => {
 });
 
 describe("PrismaOrderRepository", () => {
+  test("findAll returns orders with item details including product name", async () => {
+    const mockFindMany = vi.fn().mockResolvedValue([
+      {
+        id: "o1",
+        status: "pending",
+        total: 2700,
+        createdAt: new Date("2026-01-15T10:00:00.000Z"),
+        updatedAt: new Date(),
+        items: [
+          {
+            id: "i1",
+            quantity: 1,
+            price: 1200,
+            productId: "p1",
+            orderId: "o1",
+            product: { id: "p1", name: "Ramen" },
+          },
+        ],
+      },
+    ]);
+    const mockPrisma = {
+      order: {
+        create: vi.fn(),
+        count: vi.fn(),
+        findMany: mockFindMany,
+      },
+    };
+    const repository = createPrismaOrderRepository(mockPrisma);
+    const orders = await repository.findAll();
+    expect(orders).toEqual([
+      {
+        id: "o1",
+        status: "pending",
+        total: price(27.0),
+        createdAt: new Date("2026-01-15T10:00:00.000Z"),
+        items: [
+          {
+            id: "i1",
+            productName: "Ramen",
+            quantity: quantity(1)._unsafeUnwrap(),
+            price: price(12.0),
+          },
+        ],
+      },
+    ]);
+  });
+
+  test("findAll respects limit option", async () => {
+    const mockFindMany = vi.fn().mockResolvedValue([]);
+    const mockPrisma = {
+      order: {
+        create: vi.fn(),
+        count: vi.fn(),
+        findMany: mockFindMany,
+      },
+    };
+    const repository = createPrismaOrderRepository(mockPrisma);
+    await repository.findAll({ limit: 5 });
+    expect(mockFindMany).toHaveBeenCalledWith(
+      expect.objectContaining({ take: 5 })
+    );
+  });
+
   test("count returns the total number of orders", async () => {
     const mockCount = vi.fn().mockResolvedValue(5);
     const mockPrisma = {
