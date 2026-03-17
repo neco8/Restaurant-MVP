@@ -102,6 +102,32 @@ describe("PrismaOrderRepository", () => {
     expect(order).toBeNull();
   });
 
+  test("updateStatus updates and returns the order summary", async () => {
+    const mockUpdate = vi.fn().mockResolvedValue({
+      id: "o1",
+      status: "preparing",
+      total: 2700,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+    const mockPrisma = {
+      order: {
+        create: vi.fn(),
+        count: vi.fn(),
+        findMany: vi.fn(),
+        findUnique: vi.fn(),
+        update: mockUpdate,
+      },
+    };
+    const repository = createPrismaOrderRepository(mockPrisma);
+    const order = await repository.updateStatus("o1", "preparing");
+    expect(order).toEqual({ id: "o1", status: "preparing" });
+    expect(mockUpdate).toHaveBeenCalledWith({
+      where: { id: "o1" },
+      data: { status: "preparing" },
+    });
+  });
+
   test("findAll respects limit option", async () => {
     const mockFindMany = vi.fn().mockResolvedValue([]);
     const mockPrisma = {
