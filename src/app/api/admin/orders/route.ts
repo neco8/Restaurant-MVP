@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/server/prismaClient";
-import { centsToDollars } from "@/lib/currency";
+import { defaultOrderRepository } from "@/server/orderRepository";
 import { requireSession } from "@/server/requireSession";
 
 export const dynamic = "force-dynamic";
@@ -13,25 +12,23 @@ export async function GET(request: Request) {
   const limitParam = url.searchParams.get("limit");
   const limit = limitParam ? parseInt(limitParam, 10) : null;
 
-  const rows = await prisma.order.findMany({
-    include: { items: { include: { product: true } } },
-    orderBy: { createdAt: "desc" },
-    ...(limit !== null ? { take: limit } : {}),
-  });
+  const repository = defaultOrderRepository();
+
+  const rows = await repository.findAll(limit ? { limit } : undefined);
 
   const orders = rows.map((row) => ({
     id: row.id,
     status: row.status,
-    total: centsToDollars(row.total),
+    total: Number(row.total),
     createdAt: row.createdAt.toISOString(),
     items: row.items.map((item) => ({
       id: item.id,
-      productName: item.product.name,
-      quantity: item.quantity,
-      price: centsToDollars(item.price),
+      productName: item.productName,
+      quantity: Number(item.quantity),
+      price: Number(item.price),
     })),
   }));
 
-  const totalCount = await prisma.order.count();
+  const totalCount = await repository.count();
   return NextResponse.json({ orders, totalCount });
 }
