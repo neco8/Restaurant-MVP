@@ -151,9 +151,9 @@ test.describe("Admin Order Status Update", () => {
     const row = page.getByRole("row").filter({ hasText: "Status Update Ramen" });
     await expect(row.getByText("pending")).toBeVisible();
 
-    await row.getByRole("button", { name: "Mark as completed" }).click();
+    await row.getByRole("button", { name: "Mark as done" }).click();
 
-    await expect(row.getByText("completed")).toBeVisible();
-    await expect(row.getByRole("button", { name: "Mark as completed" })).not.toBeVisible();
+    await expect(row.getByText("done")).toBeVisible();
+    await expect(row.getByRole("button", { name: "Mark as done" })).not.toBeVisible();
   });
 });
