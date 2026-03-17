@@ -45,6 +45,8 @@ describe("PrismaOrderRepository", () => {
         create: vi.fn(),
         count: vi.fn(),
         findMany: mockFindMany,
+        findUnique: vi.fn(),
+        update: vi.fn(),
       },
     };
     const repository = createPrismaOrderRepository(mockPrisma);
@@ -81,6 +83,7 @@ describe("PrismaOrderRepository", () => {
         count: vi.fn(),
         findMany: vi.fn(),
         findUnique: mockFindUnique,
+        update: vi.fn(),
       },
     };
     const repository = createPrismaOrderRepository(mockPrisma);
@@ -95,6 +98,7 @@ describe("PrismaOrderRepository", () => {
         count: vi.fn(),
         findMany: vi.fn(),
         findUnique: vi.fn().mockResolvedValue(null),
+        update: vi.fn(),
       },
     };
     const repository = createPrismaOrderRepository(mockPrisma);
@@ -135,6 +139,8 @@ describe("PrismaOrderRepository", () => {
         create: vi.fn(),
         count: vi.fn(),
         findMany: mockFindMany,
+        findUnique: vi.fn(),
+        update: vi.fn(),
       },
     };
     const repository = createPrismaOrderRepository(mockPrisma);
@@ -150,6 +156,9 @@ describe("PrismaOrderRepository", () => {
       order: {
         create: vi.fn(),
         count: mockCount,
+        findMany: vi.fn(),
+        findUnique: vi.fn(),
+        update: vi.fn(),
       },
     };
     const repository = createPrismaOrderRepository(mockPrisma);
