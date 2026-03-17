@@ -14,11 +14,13 @@ export function createInMemoryProductRepository(
     },
     update: async (id: string, input: { name: string; description: string; price: Price }) => {
       const index = products.findIndex((p) => p.id === id);
+      if (index === -1) throw new Error(`Product not found: ${id}`);
       products[index] = { ...products[index], ...input };
       return products[index];
     },
     delete: async (id: string) => {
       const index = products.findIndex((p) => p.id === id);
+      if (index === -1) return;
       products.splice(index, 1);
     },
   };
