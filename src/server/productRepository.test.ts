@@ -38,7 +38,10 @@ describe("defaultProductRepository", () => {
     test("shares state across multiple calls", async () => {
       const repo1 = defaultProductRepository();
       const repo2 = defaultProductRepository();
-      expect(repo1).toBe(repo2);
+      const before = await repo2.findAll();
+      await repo1.create({ name: "New Item", description: "Test", price: (10 as import("@/lib/price").Price) });
+      const after = await repo2.findAll();
+      expect(after.length).toBe(before.length + 1);
     });
   });
 });

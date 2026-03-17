@@ -19,27 +19,14 @@ export function isDemoMode(): boolean {
   return process.env.DEMO_MODE === "true";
 }
 
-let cachedProductRepo: ProductRepository | null = null;
-let cachedOrderRepo: OrderRepository | null = null;
-let cachedAdminRepo: AdminRepository | null = null;
-
 export function demoProductRepository(): ProductRepository {
-  if (!cachedProductRepo) {
-    cachedProductRepo = createInMemoryProductRepository([...demoProducts]);
-  }
-  return cachedProductRepo;
+  return createInMemoryProductRepository([...demoProducts]);
 }
 
 export function demoOrderRepository(): OrderRepository {
-  if (!cachedOrderRepo) {
-    cachedOrderRepo = createInMemoryOrderRepository();
-  }
-  return cachedOrderRepo;
+  return createInMemoryOrderRepository();
 }
 
 export function demoAdminRepository(): AdminRepository {
-  if (!cachedAdminRepo) {
-    cachedAdminRepo = createInMemoryAdminRepository([]);
-  }
-  return cachedAdminRepo;
+  return createInMemoryAdminRepository([]);
 }
