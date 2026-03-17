@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/server/prismaClient";
-import { centsToDollars, dollarsToCents } from "@/lib/currency";
+import { defaultProductRepository } from "@/server/productRepository";
+import { price as toPrice } from "@/lib/price";
 import { validateProductInput } from "@/lib/validateProduct";
 import { requireSession } from "@/server/requireSession";
 
@@ -10,14 +10,16 @@ export async function GET(request: Request) {
   const session = await requireSession(request);
   if (session instanceof Response) return session;
 
-  const rows = await prisma.product.findMany();
-  const products = rows.map((row) => ({
-    id: row.id,
-    name: row.name,
-    description: row.description,
-    price: centsToDollars(row.price),
-  }));
-  return NextResponse.json(products);
+  const repository = defaultProductRepository();
+  const products = await repository.findAll();
+  return NextResponse.json(
+    products.map((p) => ({
+      id: p.id,
+      name: p.name,
+      description: p.description,
+      price: Number(p.price),
+    }))
+  );
 }
 
 export async function POST(request: Request) {
@@ -32,15 +34,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: validationError }, { status: 400 });
   }
 
-  const priceInCents = dollarsToCents(price);
-
-  const product = await prisma.product.create({
-    data: {
-      name,
-      description: description || "",
-      price: priceInCents,
-      image: body.image || "",
-    },
+  const repository = defaultProductRepository();
+  const product = await repository.create({
+    name,
+    description: description || "",
+    price: toPrice(price),
   });
 
   return NextResponse.json({ id: product.id }, { status: 201 });
