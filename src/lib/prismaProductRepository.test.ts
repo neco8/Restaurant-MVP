@@ -156,3 +156,19 @@ test("findAll maps Prisma rows to domain products with price conversion", async 
     { id: "def", name: "Gyoza", description: "Dumplings", price: price(7.5) },
   ]);
 });
+
+test("delete removes a product by id", async () => {
+  const mockDelete = vi.fn().mockResolvedValue({});
+  const mockPrisma: PrismaLike = {
+    product: {
+      findMany: vi.fn(),
+      findUnique: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+      delete: mockDelete,
+    },
+  };
+  const repository = createPrismaProductRepository(mockPrisma);
+  await repository.delete("abc");
+  expect(mockDelete).toHaveBeenCalledWith({ where: { id: "abc" } });
+});
