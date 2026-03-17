@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createSession } from "@/server/session";
 import { exchangeCodeForToken, fetchUserInfo } from "@/lib/google-oauth";
-import { prisma } from "@/server/prismaClient";
+import { defaultAdminRepository } from "@/server/adminRepository";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -27,9 +27,7 @@ export async function GET(request: Request) {
     const tokenData = await exchangeCodeForToken(code);
     const userinfo = await fetchUserInfo(tokenData.access_token);
 
-    const admin = await prisma.admin.findUnique({
-      where: { email: userinfo.email },
-    });
+    const admin = await defaultAdminRepository().findByEmail(userinfo.email);
 
     if (!admin) {
       return NextResponse.redirect(
