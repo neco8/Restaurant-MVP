@@ -86,6 +86,37 @@ test("create stores a product and returns it with generated id", async () => {
   });
 });
 
+test("update modifies a product and returns the updated domain product", async () => {
+  const mockPrisma: PrismaLike = {
+    product: {
+      findMany: vi.fn(),
+      findUnique: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn().mockResolvedValue({
+        id: "abc",
+        name: "Updated Ramen",
+        description: "New broth",
+        price: 1500,
+        image: "",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }),
+    },
+  };
+  const repository = createPrismaProductRepository(mockPrisma);
+  const product = await repository.update("abc", {
+    name: "Updated Ramen",
+    description: "New broth",
+    price: price(15.0),
+  });
+  expect(product).toEqual({
+    id: "abc",
+    name: "Updated Ramen",
+    description: "New broth",
+    price: price(15.0),
+  });
+});
+
 test("findAll maps Prisma rows to domain products with price conversion", async () => {
   const mockPrisma: PrismaLike = {
     product: {
