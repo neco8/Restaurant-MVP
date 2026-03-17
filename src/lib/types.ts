@@ -66,6 +66,15 @@ export type OrderRepository = {
   updateStatus: (id: string, status: string) => Promise<OrderSummary>;
 };
 
+export type Admin = {
+  id: string;
+  email: string;
+};
+
+export type AdminRepository = {
+  findByEmail: (email: string) => Promise<Admin | null>;
+};
+
 export type ProductRepository = {
   findAll: () => Promise<Product[]>;
   findById: (id: string) => Promise<Product | null>;
