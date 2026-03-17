@@ -28,5 +28,11 @@ describe("defaultProductRepository", () => {
       const products = await repository.findAll();
       expect(Array.isArray(products)).toBe(true);
     });
+
+    test("returns repository pre-populated with demo products", async () => {
+      const repository = defaultProductRepository();
+      const products = await repository.findAll();
+      expect(products.length).toBeGreaterThan(0);
+    });
   });
 });
