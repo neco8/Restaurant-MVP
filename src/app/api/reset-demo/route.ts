@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
+import { resetDemo } from "@/lib/resetDemo";
+import { defaultProductRepository } from "@/server/productRepository";
 
 export const dynamic = "force-dynamic";
 
 export async function POST() {
-  return NextResponse.json({ error: "Not implemented" }, { status: 501 });
+  await resetDemo({ productRepository: defaultProductRepository() });
+  return NextResponse.json({ ok: true });
 }
