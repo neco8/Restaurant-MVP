@@ -20,6 +20,19 @@ beforeEach(() => {
 });
 
 describe("PrismaOrderRepository", () => {
+  test("count returns the total number of orders", async () => {
+    const mockCount = vi.fn().mockResolvedValue(5);
+    const mockPrisma = {
+      order: {
+        create: vi.fn(),
+        count: mockCount,
+      },
+    };
+    const repository = createPrismaOrderRepository(mockPrisma);
+    const total = await repository.count();
+    expect(total).toBe(5);
+  });
+
   test("save should create an order with items in the database", async () => {
     const items: OrderItem[] = [
       { productId: "p1", quantity: quantity(2)._unsafeUnwrap(), price: price(12.5) },
