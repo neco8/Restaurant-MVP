@@ -13,6 +13,7 @@ export type PrismaProductDelegate = {
   findMany: () => Promise<PrismaProductRow[]>;
   findUnique: (args: { where: { id: string } }) => Promise<PrismaProductRow | null>;
   create: (args: { data: { name: string; description: string; price: number; image: string } }) => Promise<PrismaProductRow>;
+  update: (args: { where: { id: string }; data: { name: string; description: string; price: number } }) => Promise<PrismaProductRow>;
 };
 
 export type PrismaLike = {
@@ -46,6 +47,19 @@ export function createPrismaProductRepository(
       const priceInCents = dollarsToCents(input.price);
       const row = await prisma.product.create({
         data: { name: input.name, description: input.description, price: priceInCents, image: "" },
+      });
+      return {
+        id: row.id,
+        name: row.name,
+        description: row.description,
+        price: price(centsToDollars(row.price)),
+      };
+    },
+    update: async (id, input): Promise<Product> => {
+      const priceInCents = dollarsToCents(input.price);
+      const row = await prisma.product.update({
+        where: { id },
+        data: { name: input.name, description: input.description, price: priceInCents },
       });
       return {
         id: row.id,
