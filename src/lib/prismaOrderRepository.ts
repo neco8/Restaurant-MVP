@@ -1,4 +1,4 @@
-import type { OrderItem, Order, OrderRepository } from "./types";
+import type { OrderItem, Order, OrderRepository, DetailedOrder } from "./types";
 import { dollarsToCents, centsToDollars } from "./currency";
 import { orderTotal } from "./totals";
 import { price } from "./price";
@@ -21,6 +21,15 @@ export type PrismaOrderRow = {
   items: PrismaOrderItemRow[];
 };
 
+type PrismaOrderWithItemsRow = {
+  id: string;
+  status: string;
+  total: number;
+  createdAt: Date;
+  updatedAt: Date;
+  items: (PrismaOrderItemRow & { product: { id: string; name: string } })[];
+};
+
 export type PrismaOrderDelegate = {
   create: (args: {
     data: {
@@ -33,6 +42,11 @@ export type PrismaOrderDelegate = {
     include: { items: true };
   }) => Promise<PrismaOrderRow>;
   count: () => Promise<number>;
+  findMany: (args: {
+    include: { items: { include: { product: true } } };
+    orderBy: { createdAt: "desc" };
+    take?: number;
+  }) => Promise<PrismaOrderWithItemsRow[]>;
 };
 
 export type PrismaOrderLike = {
@@ -73,5 +87,24 @@ export function createPrismaOrderRepository(
       };
     },
     count: () => prisma.order.count(),
+    findAll: async (options?: { limit?: number }): Promise<DetailedOrder[]> => {
+      const rows = await prisma.order.findMany({
+        include: { items: { include: { product: true } } },
+        orderBy: { createdAt: "desc" },
+        ...(options?.limit ? { take: options.limit } : {}),
+      });
+      return rows.map((row) => ({
+        id: row.id,
+        status: row.status,
+        total: price(centsToDollars(row.total)),
+        createdAt: row.createdAt,
+        items: row.items.map((item) => ({
+          id: item.id,
+          productName: item.product.name,
+          quantity: quantity(item.quantity)._unsafeUnwrap(),
+          price: price(centsToDollars(item.price)),
+        })),
+      }));
+    },
   };
 }

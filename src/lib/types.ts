@@ -38,9 +38,25 @@ export type Order = {
   items: OrderItem[];
 };
 
+export type DetailedOrderItem = {
+  id: string;
+  productName: string;
+  quantity: Quantity;
+  price: Price;
+};
+
+export type DetailedOrder = {
+  id: string;
+  status: string;
+  total: Price;
+  createdAt: Date;
+  items: DetailedOrderItem[];
+};
+
 export type OrderRepository = {
   save: (items: OrderItem[]) => Promise<Order>;
   count: () => Promise<number>;
+  findAll: (options?: { limit?: number }) => Promise<DetailedOrder[]>;
 };
 
 export type ProductRepository = {
