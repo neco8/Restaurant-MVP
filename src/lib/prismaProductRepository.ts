@@ -1,4 +1,4 @@
-import { centsToDollars } from "./currency";
+import { centsToDollars, dollarsToCents } from "./currency";
 import { price } from "./price";
 import type { Product, ProductRepository } from "./types";
 
@@ -12,6 +12,7 @@ export type PrismaProductRow = {
 export type PrismaProductDelegate = {
   findMany: () => Promise<PrismaProductRow[]>;
   findUnique: (args: { where: { id: string } }) => Promise<PrismaProductRow | null>;
+  create: (args: { data: { name: string; description: string; price: number; image: string } }) => Promise<PrismaProductRow>;
 };
 
 export type PrismaLike = {
@@ -34,6 +35,18 @@ export function createPrismaProductRepository(
     findById: async (id: string): Promise<Product | null> => {
       const row = await prisma.product.findUnique({ where: { id } });
       if (!row) return null;
+      return {
+        id: row.id,
+        name: row.name,
+        description: row.description,
+        price: price(centsToDollars(row.price)),
+      };
+    },
+    create: async (input): Promise<Product> => {
+      const priceInCents = dollarsToCents(input.price);
+      const row = await prisma.product.create({
+        data: { name: input.name, description: input.description, price: priceInCents, image: "" },
+      });
       return {
         id: row.id,
         name: row.name,
