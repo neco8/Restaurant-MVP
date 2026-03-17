@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/server/prismaClient";
+import { defaultOrderRepository } from "@/server/orderRepository";
 import { requireSession } from "@/server/requireSession";
 import {
   validateStatusTransition,
@@ -24,7 +24,8 @@ export async function PUT(request: Request, context: RouteParams) {
     return NextResponse.json({ error: "Invalid status" }, { status: 400 });
   }
 
-  const currentOrder = await prisma.order.findUnique({ where: { id } });
+  const repository = defaultOrderRepository();
+  const currentOrder = await repository.findById(id);
 
   if (!currentOrder) {
     return NextResponse.json({ error: "Order not found" }, { status: 404 });
@@ -42,10 +43,7 @@ export async function PUT(request: Request, context: RouteParams) {
     );
   }
 
-  const order = await prisma.order.update({
-    where: { id },
-    data: { status },
-  });
+  const order = await repository.updateStatus(id, status);
 
   return NextResponse.json({ id: order.id, status: order.status });
 }
