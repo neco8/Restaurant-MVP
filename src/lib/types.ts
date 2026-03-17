@@ -47,4 +47,5 @@ export type ProductRepository = {
   findById: (id: string) => Promise<Product | null>;
   create: (input: { name: string; description: string; price: Price }) => Promise<Product>;
   update: (id: string, input: { name: string; description: string; price: Price }) => Promise<Product>;
+  delete: (id: string) => Promise<void>;
 };

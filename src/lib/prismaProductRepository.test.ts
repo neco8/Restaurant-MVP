@@ -11,6 +11,7 @@ test("findAll returns empty array when no products exist", async () => {
       findUnique: vi.fn(),
       create: vi.fn(),
       update: vi.fn(),
+      delete: vi.fn(),
     },
   };
   const repository = createPrismaProductRepository(mockPrisma);
@@ -33,6 +34,7 @@ test("findById returns a product when found", async () => {
       }),
       create: vi.fn(),
       update: vi.fn(),
+      delete: vi.fn(),
     },
   };
   const repository = createPrismaProductRepository(mockPrisma);
@@ -52,6 +54,7 @@ test("findById returns null when product not found", async () => {
       findUnique: vi.fn().mockResolvedValue(null),
       create: vi.fn(),
       update: vi.fn(),
+      delete: vi.fn(),
     },
   };
   const repository = createPrismaProductRepository(mockPrisma);
@@ -74,6 +77,7 @@ test("create stores a product and returns it with generated id", async () => {
         updatedAt: new Date(),
       }),
       update: vi.fn(),
+      delete: vi.fn(),
     },
   };
   const repository = createPrismaProductRepository(mockPrisma);
@@ -105,6 +109,7 @@ test("update modifies a product and returns the updated domain product", async (
         createdAt: new Date(),
         updatedAt: new Date(),
       }),
+      delete: vi.fn(),
     },
   };
   const repository = createPrismaProductRepository(mockPrisma);
@@ -147,6 +152,7 @@ test("findAll maps Prisma rows to domain products with price conversion", async 
       findUnique: vi.fn(),
       create: vi.fn(),
       update: vi.fn(),
+      delete: vi.fn(),
     },
   };
   const repository = createPrismaProductRepository(mockPrisma);

@@ -14,6 +14,7 @@ export type PrismaProductDelegate = {
   findUnique: (args: { where: { id: string } }) => Promise<PrismaProductRow | null>;
   create: (args: { data: { name: string; description: string; price: number; image: string } }) => Promise<PrismaProductRow>;
   update: (args: { where: { id: string }; data: { name: string; description: string; price: number } }) => Promise<PrismaProductRow>;
+  delete: (args: { where: { id: string } }) => Promise<PrismaProductRow>;
 };
 
 export type PrismaLike = {
@@ -67,6 +68,9 @@ export function createPrismaProductRepository(
         description: row.description,
         price: price(centsToDollars(row.price)),
       };
+    },
+    delete: async (id: string): Promise<void> => {
+      await prisma.product.delete({ where: { id } });
     },
   };
 }
