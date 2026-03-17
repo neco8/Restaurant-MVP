@@ -48,6 +48,7 @@ export type PrismaOrderDelegate = {
     take?: number;
   }) => Promise<PrismaOrderWithItemsRow[]>;
   findUnique: (args: { where: { id: string } }) => Promise<{ id: string; status: string; total: number; createdAt: Date; updatedAt: Date } | null>;
+  update: (args: { where: { id: string }; data: { status: string } }) => Promise<{ id: string; status: string; total: number; createdAt: Date; updatedAt: Date }>;
 };
 
 export type PrismaOrderLike = {
@@ -91,6 +92,10 @@ export function createPrismaOrderRepository(
     findById: async (id: string): Promise<OrderSummary | null> => {
       const result = await prisma.order.findUnique({ where: { id } });
       if (!result) return null;
+      return { id: result.id, status: result.status };
+    },
+    updateStatus: async (id: string, status: string): Promise<OrderSummary> => {
+      const result = await prisma.order.update({ where: { id }, data: { status } });
       return { id: result.id, status: result.status };
     },
     findAll: async (options?: { limit?: number }): Promise<DetailedOrder[]> => {

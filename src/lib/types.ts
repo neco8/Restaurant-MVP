@@ -63,6 +63,7 @@ export type OrderRepository = {
   count: () => Promise<number>;
   findAll: (options?: { limit?: number }) => Promise<DetailedOrder[]>;
   findById: (id: string) => Promise<OrderSummary | null>;
+  updateStatus: (id: string, status: string) => Promise<OrderSummary>;
 };
 
 export type ProductRepository = {
