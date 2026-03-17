@@ -1,4 +1,4 @@
-import type { OrderItem, Order, OrderRepository, DetailedOrder } from "./types";
+import type { OrderItem, Order, OrderRepository, DetailedOrder, OrderSummary } from "./types";
 import { dollarsToCents, centsToDollars } from "./currency";
 import { orderTotal } from "./totals";
 import { price } from "./price";
@@ -47,6 +47,7 @@ export type PrismaOrderDelegate = {
     orderBy: { createdAt: "desc" };
     take?: number;
   }) => Promise<PrismaOrderWithItemsRow[]>;
+  findUnique: (args: { where: { id: string } }) => Promise<{ id: string; status: string; total: number; createdAt: Date; updatedAt: Date } | null>;
 };
 
 export type PrismaOrderLike = {
@@ -87,6 +88,11 @@ export function createPrismaOrderRepository(
       };
     },
     count: () => prisma.order.count(),
+    findById: async (id: string): Promise<OrderSummary | null> => {
+      const result = await prisma.order.findUnique({ where: { id } });
+      if (!result) return null;
+      return { id: result.id, status: result.status };
+    },
     findAll: async (options?: { limit?: number }): Promise<DetailedOrder[]> => {
       const rows = await prisma.order.findMany({
         include: { items: { include: { product: true } } },

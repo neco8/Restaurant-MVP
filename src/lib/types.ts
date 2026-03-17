@@ -53,10 +53,16 @@ export type DetailedOrder = {
   items: DetailedOrderItem[];
 };
 
+export type OrderSummary = {
+  id: string;
+  status: string;
+};
+
 export type OrderRepository = {
   save: (items: OrderItem[]) => Promise<Order>;
   count: () => Promise<number>;
   findAll: (options?: { limit?: number }) => Promise<DetailedOrder[]>;
+  findById: (id: string) => Promise<OrderSummary | null>;
 };
 
 export type ProductRepository = {
