@@ -53,6 +53,36 @@ test("findById returns null when product not found", async () => {
   expect(product).toBeNull();
 });
 
+test("create stores a product and returns it with generated id", async () => {
+  const mockPrisma: PrismaLike = {
+    product: {
+      findMany: vi.fn(),
+      findUnique: vi.fn(),
+      create: vi.fn().mockResolvedValue({
+        id: "new-id",
+        name: "Tonkatsu",
+        description: "Crispy pork",
+        price: 1500,
+        image: "",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }),
+    },
+  };
+  const repository = createPrismaProductRepository(mockPrisma);
+  const product = await repository.create({
+    name: "Tonkatsu",
+    description: "Crispy pork",
+    price: price(15.0),
+  });
+  expect(product).toEqual({
+    id: "new-id",
+    name: "Tonkatsu",
+    description: "Crispy pork",
+    price: price(15.0),
+  });
+});
+
 test("findAll maps Prisma rows to domain products with price conversion", async () => {
   const mockPrisma: PrismaLike = {
     product: {
