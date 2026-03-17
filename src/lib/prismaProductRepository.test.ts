@@ -8,6 +8,7 @@ test("findAll returns empty array when no products exist", async () => {
   const mockPrisma: PrismaLike = {
     product: {
       findMany: vi.fn().mockResolvedValue([]),
+      findUnique: vi.fn(),
     },
   };
   const repository = createPrismaProductRepository(mockPrisma);
@@ -75,6 +76,7 @@ test("findAll maps Prisma rows to domain products with price conversion", async 
           updatedAt: new Date(),
         },
       ]),
+      findUnique: vi.fn(),
     },
   };
   const repository = createPrismaProductRepository(mockPrisma);

@@ -11,6 +11,7 @@ export type PrismaProductRow = {
 
 export type PrismaProductDelegate = {
   findMany: () => Promise<PrismaProductRow[]>;
+  findUnique: (args: { where: { id: string } }) => Promise<PrismaProductRow | null>;
 };
 
 export type PrismaLike = {
@@ -29,6 +30,16 @@ export function createPrismaProductRepository(
         description: row.description,
         price: price(centsToDollars(row.price)),
       }));
+    },
+    findById: async (id: string): Promise<Product | null> => {
+      const row = await prisma.product.findUnique({ where: { id } });
+      if (!row) return null;
+      return {
+        id: row.id,
+        name: row.name,
+        description: row.description,
+        price: price(centsToDollars(row.price)),
+      };
     },
   };
 }

@@ -44,4 +44,5 @@ export type OrderRepository = {
 
 export type ProductRepository = {
   findAll: () => Promise<Product[]>;
+  findById: (id: string) => Promise<Product | null>;
 };
