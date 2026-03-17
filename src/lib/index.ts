@@ -15,6 +15,7 @@ export * from "./prismaAdminRepository";
 export * from "./prismaOrderRepository";
 export * from "./prismaProductRepository";
 export * from "./quantity";
+export * from "./resetDemo";
 export * from "./routes";
 export * from "./signatureDishes";
 export * from "./totals";
