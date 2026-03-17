@@ -18,6 +18,10 @@ describe("createOrder", () => {
           },
         ],
       }),
+      count: vi.fn(),
+      findAll: vi.fn(),
+      findById: vi.fn(),
+      updateStatus: vi.fn(),
     };
 
     const order = await createOrder(

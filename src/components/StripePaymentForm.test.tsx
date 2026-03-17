@@ -4,6 +4,8 @@ import userEvent from "@testing-library/user-event";
 import * as lib from "@/lib";
 import { StripePaymentForm } from "./StripePaymentForm";
 
+process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY = "pk_test_dummy";
+
 const mockConfirmPayment = vi.fn();
 const mockStripe = { confirmPayment: mockConfirmPayment };
 

@@ -72,7 +72,7 @@ test.describe("Admin Dashboard Recent Orders — empty state", () => {
   test("shows empty message when there are no orders", async ({ page }) => {
     await loginAsAdmin(page);
 
-    await expect(page.getByText("まだ注文はありません")).toBeVisible();
+    await expect(page.getByText("No orders yet")).toBeVisible();
   });
 });
 
@@ -259,7 +259,7 @@ test.describe("Admin Dashboard Recent Orders — more than 5 orders", () => {
   }) => {
     await loginAsAdmin(page);
 
-    const viewAllLink = page.getByRole("link", { name: "すべての注文を見る" });
+    const viewAllLink = page.getByRole("link", { name: "View all orders" });
     await expect(viewAllLink).toBeVisible();
 
     await viewAllLink.click();

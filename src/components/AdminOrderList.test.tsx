@@ -53,7 +53,7 @@ describe("AdminOrderList", () => {
     expect(screen.getByText("Gyoza")).toBeInTheDocument();
   });
 
-  test("renders mark as done button for pending orders", () => {
+  test("renders mark as preparing button for pending orders", () => {
     const orders: AdminOrder[] = [
       {
         id: "o1",
@@ -64,10 +64,27 @@ describe("AdminOrderList", () => {
       },
       {
         id: "o2",
-        status: "completed",
+        status: "done",
         total: 12,
         createdAt: "2026-01-16T10:00:00.000Z",
         items: [{ id: "i2", productName: "Gyoza", quantity: 1, price: 12 }],
+      },
+    ];
+    const onStatusUpdate = vi.fn();
+    render(<AdminOrderList orders={orders} onStatusUpdate={onStatusUpdate} />);
+
+    const buttons = screen.getAllByRole("button", { name: "Mark as preparing" });
+    expect(buttons).toHaveLength(1);
+  });
+
+  test("renders mark as done button for preparing orders", () => {
+    const orders: AdminOrder[] = [
+      {
+        id: "o1",
+        status: "preparing",
+        total: 12,
+        createdAt: "2026-01-15T10:00:00.000Z",
+        items: [{ id: "i1", productName: "Ramen", quantity: 1, price: 12 }],
       },
     ];
     const onStatusUpdate = vi.fn();
@@ -77,12 +94,31 @@ describe("AdminOrderList", () => {
     expect(buttons).toHaveLength(1);
   });
 
-  test("calls onStatusUpdate with order id and new status when button clicked", async () => {
+  test("calls onStatusUpdate with preparing status when pending order button clicked", async () => {
     const user = userEvent.setup();
     const orders: AdminOrder[] = [
       {
         id: "o1",
         status: "pending",
+        total: 12,
+        createdAt: "2026-01-15T10:00:00.000Z",
+        items: [{ id: "i1", productName: "Ramen", quantity: 1, price: 12 }],
+      },
+    ];
+    const onStatusUpdate = vi.fn();
+    render(<AdminOrderList orders={orders} onStatusUpdate={onStatusUpdate} />);
+
+    await user.click(screen.getByRole("button", { name: "Mark as preparing" }));
+
+    expect(onStatusUpdate).toHaveBeenCalledWith("o1", "preparing");
+  });
+
+  test("calls onStatusUpdate with done status when preparing order button clicked", async () => {
+    const user = userEvent.setup();
+    const orders: AdminOrder[] = [
+      {
+        id: "o1",
+        status: "preparing",
         total: 12,
         createdAt: "2026-01-15T10:00:00.000Z",
         items: [{ id: "i1", productName: "Ramen", quantity: 1, price: 12 }],

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/server/session";
-import { prisma } from "@/server/prismaClient";
+import { defaultAdminRepository } from "@/server/adminRepository";
 
 export async function requireSession(
   request: Request
@@ -10,9 +10,7 @@ export async function requireSession(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const admin = await prisma.admin.findUnique({
-    where: { email: session.email },
-  });
+  const admin = await defaultAdminRepository().findByEmail(session.email);
 
   if (!admin) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });

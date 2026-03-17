@@ -144,16 +144,18 @@ test.describe("Admin Order Status Update", () => {
 
   });
 
-  test("updates order status from pending to completed", async ({ page }) => {
+  test("updates order status from pending through preparing to done", async ({ page }) => {
     await loginAsAdmin(page);
     await page.goto("/admin/orders");
 
     const row = page.getByRole("row").filter({ hasText: "Status Update Ramen" });
     await expect(row.getByText("pending")).toBeVisible();
 
-    await row.getByRole("button", { name: "Mark as completed" }).click();
+    await row.getByRole("button", { name: "Mark as preparing" }).click();
+    await expect(row.getByText("preparing")).toBeVisible();
 
-    await expect(row.getByText("completed")).toBeVisible();
-    await expect(row.getByRole("button", { name: "Mark as completed" })).not.toBeVisible();
+    await row.getByRole("button", { name: "Mark as done" }).click();
+    await expect(row.getByText("done")).toBeVisible();
+    await expect(row.getByRole("button", { name: "Mark as done" })).not.toBeVisible();
   });
 });

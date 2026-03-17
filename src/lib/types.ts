@@ -38,10 +38,47 @@ export type Order = {
   items: OrderItem[];
 };
 
+export type DetailedOrderItem = {
+  id: string;
+  productName: string;
+  quantity: Quantity;
+  price: Price;
+};
+
+export type DetailedOrder = {
+  id: string;
+  status: string;
+  total: Price;
+  createdAt: Date;
+  items: DetailedOrderItem[];
+};
+
+export type OrderSummary = {
+  id: string;
+  status: string;
+};
+
 export type OrderRepository = {
   save: (items: OrderItem[]) => Promise<Order>;
+  count: () => Promise<number>;
+  findAll: (options?: { limit?: number }) => Promise<DetailedOrder[]>;
+  findById: (id: string) => Promise<OrderSummary | null>;
+  updateStatus: (id: string, status: string) => Promise<OrderSummary>;
+};
+
+export type Admin = {
+  id: string;
+  email: string;
+};
+
+export type AdminRepository = {
+  findByEmail: (email: string) => Promise<Admin | null>;
 };
 
 export type ProductRepository = {
   findAll: () => Promise<Product[]>;
+  findById: (id: string) => Promise<Product | null>;
+  create: (input: { name: string; description: string; price: Price }) => Promise<Product>;
+  update: (id: string, input: { name: string; description: string; price: Price }) => Promise<Product>;
+  delete: (id: string) => Promise<void>;
 };

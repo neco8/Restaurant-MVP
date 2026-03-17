@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { createOrder } from "@/lib/createOrder";
 import type { OrderItem } from "@/lib/types";
-import { createPrismaOrderRepository } from "@/lib/prismaOrderRepository";
-import { prisma } from "@/server/prismaClient";
+import { defaultOrderRepository } from "@/server/orderRepository";
 import { centsToDollars, dollarsToCents } from "@/lib/currency";
 import { price } from "@/lib/price";
 import { quantity } from "@/lib/quantity";
@@ -18,7 +17,7 @@ export async function POST(request: Request) {
     })
   );
 
-  const repository = createPrismaOrderRepository(prisma);
+  const repository = defaultOrderRepository();
   const order = await createOrder(items, repository);
 
   return NextResponse.json(

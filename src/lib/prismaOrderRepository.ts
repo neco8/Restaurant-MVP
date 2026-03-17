@@ -1,4 +1,4 @@
-import type { OrderItem, Order, OrderRepository } from "./types";
+import type { OrderItem, Order, OrderRepository, DetailedOrder, OrderSummary } from "./types";
 import { dollarsToCents, centsToDollars } from "./currency";
 import { orderTotal } from "./totals";
 import { price } from "./price";
@@ -21,6 +21,15 @@ export type PrismaOrderRow = {
   items: PrismaOrderItemRow[];
 };
 
+type PrismaOrderWithItemsRow = {
+  id: string;
+  status: string;
+  total: number;
+  createdAt: Date;
+  updatedAt: Date;
+  items: (PrismaOrderItemRow & { product: { id: string; name: string } })[];
+};
+
 export type PrismaOrderDelegate = {
   create: (args: {
     data: {
@@ -32,6 +41,14 @@ export type PrismaOrderDelegate = {
     };
     include: { items: true };
   }) => Promise<PrismaOrderRow>;
+  count: () => Promise<number>;
+  findMany: (args: {
+    include: { items: { include: { product: true } } };
+    orderBy: { createdAt: "desc" };
+    take?: number;
+  }) => Promise<PrismaOrderWithItemsRow[]>;
+  findUnique: (args: { where: { id: string } }) => Promise<{ id: string; status: string; total: number; createdAt: Date; updatedAt: Date } | null>;
+  update: (args: { where: { id: string }; data: { status: string } }) => Promise<{ id: string; status: string; total: number; createdAt: Date; updatedAt: Date }>;
 };
 
 export type PrismaOrderLike = {
@@ -70,6 +87,35 @@ export function createPrismaOrderRepository(
           price: price(centsToDollars(item.price)),
         })),
       };
+    },
+    count: () => prisma.order.count(),
+    findById: async (id: string): Promise<OrderSummary | null> => {
+      const result = await prisma.order.findUnique({ where: { id } });
+      if (!result) return null;
+      return { id: result.id, status: result.status };
+    },
+    updateStatus: async (id: string, status: string): Promise<OrderSummary> => {
+      const result = await prisma.order.update({ where: { id }, data: { status } });
+      return { id: result.id, status: result.status };
+    },
+    findAll: async (options?: { limit?: number }): Promise<DetailedOrder[]> => {
+      const rows = await prisma.order.findMany({
+        include: { items: { include: { product: true } } },
+        orderBy: { createdAt: "desc" },
+        ...(options?.limit ? { take: options.limit } : {}),
+      });
+      return rows.map((row) => ({
+        id: row.id,
+        status: row.status,
+        total: price(centsToDollars(row.total)),
+        createdAt: row.createdAt,
+        items: row.items.map((item) => ({
+          id: item.id,
+          productName: item.product.name,
+          quantity: quantity(item.quantity)._unsafeUnwrap(),
+          price: price(centsToDollars(item.price)),
+        })),
+      }));
     },
   };
 }
