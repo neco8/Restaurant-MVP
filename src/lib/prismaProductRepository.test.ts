@@ -15,6 +15,43 @@ test("findAll returns empty array when no products exist", async () => {
   expect(products).toEqual([]);
 });
 
+test("findById returns a product when found", async () => {
+  const mockPrisma: PrismaLike = {
+    product: {
+      findMany: vi.fn(),
+      findUnique: vi.fn().mockResolvedValue({
+        id: "abc",
+        name: "Ramen",
+        description: "Rich broth",
+        price: 1200,
+        image: "",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }),
+    },
+  };
+  const repository = createPrismaProductRepository(mockPrisma);
+  const product = await repository.findById("abc");
+  expect(product).toEqual({
+    id: "abc",
+    name: "Ramen",
+    description: "Rich broth",
+    price: price(12.0),
+  });
+});
+
+test("findById returns null when product not found", async () => {
+  const mockPrisma: PrismaLike = {
+    product: {
+      findMany: vi.fn(),
+      findUnique: vi.fn().mockResolvedValue(null),
+    },
+  };
+  const repository = createPrismaProductRepository(mockPrisma);
+  const product = await repository.findById("nonexistent");
+  expect(product).toBeNull();
+});
+
 test("findAll maps Prisma rows to domain products with price conversion", async () => {
   const mockPrisma: PrismaLike = {
     product: {
