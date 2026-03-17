@@ -61,6 +61,26 @@ test("delete removes a product", async () => {
   expect(all).toHaveLength(0);
 });
 
+test("update throws when product does not exist", async () => {
+  const repository = createInMemoryProductRepository([]);
+  await expect(
+    repository.update("nonexistent", {
+      name: "New",
+      description: "New",
+      price: price(10.0),
+    })
+  ).rejects.toThrow();
+});
+
+test("delete does not remove any product when id does not exist", async () => {
+  const repository = createInMemoryProductRepository([
+    { id: "1", name: "Ramen", price: price(8.0), description: "Broth" },
+  ]);
+  await repository.delete("nonexistent");
+  const all = await repository.findAll();
+  expect(all).toHaveLength(1);
+});
+
 test("findAll returns stored products", async () => {
   const repository = createInMemoryProductRepository([
     { id: "1", name: "Ramen", price: price(8.00), description: "Rich tonkotsu broth" },
