@@ -67,6 +67,41 @@ describe("PrismaOrderRepository", () => {
     ]);
   });
 
+  test("findById returns order status when found", async () => {
+    const mockFindUnique = vi.fn().mockResolvedValue({
+      id: "o1",
+      status: "pending",
+      total: 2700,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+    const mockPrisma = {
+      order: {
+        create: vi.fn(),
+        count: vi.fn(),
+        findMany: vi.fn(),
+        findUnique: mockFindUnique,
+      },
+    };
+    const repository = createPrismaOrderRepository(mockPrisma);
+    const order = await repository.findById("o1");
+    expect(order).toEqual({ id: "o1", status: "pending" });
+  });
+
+  test("findById returns null when order not found", async () => {
+    const mockPrisma = {
+      order: {
+        create: vi.fn(),
+        count: vi.fn(),
+        findMany: vi.fn(),
+        findUnique: vi.fn().mockResolvedValue(null),
+      },
+    };
+    const repository = createPrismaOrderRepository(mockPrisma);
+    const order = await repository.findById("nonexistent");
+    expect(order).toBeNull();
+  });
+
   test("findAll respects limit option", async () => {
     const mockFindMany = vi.fn().mockResolvedValue([]);
     const mockPrisma = {
