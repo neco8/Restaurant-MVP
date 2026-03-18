@@ -55,6 +55,18 @@ test("updateStatus changes the order status", async () => {
   expect(updated).toEqual({ id: saved.id, status: "preparing" });
 });
 
+test("deleteAll removes all orders", async () => {
+  const repository = createInMemoryOrderRepository();
+  await repository.save([
+    { productId: "p1", quantity: quantity(1)._unsafeUnwrap(), price: price(10.0) },
+  ]);
+  await repository.save([
+    { productId: "p2", quantity: quantity(1)._unsafeUnwrap(), price: price(5.0) },
+  ]);
+  await repository.deleteAll();
+  expect(await repository.count()).toBe(0);
+});
+
 test("findAll returns orders with item details", async () => {
   const repository = createInMemoryOrderRepository(
     new Map([["p1", "Ramen"]])

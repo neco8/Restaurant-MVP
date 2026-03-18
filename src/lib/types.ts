@@ -64,6 +64,7 @@ export type OrderRepository = {
   findAll: (options?: { limit?: number }) => Promise<DetailedOrder[]>;
   findById: (id: string) => Promise<OrderSummary | null>;
   updateStatus: (id: string, status: string) => Promise<OrderSummary>;
+  deleteAll: () => Promise<void>;
 };
 
 export type Admin = {

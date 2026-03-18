@@ -22,6 +22,7 @@ describe("createOrder", () => {
       findAll: vi.fn(),
       findById: vi.fn(),
       updateStatus: vi.fn(),
+      deleteAll: vi.fn(),
     };
 
     const order = await createOrder(

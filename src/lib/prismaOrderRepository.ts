@@ -98,6 +98,9 @@ export function createPrismaOrderRepository(
       const result = await prisma.order.update({ where: { id }, data: { status } });
       return { id: result.id, status: result.status };
     },
+    deleteAll: async (): Promise<void> => {
+      throw new Error("Not implemented");
+    },
     findAll: async (options?: { limit?: number }): Promise<DetailedOrder[]> => {
       const rows = await prisma.order.findMany({
         include: { items: { include: { product: true } } },

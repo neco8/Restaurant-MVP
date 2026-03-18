@@ -37,6 +37,10 @@ export function createInMemoryOrderRepository(
       return { id: order.id, status: order.status };
     },
 
+    async deleteAll(): Promise<void> {
+      throw new Error("Not implemented");
+    },
+
     async findAll(options?: { limit?: number }): Promise<DetailedOrder[]> {
       const sorted = [...orders].reverse();
       const limited = options?.limit ? sorted.slice(0, options.limit) : sorted;
