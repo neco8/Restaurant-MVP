@@ -36,4 +36,17 @@ describe("GET /api/cron/demo-reset", () => {
     expect(body).toEqual({ ok: true });
     expect(mockResetDatabase).toHaveBeenCalledOnce();
   });
+
+  test("returns 500 when resetDatabase throws", async () => {
+    mockResetDatabase.mockRejectedValue(new Error("connection refused"));
+    const request = new Request("http://localhost:3000/api/cron/demo-reset", {
+      headers: { authorization: "Bearer test-secret" },
+    });
+
+    const response = await GET(request);
+
+    expect(response.status).toBe(500);
+    const body = await response.json();
+    expect(body).toEqual({ error: "Error: connection refused" });
+  });
 });
