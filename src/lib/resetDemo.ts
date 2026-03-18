@@ -1,5 +1,5 @@
 import { price } from "./price";
-import type { ProductRepository } from "./types";
+import type { OrderRepository, ProductRepository } from "./types";
 
 const DEMO_PRODUCTS = [
   { name: "Tonkotsu Ramen", price: price(12.0), description: "Rich pork bone broth with chashu, egg, and nori" },
@@ -9,6 +9,7 @@ const DEMO_PRODUCTS = [
 
 export async function resetDemo(deps: {
   productRepository: ProductRepository;
+  orderRepository: OrderRepository;
 }): Promise<void> {
   const existing = await deps.productRepository.findAll();
   for (const product of existing) {
