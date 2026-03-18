@@ -9,6 +9,10 @@ vi.mock("@/server/productRepository", () => ({
   defaultProductRepository: () => ({}),
 }));
 
+vi.mock("@/server/orderRepository", () => ({
+  defaultOrderRepository: () => ({}),
+}));
+
 describe("POST /api/reset-demo", () => {
   it("calls resetDemo and returns 200", async () => {
     mockResetDemo.mockResolvedValue(undefined);

@@ -11,6 +11,7 @@ export async function resetDemo(deps: {
   productRepository: ProductRepository;
   orderRepository: OrderRepository;
 }): Promise<void> {
+  await deps.orderRepository.deleteAll();
   const existing = await deps.productRepository.findAll();
   for (const product of existing) {
     await deps.productRepository.delete(product.id);
