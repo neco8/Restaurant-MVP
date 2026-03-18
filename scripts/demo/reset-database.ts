@@ -15,7 +15,8 @@ export async function resetDatabase(): Promise<void> {
     for (const product of DEMO_PRODUCTS) {
       await pool.query(
         `INSERT INTO "Product" (id, name, description, price, image, "createdAt", "updatedAt")
-         VALUES ($1, $2, $3, $4, $5, NOW(), NOW())`,
+         VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
+         ON CONFLICT (id) DO UPDATE SET name = $2, description = $3, price = $4, image = $5, "updatedAt" = NOW()`,
         [product.id, product.name, product.description, product.price, product.image]
       );
     }
