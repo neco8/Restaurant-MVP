@@ -38,7 +38,7 @@ export function createInMemoryOrderRepository(
     },
 
     async deleteAll(): Promise<void> {
-      throw new Error("Not implemented");
+      orders.length = 0;
     },
 
     async findAll(options?: { limit?: number }): Promise<DetailedOrder[]> {
