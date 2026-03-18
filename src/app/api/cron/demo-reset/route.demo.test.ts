@@ -2,7 +2,7 @@ vi.mock("../../../../../scripts/demo/reset-database", () => ({
   resetDatabase: vi.fn(),
 }));
 
-import { GET } from "./route";
+import { GET } from "./route.demo";
 import { resetDatabase } from "../../../../../scripts/demo/reset-database";
 
 const mockResetDatabase = vi.mocked(resetDatabase);
