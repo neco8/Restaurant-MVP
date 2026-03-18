@@ -10,4 +10,8 @@ const nextConfig = {
   },
 };
 
+if (process.env.DEMO_MODE === "true") {
+  nextConfig.pageExtensions = ["demo.ts", "demo.tsx", "ts", "tsx", "js", "jsx"];
+}
+
 export default nextConfig;
