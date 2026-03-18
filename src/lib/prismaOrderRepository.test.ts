@@ -47,7 +47,9 @@ describe("PrismaOrderRepository", () => {
         findMany: mockFindMany,
         findUnique: vi.fn(),
         update: vi.fn(),
+        deleteMany: vi.fn(),
       },
+      orderItem: { deleteMany: vi.fn() },
     };
     const repository = createPrismaOrderRepository(mockPrisma);
     const orders = await repository.findAll();
@@ -84,7 +86,9 @@ describe("PrismaOrderRepository", () => {
         findMany: vi.fn(),
         findUnique: mockFindUnique,
         update: vi.fn(),
+        deleteMany: vi.fn(),
       },
+      orderItem: { deleteMany: vi.fn() },
     };
     const repository = createPrismaOrderRepository(mockPrisma);
     const order = await repository.findById("o1");
@@ -99,7 +103,9 @@ describe("PrismaOrderRepository", () => {
         findMany: vi.fn(),
         findUnique: vi.fn().mockResolvedValue(null),
         update: vi.fn(),
+        deleteMany: vi.fn(),
       },
+      orderItem: { deleteMany: vi.fn() },
     };
     const repository = createPrismaOrderRepository(mockPrisma);
     const order = await repository.findById("nonexistent");
@@ -121,7 +127,9 @@ describe("PrismaOrderRepository", () => {
         findMany: vi.fn(),
         findUnique: vi.fn(),
         update: mockUpdate,
+        deleteMany: vi.fn(),
       },
+      orderItem: { deleteMany: vi.fn() },
     };
     const repository = createPrismaOrderRepository(mockPrisma);
     const order = await repository.updateStatus("o1", "preparing");
@@ -141,7 +149,9 @@ describe("PrismaOrderRepository", () => {
         findMany: mockFindMany,
         findUnique: vi.fn(),
         update: vi.fn(),
+        deleteMany: vi.fn(),
       },
+      orderItem: { deleteMany: vi.fn() },
     };
     const repository = createPrismaOrderRepository(mockPrisma);
     await repository.findAll({ limit: 5 });
@@ -159,7 +169,9 @@ describe("PrismaOrderRepository", () => {
         findMany: vi.fn(),
         findUnique: vi.fn(),
         update: vi.fn(),
+        deleteMany: vi.fn(),
       },
+      orderItem: { deleteMany: vi.fn() },
     };
     const repository = createPrismaOrderRepository(mockPrisma);
     const total = await repository.count();

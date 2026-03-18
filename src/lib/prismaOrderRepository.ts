@@ -49,10 +49,16 @@ export type PrismaOrderDelegate = {
   }) => Promise<PrismaOrderWithItemsRow[]>;
   findUnique: (args: { where: { id: string } }) => Promise<{ id: string; status: string; total: number; createdAt: Date; updatedAt: Date } | null>;
   update: (args: { where: { id: string }; data: { status: string } }) => Promise<{ id: string; status: string; total: number; createdAt: Date; updatedAt: Date }>;
+  deleteMany: () => Promise<{ count: number }>;
+};
+
+export type PrismaOrderItemDelegate = {
+  deleteMany: () => Promise<{ count: number }>;
 };
 
 export type PrismaOrderLike = {
   order: PrismaOrderDelegate;
+  orderItem: PrismaOrderItemDelegate;
 };
 
 export function createPrismaOrderRepository(
@@ -99,7 +105,8 @@ export function createPrismaOrderRepository(
       return { id: result.id, status: result.status };
     },
     deleteAll: async (): Promise<void> => {
-      throw new Error("Not implemented");
+      await prisma.orderItem.deleteMany();
+      await prisma.order.deleteMany();
     },
     findAll: async (options?: { limit?: number }): Promise<DetailedOrder[]> => {
       const rows = await prisma.order.findMany({
