@@ -166,6 +166,28 @@ describe("PrismaOrderRepository", () => {
     expect(total).toBe(5);
   });
 
+  test("deleteAll deletes all order items then all orders", async () => {
+    const mockDeleteManyOrderItem = vi.fn().mockResolvedValue({ count: 3 });
+    const mockDeleteManyOrder = vi.fn().mockResolvedValue({ count: 2 });
+    const mockPrisma = {
+      order: {
+        create: vi.fn(),
+        count: vi.fn(),
+        findMany: vi.fn(),
+        findUnique: vi.fn(),
+        update: vi.fn(),
+        deleteMany: mockDeleteManyOrder,
+      },
+      orderItem: {
+        deleteMany: mockDeleteManyOrderItem,
+      },
+    };
+    const repository = createPrismaOrderRepository(mockPrisma);
+    await repository.deleteAll();
+    expect(mockDeleteManyOrderItem).toHaveBeenCalled();
+    expect(mockDeleteManyOrder).toHaveBeenCalled();
+  });
+
   test("save should create an order with items in the database", async () => {
     const items: OrderItem[] = [
       { productId: "p1", quantity: quantity(2)._unsafeUnwrap(), price: price(12.5) },
